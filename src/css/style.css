@@ -291,7 +291,6 @@ video {
 .space-top--4xl {
   margin-top: var(--space-4xl) !important;
 }
-
 .space-bottom--neutral {
   margin-top: var(--space-neutral) !important;
 }
@@ -355,7 +354,7 @@ video {
   display: block;
   width: 100%;
   color: var(--color-black);
-  font-size: var(--font-size-lg);
+  font-size: clamp(var(--font-size-base), 2vw, var(--font-size-lg));
   line-height: var(--line-height-neutral);
   font-weight: 600;
   text-decoration: none;
@@ -363,9 +362,18 @@ video {
   user-select: none;
 }
 
-.nav__desktop article p,
-.nav__desktop footer p {
-  font-size: clamp(var(--font-size-xs), 2vw, var(--font-size-base));
+.nav__desktop article p {
+  font-size: clamp(var(--font-size-md), 2vw, var(--font-size-base));
+}
+
+.nav__desktop article p u {
+  text-decoration-thickness: 0.0625em;
+  text-underline-offset: 0.0625em;
+}
+
+.nav__desktop__footer p {
+  width: 100%;
+  font-size: clamp(var(--font-size-md), 2vw, var(--font-size-base));
 }
 
 @media (hover: hover) {
@@ -531,13 +539,8 @@ video {
   max-width: 55rem;
   padding: 0 2em;
   width: auto; /* Let the margins control the width */
-}
-
-.article {
   margin-left: clamp(13.25rem, 30vw, 20.25rem) + 2em;
-  margin-right: calc(
-    clamp(13.25rem, 30vw, 20.25rem)
-  ); /* Right sidebar width plus padding */
+  margin-right: calc(clamp(13.25rem, 30vw, 20.25rem));
 }
 
 @media (max-width: 625px) {
@@ -549,9 +552,8 @@ video {
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1232px) {
   .article {
-    width: 56rem;
     margin-left: calc((100% - 56rem - clamp(13.25rem, 30vw, 20.25rem)) / 2);
     margin-right: calc(
       clamp(13.25rem, 30vw, 20.25rem) +
