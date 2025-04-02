@@ -70,7 +70,7 @@
             </article>
           </div>
           <div class="nav__mobile">
-            <hr class="nav__divider space-top--xl space-bottom--base" />
+            <hr class="nav__divider space-top--lg" />
 
             <div>
               <a href="/index.html">Home</a>
@@ -99,7 +99,7 @@
 
           <footer
             x-data="{ year: new Date().getFullYear() }"
-            class="space-top--xl space-bottom--base"
+            class="space-top--lg space-bottom--base"
           >
             © <span x-text="year"></span> Built by Underdogs. <br />
             All rights reserved.
@@ -265,7 +265,7 @@
         </article>
         <hr class="page__header__divider" />
       </div>
-      <article class="article space-top--3xl">
+      <article class="article space-top--lg space-bottom--lg">
         <header class="article__headline">
           <div>
             <time datetime="2025-02-09"><a href="#">February 9, 2025</a></time>
@@ -534,6 +534,31 @@
           </div>
         </footer>
       </article>
+      <div class="page page__pagination space-bottom--lg">
+        <hr class="page__divider" />
+        <nav class="pagination">
+          <a href="#" class="pagination__button pagination__prev"
+            >← <span class="pagination__button__text">Previous</span></a
+          >
+
+          <ul class="pagination__list">
+            <li>
+              <a href="#" class="pagination__link pagination__link--active"
+                >1</a
+              >
+            </li>
+            <li><a href="#" class="pagination__link">2</a></li>
+            <li><a href="#" class="pagination__link">3</a></li>
+            <li><a href="#" class="pagination__link">4</a></li>
+            <li><a href="#" class="pagination__link">5</a></li>
+            <li><a href="#" class="pagination__link">6</a></li>
+          </ul>
+
+          <a href="#" class="pagination__button pagination__next"
+            ><span class="pagination__button__text">Next</span> →</a
+          >
+        </nav>
+      </div>
     </main>
   </body>
 </html>

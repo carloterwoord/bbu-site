@@ -70,7 +70,7 @@
             </article>
           </div>
           <div class="nav__mobile">
-            <hr class="nav__divider space-top--xl space-bottom--base" />
+            <hr class="nav__divider space-top--lg" />
 
             <div>
               <a href="/index.html">Home</a>
@@ -99,7 +99,7 @@
 
           <footer
             x-data="{ year: new Date().getFullYear() }"
-            class="space-top--xl space-bottom--base"
+            class="space-top--lg space-bottom--base"
           >
             © <span x-text="year"></span> Built by Underdogs. <br />
             All rights reserved.
@@ -315,8 +315,10 @@
                 >keep reading</a
               >
             </article>
-            <hr class="search__results__item__divider" />
           </div>
+
+          <hr class="search__results__item__divider" />
+
           <div class="search__results__item">
             <header class="search__results__item__headline">
               <div>
@@ -342,8 +344,93 @@
                 >keep reading</a
               >
             </article>
-            <hr class="search__results__item__divider" />
           </div>
+
+          <hr class="search__results__item__divider" />
+
+          <div class="search__results__item">
+            <header class="search__results__item__headline">
+              <div>
+                <time datetime="2025-02-09"
+                  ><a href="#">February 9, 2025</a></time
+                >
+                <span>•</span>
+                <p><a href="/post.html">Podcast</a></p>
+              </div>
+              <a href="/post.html"
+                ><h2>
+                  I've been trying to find something that appears not to exist.
+                </h2></a
+              >
+              <picture>
+                <source
+                  srcset="
+                    https://raw.githubusercontent.com/link-u/avif-sample-images/refs/heads/master/fox.profile0.10bpc.yuv420.monochrome.avif
+                  "
+                  media="(max-width: 600px)"
+                  type="image/avif"
+                />
+                <source
+                  srcset="image-mobile.webp"
+                  media="(max-width: 600px)"
+                  type="image/webp"
+                />
+                <source
+                  srcset="
+                    https://raw.githubusercontent.com/link-u/avif-sample-images/refs/heads/master/fox.profile0.10bpc.yuv420.monochrome.avif
+                  "
+                  type="image/avif"
+                />
+                <source srcset="image-desktop.webp" type="image/webp" />
+                <img
+                  src="image.jpg"
+                  alt="A descriptive alt text"
+                  loading="lazy"
+                />
+              </picture>
+            </header>
+            <article>
+              <p class="article__excerpt">
+                Here is some excerpt of the article that is the result with
+                truncation at the end. Here is some excerpt of the Here is some
+                exceptionly
+              </p>
+              <a href="/post.html" class="article__keep-reading"
+                >keep reading</a
+              >
+            </article>
+          </div>
+
+          <hr class="search__results__item__divider" />
+
+          <div class="search__results__item">
+            <header class="search__results__item__headline">
+              <div>
+                <time datetime="2025-02-09"
+                  ><a href="#">February 9, 2025</a></time
+                >
+                <span>•</span>
+                <p><a href="/post.html">Podcast</a></p>
+              </div>
+              <a href="/post.html"
+                ><h2>
+                  I've been trying to find something that appears not to exist.
+                </h2></a
+              >
+            </header>
+            <article>
+              <p class="article__excerpt">
+                Here is some excerpt of the article that is the result with
+                truncation at the end. Here is some excerpt of the Here is some
+                exceptionly
+              </p>
+              <a href="/post.html" class="article__keep-reading"
+                >keep reading</a
+              >
+            </article>
+          </div>
+
+          <hr class="search__results__item__divider" />
         </div>
       </div>
     </main>
