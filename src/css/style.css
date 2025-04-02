@@ -521,8 +521,8 @@ video {
 
 .menu__icon {
   position: relative;
-  width: 24px;
-  height: 11px;
+  width: 1.5em;
+  height: 0.6875em;
   cursor: pointer;
 }
 
@@ -530,7 +530,7 @@ video {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 2.5px;
+  height: 0.125em;
   background-color: black;
   transition: all 0.1s ease;
 }
@@ -554,11 +554,11 @@ video {
 .article,
 .page {
   display: grid;
-  max-width: 57.5em;
+  max-width: 56.25em;
   padding: 0 2em;
   width: auto; /* Let the margins control the width */
-  margin-left: clamp(13.25rem, 30vw, 20.25rem) + 2em;
-  margin-right: calc(clamp(13.25rem, 30vw, 20.25rem));
+  margin-left: clamp(13.25em, 30vw, 20.25em) + 2em;
+  margin-right: calc(clamp(13.25em, 30vw, 20.25em));
 }
 
 .page {
@@ -582,10 +582,10 @@ video {
 @media (min-width: 1232px) {
   .article,
   .page {
-    margin-left: calc((100% - 57.5rem - clamp(13.25rem, 30vw, 20.25rem)) / 2);
+    margin-left: calc((100% - 56.25em - clamp(13.25em, 30vw, 20.25em)) / 2);
     margin-right: calc(
-      clamp(13.25rem, 30vw, 20.25rem) +
-        ((100% - 57.5rem - clamp(13.25rem, 30vw, 20.25rem)) / 2)
+      clamp(13.25rem, 30vw, 20.25em) +
+        ((100% - 56.25em - clamp(13.25em, 30vw, 20.25em)) / 2)
     );
   }
 }
@@ -1255,23 +1255,39 @@ strong {
   font-size: clamp(var(--font-size-lg), 2.5vw, var(--font-size-xl));
 }
 
-.search__results__item article .article__excerpt {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.search__results__item article {
   position: relative;
 }
 
-.search__results__item article .article__keep-reading {
+.article__excerpt {
   display: inline;
 }
 
+.article__excerpt::after {
+  content: "…";
+  margin-left: -0.15em;
+}
+
+.article__keep-reading {
+  display: inline;
+  margin-left: 0.3em;
+}
+
 .search__results__item__headline a h2 {
-  font-size: clamp(var(--font-size-6xl), 2.3vw, var(--font-size-9xl));
+  font-size: clamp(var(--font-size-6xl), 4vw, var(--font-size-9xl));
   letter-spacing: var(--letter-spacing-xs);
   line-height: var(--line-height-base);
   font-weight: 850;
+}
+
+@media (hover: hover) {
+  .search__results__item__headline a:hover,
+  .search__results__item__headline a:focus {
+    color: var(--color-blue);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    cursor: pointer;
+  }
 }
 
 .search__results__item__headline time,
