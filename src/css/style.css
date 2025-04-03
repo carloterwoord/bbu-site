@@ -762,13 +762,13 @@ video {
 }
 
 .page__footer li a {
-  display: flex;
-  justify-content: space-between;
+  display: block;
+  max-width: max-content;
   font-size: clamp(var(--font-size-lg), 2.5vw, var(--font-size-4xl));
   letter-spacing: var(--letter-spacing-xs);
   line-height: var(--line-height-base);
   text-decoration: underline;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .page__footer li a span {
