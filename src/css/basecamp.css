@@ -846,8 +846,8 @@ u {
 }
 .details {
   display: grid;
-  margin-left: var(--space-medium);
-  margin-right: var(--space-medium);
+  margin-left: 1em;
+  margin-right: 1em;
   position: relative;
 }
 .details details summary {
@@ -865,7 +865,7 @@ u {
   -webkit-user-select: none;
 }
 .details details summary p {
-  font-size: var(--font-size-x-small);
+  font-size: var(--font-size-4xl);
   font-weight: 600;
   letter-spacing: var(--letter-spacing);
   text-underline-offset: 0.0925em;
@@ -883,6 +883,7 @@ u {
 .details details summary::-webkit-details-marker {
   display: none;
 }
+
 .details details article {
   display: grid;
   gap: 0.4875em;
@@ -893,7 +894,7 @@ u {
 }
 .details details article p,
 .details details article ul {
-  font-size: var(--font-size-xx-small);
+  font-size: var(--font-size-4xl);
   letter-spacing: var(--letter-spacing);
 }
 .details details article ul {
@@ -905,7 +906,7 @@ u {
   transform: rotate(90deg);
 }
 .details details:not(:last-child) {
-  border-bottom: 1px solid var(--color-grey);
+  border-bottom: 1px solid var(--color-black);
 }
 @media (hover: hover) {
   .details details: not([open]) summary:hover p {
@@ -915,8 +916,8 @@ u {
 }
 @media (min-width: 64em) {
   .details {
-    margin-left: var(--space-neutral);
-    margin-right: var(--space-neutral);
+    margin-left: 1em;
+    margin-right: 1em;
   }
 }
 .footer {
