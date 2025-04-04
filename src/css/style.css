@@ -1262,7 +1262,15 @@ strong {
   font-size: clamp(var(--font-size-lg), 3vw, var(--font-size-2xl));
 }
 
+.author span {
+  font-size: clamp(var(--font-size-xs), 3vw, var(--font-size-base));
+  font-weight: 600;
+  text-transform: uppercase;
+  color: oklch(var(--lch-coal) / 0.6);
+}
+
 .author__header h2 {
+  margin: 0.25em 0;
   font-size: clamp(var(--font-size-xl), 3vw, var(--font-size-4xl));
   font-weight: 800;
   letter-spacing: var(--letter-spacing-md);
