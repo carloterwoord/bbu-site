@@ -603,7 +603,6 @@ video {
 .article__cover-wrapper,
 .page__cover-wrapper {
   width: 100%;
-  max-height: clamp(12rem, 30vw, 23.9375rem);
   overflow: hidden;
   position: relative;
   border-bottom: 0.0625em solid oklch(var(--lch-coal) / 0.1);
@@ -621,6 +620,7 @@ video {
 
 @media (max-width: 625px) {
   .page__cover-wrapper {
+    margin-top: 2em;
     padding-right: 0;
   }
 }
@@ -634,9 +634,13 @@ video {
   background: var(--color-off-white);
 }
 
-.article__cover,
-.page__cover {
+.article__cover {
   height: clamp(10em, 30vw, 24em);
+  aspect-ratio: 16 / 9;
+}
+
+.page__cover {
+  height: clamp(12em, 30vw, 16em);
   aspect-ratio: 16 / 9;
 }
 
@@ -644,7 +648,7 @@ video {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 24em;
+  max-height: 32em;
   object-fit: cover;
 }
 
