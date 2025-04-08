@@ -326,7 +326,7 @@ video {
   margin-bottom: var(--space-2xl) !important;
 }
 .space-bottom--3xl {
-  margin-bottom: var(--space-3xl) !important;
+  margin-bottom: clamp(var(--space-xl), 5vw, var(--space-3xl)) !important;
 }
 .space-bottom--4xl {
   margin-bottom: var(--space-4xl) !important;
@@ -572,12 +572,9 @@ video {
   margin-right: clamp(13.25em, 30vw, 20.25em);
 }
 
-.page {
-  gap: 1em;
-}
-
+.page,
 .article {
-  gap: 2.25em;
+  gap: 1em;
 }
 
 @media (max-width: 625px) {
@@ -660,7 +657,7 @@ video {
   background-size: cover;
   backgorund-position: center;
   background-repeat: no-repeat;
-  background-color: var(--color-off-white);
+  background-color: var(--color-white);
   box-shadow: 0 0 0 0.0625em oklch(var(--lch-coal) / 0.1);
 }
 
@@ -825,7 +822,7 @@ video {
 .page__divider,
 .page__footer__divider {
   margin: 0.5em 0;
-  width: full;
+  width: 100%;
   border-top: 0.0625em solid oklch(var(--lch-coal) / 0.1);
 }
 
@@ -1164,11 +1161,50 @@ strong {
   border-top: 0.0625em solid oklch(var(--lch-coal) / 0.1);
 }
 
+.article__keep-reading {
+  margin-top: 1em;
+  display: block;
+  position: relative;
+  width: max-content;
+}
+
+.article__content > *:last-child {
+  position: relative;
+  padding-bottom: 50px; /* Add space for the gradient fade */
+}
+
+.article__content > *:last-child::after {
+  content: "";
+  position: absolute;
+  bottom: 0em;
+  left: 0;
+  width: 100%;
+  height: 24em; /* Adjust the height of the fade effect */
+  background: linear-gradient(to bottom, transparent, var(--color-white));
+}
+
+.article__keep-reading a {
+  border-top: 0.09375em solid var(--color-blue);
+  padding-top: 0.5em;
+  text-decoration: none;
+  font-size: clamp(var(--font-size-xl), 2vw, var(--font-size-3xl));
+  transition: var(--transition);
+}
+
+@media (hover: hover) {
+  .article__keep-reading a:hover,
+  .article__keep-reading a:focus {
+    border-top: 0.09375em solid var(--color-black);
+    padding-top: 0.5em;
+    text-decoration: none;
+    font-size: clamp(var(--font-size-xl), 2vw, var(--font-size-3xl));
+  }
+}
+
 .article__footer {
   display: grid;
   gap: 1.5em;
   align-items: start;
-  margin-bottom: 2.5em;
 }
 
 .article__content .article__footer ul,
