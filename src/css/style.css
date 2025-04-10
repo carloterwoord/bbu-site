@@ -248,7 +248,7 @@ a {
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 0.0925em;
-  text-decoration-thickness: clamp(0.09375em, 0.2vw, 0.1em);
+  text-decoration-thickness: clamp(0.09375em, 0.1vw, 0.1em);
 }
 
 @media (hover: hover) {
@@ -291,7 +291,7 @@ video {
   margin-top: var(--space-lg) !important;
 }
 .space-top--xl {
-  margin-top: var(--space-xl) !important;
+  margin-top: clamp(var(--space-base), 5vw, var(--space-xl)) !important;
 }
 .space-top--2xl {
   margin-top: var(--space-2xl) !important;
@@ -886,27 +886,21 @@ video {
 .page__footer ul {
   display: grid;
   gap: var(--space-base);
+  max-width: max-content;
 }
 
 .page__footer ul li {
   list-style-type: none;
+  gap: var(--space-base);
 }
 
-.page__footer li a {
-  display: block;
+.page__footer ul li a {
+  display: inline;
   max-width: max-content;
   font-size: clamp(var(--font-size-lg), 2.5vw, var(--font-size-4xl));
   letter-spacing: var(--letter-spacing-xs);
   line-height: var(--line-height-base);
-  text-decoration: underline;
   font-weight: 700;
-}
-
-.page__footer li a span {
-  display: inline-block;
-  text-decoration: none;
-  color: var(--color-black);
-  font-weight: 450;
 }
 
 .article__headline div {
@@ -961,6 +955,42 @@ video {
 .article__headline h2,
 .page__header header h1 {
   font-size: clamp(var(--font-size-6xl), 5vw, var(--font-size-10xl));
+  letter-spacing: var(--letter-spacing-xs);
+  line-height: var(--line-height-base);
+  font-weight: 850;
+}
+
+.article__table-of-contents {
+  display: grid;
+  gap: var(--space-base);
+  margin-top: clamp(var(--space-2xs), 2.5vw, var(--space-base));
+  padding: clamp(var(--space-lg), 2.5vw, var(--space-xl)) 0;
+  border: 0.0625em solid oklch(var(--lch-coal) / 0.1);
+  border-left-style: none;
+  border-right-style: none;
+}
+
+.article__table-of-contents ol {
+  display: grid;
+  gap: var(--space-2xs);
+  padding: 0;
+}
+
+.article__table-of-contents ol li {
+  font-size: clamp(var(--font-size-lg), 2vw, var(--font-size-2xl));
+  list-style-type: decimal;
+  list-style-position: outside;
+  margin-left: var(--space-md);
+  padding-left: var(--space-2xs);
+  font-weight: 500;
+}
+
+.article__table-of-contents ol li a {
+  font-weight: 700;
+}
+
+.article__table-of-contents h2 {
+  font-size: clamp(var(--font-size-xl), 2.5vw, var(--font-size-4xl));
   letter-spacing: var(--letter-spacing-xs);
   line-height: var(--line-height-base);
   font-weight: 850;
@@ -1360,6 +1390,30 @@ strong {
   }
 }
 
+.author span {
+  font-size: clamp(var(--font-size-xs), 2.5vw, var(--font-size-base));
+  font-weight: 600;
+  text-transform: uppercase;
+  color: oklch(var(--lch-coal) / 0.6);
+}
+
+.author ul li {
+  margin-top: var(--space-xs);
+  display: inline-block;
+  margin-right: var(--space-2xs);
+}
+.author ul li:not(:last-child)::after {
+  font-size: clamp(var(--font-size-lg), 2.5vw, var(--font-size-xl));
+  font-weight: 400;
+  content: "/";
+  margin-left: var(--space-2xs);
+}
+.author ul li a {
+  font-size: clamp(var(--font-size-lg), 2.5vw, var(--font-size-xl));
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .author__border {
   border: 0.0625em solid oklch(var(--lch-coal) / 0.1);
   border-left-style: none;
@@ -1391,13 +1445,6 @@ strong {
 
 .author__header p {
   font-size: clamp(var(--font-size-lg), 2vw, var(--font-size-2xl));
-}
-
-.author span {
-  font-size: clamp(var(--font-size-xs), 2.5vw, var(--font-size-base));
-  font-weight: 600;
-  text-transform: uppercase;
-  color: oklch(var(--lch-coal) / 0.6);
 }
 
 .author__header h2 {
@@ -1625,7 +1672,7 @@ strong {
   margin-left: 0.3em;
 }
 
-.search__results__item__headline a h2 {
+/* .search__results__item__headline a h2 {
   font-size: clamp(var(--font-size-6xl), 4vw, var(--font-size-9xl));
   letter-spacing: var(--letter-spacing-xs);
   line-height: var(--line-height-base);
@@ -1696,7 +1743,7 @@ strong {
   margin: var(--space-lg) 0;
   width: full;
   border-top: 0.0625em solid oklch(var(--lch-coal) / 0.1);
-}
+} */
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -1761,13 +1808,10 @@ strong {
 .error header,
 .error article {
   margin-inline: auto;
-}
-
-.error header,
-.error article {
   text-align: center;
   width: min(100%, 55em);
 }
+
 .error header h1 {
   font-size: clamp(var(--font-size-6xl), 5vw, var(--font-size-10xl));
   letter-spacing: var(--letter-spacing-xs);
