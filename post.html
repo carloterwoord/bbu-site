@@ -157,6 +157,93 @@
                 </button>
 
                 <div
+                    class="nav__desktop__rail-menu"
+                    :aria-hidden="isDesktopMenuOpen"
+                    :inert="isDesktopMenuOpen"
+                >
+                    <div class="nav__desktop__rail-group">
+                        <a class="nav__desktop__rail-link" href="/index.html" aria-label="Home">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#home"></use>
+                            </svg>
+                            <span aria-hidden="true">Home</span>
+                        </a>
+                        <a class="nav__desktop__rail-link" href="#" aria-label="Membership">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#membership"></use>
+                            </svg>
+                            <span aria-hidden="true">Membership</span>
+                        </a>
+                        <a class="nav__desktop__rail-link" href="/podcast.html" aria-label="Podcast">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#podcast"></use>
+                            </svg>
+                            <span aria-hidden="true">Podcast</span>
+                        </a>
+                        <a class="nav__desktop__rail-link" href="#" aria-label="Behind the Scenes">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#behind"></use>
+                            </svg>
+                            <span aria-hidden="true">Behind the Scenes</span>
+                        </a>
+                        <a class="nav__desktop__rail-link" href="#" aria-label="Underdog Principles">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#principles"></use>
+                            </svg>
+                            <span aria-hidden="true">Underdog Principles</span>
+                        </a>
+                        <a class="nav__desktop__rail-link" href="#" aria-label="Tech & Tools">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#tools"></use>
+                            </svg>
+                            <span aria-hidden="true">Tech & Tools</span>
+                        </a>
+                    </div>
+
+                    <hr />
+
+                    <div class="nav__desktop__rail-group">
+                        <a class="nav__desktop__rail-link" href="#" aria-label="Find your Voice">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#voice"></use>
+                            </svg>
+                            <span aria-hidden="true">Find your Voice</span>
+                        </a>
+                        <a class="nav__desktop__rail-link" href="#" aria-label="The Business of Making">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#business"></use>
+                            </svg>
+                            <span aria-hidden="true">The Business of Making</span>
+                        </a>
+                    </div>
+
+                    <hr />
+
+                    <div class="nav__desktop__rail-group">
+                        <a class="nav__desktop__rail-link" href="#" aria-label="Search stuff">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#search"></use>
+                            </svg>
+                            <span aria-hidden="true">Search stuff</span>
+                        </a>
+                        <a class="nav__desktop__rail-link" href="#" aria-label="About">
+                            <svg aria-hidden="true" focusable="false">
+                                <use href="/src/icons/nav.svg#about"></use>
+                            </svg>
+                            <span aria-hidden="true">About</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a
+                    class="nav__desktop__rail-logo"
+                    href="/index.html"
+                    aria-label="Built by Underdogs"
+                >
+                    Built by Underdogs
+                </a>
+
+                <div
                     id="desktop-menu"
                     class="nav__desktop__panel"
                     :aria-hidden="!isDesktopMenuOpen"
@@ -167,7 +254,7 @@
                         class="nav__desktop__logo"
                         aria-label="Built by Underdogs Logo"
                     >
-                        <a href="#">
+                        <a href="/index.html">
                             <svg
                                 width="196"
                                 height="70"
