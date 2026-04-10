@@ -15,11 +15,16 @@
             x-data="{ 
         isMenuOpen: false, 
         hasScrolled: false, 
+        isDesktopMenuOpen: true,
         isMobile: window.innerWidth <= 625 
       }"
             @scroll.window="hasScrolled = window.scrollY > 10"
             @resize.window="isMobile = window.innerWidth <= 625; if (!isMobile) isMenuOpen = false"
             class="nav"
+            :class="{
+        'nav--desktop-open': !isMobile && isDesktopMenuOpen,
+        'nav--desktop-closed': !isMobile && !isDesktopMenuOpen
+      }"
             aria-label="Main Navigation"
         >
             <!-- Mobile Navigation -->
@@ -38,19 +43,20 @@
                     </div>
 
                     <button
+                        type="button"
                         @click="isMenuOpen = !isMenuOpen"
                         aria-label="Navigation Toggle"
                         :aria-expanded="isMenuOpen"
                         aria-controls="mobile-menu"
                     >
-                        <div
+                        <span
                             class="menu__icon"
                             :class="{ 'open': isMenuOpen }"
                             aria-hidden="true"
                         >
                             <span class="menu__icon__bar"></span>
                             <span class="menu__icon__bar"></span>
-                        </div>
+                        </span>
                     </button>
                 </header>
 
@@ -112,8 +118,50 @@
             <div
                 x-show="!isMobile"
                 class="nav__desktop__container"
+                :class="{
+          'nav__desktop__container--open': isDesktopMenuOpen,
+          'nav__desktop__container--closed': !isDesktopMenuOpen
+        }"
                 aria-label="Desktop Navigation"
             >
+                <button
+                    class="nav__desktop__toggle"
+                    type="button"
+                    @click="isDesktopMenuOpen = !isDesktopMenuOpen"
+                    :aria-expanded="isDesktopMenuOpen"
+                    :aria-label="isDesktopMenuOpen ? 'Close desktop menu' : 'Open desktop menu'"
+                    aria-controls="desktop-menu"
+                >
+                    <svg
+                        class="nav__desktop__toggle-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <rect
+                            x="3.5"
+                            y="4"
+                            width="17"
+                            height="16"
+                            rx="2"
+                        ></rect>
+                        <rect
+                            class="nav__desktop__toggle-panel"
+                            x="14"
+                            y="4"
+                            width="6.5"
+                            height="16"
+                            rx="2"
+                        ></rect>
+                    </svg>
+                </button>
+
+                <div
+                    id="desktop-menu"
+                    class="nav__desktop__panel"
+                    :aria-hidden="!isDesktopMenuOpen"
+                    :inert="!isDesktopMenuOpen"
+                >
                 <header class="nav__desktop space-top--3xl space-bottom-base">
                     <div
                         class="nav__desktop__logo"
@@ -258,6 +306,7 @@
                         All rights reserved.
                     </p>
                 </footer>
+                </div>
             </div>
         </nav>
         <main class="main">
