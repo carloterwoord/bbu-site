@@ -68,9 +68,12 @@
     /* Layout */
     --desktop-sidebar-width: clamp(13.25rem, 30vw, 20.25rem);
     --desktop-sidebar-rail-width: 3.5rem;
+    --desktop-sidebar-panel-inline: clamp(0.1em, 2.5vw, var(--space-md));
     --desktop-toggle-icon-width: var(--space-md);
     --desktop-toggle-icon-height: 1em;
-    --desktop-toggle-open-nudge-x: -8px;
+    --desktop-toggle-open-nudge-x: calc(
+        (var(--desktop-sidebar-panel-inline) - 0.1em) * 0
+    );
 
     /* Transitions & Animations */
     --transition: 0.08s ease;
@@ -476,13 +479,11 @@ video {
 .nav__desktop__rail-logo {
     position: absolute;
     bottom: 0;
-    left: 0;
+    left: -1.5px;
     display: block;
     width: var(--desktop-sidebar-rail-width);
     height: 14rem;
     padding: 0;
-    background: var(--color-white);
-    background-color: var(--color-white);
     color: var(--color-black);
     font-family: var(--font-family);
     font-size: 0;
@@ -501,7 +502,7 @@ video {
     position: absolute;
     bottom: var(--space-xs);
     left: 50%;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     line-height: var(--line-height-base);
     white-space: nowrap;
     transform: rotate(-90deg);
@@ -573,7 +574,7 @@ video {
     height: 100%;
     max-height: 100vh;
     overflow-y: auto;
-    padding: 0 clamp(0.1em, 2.5vw, var(--space-md));
+    padding: 0 var(--desktop-sidebar-panel-inline);
     transition: opacity var(--transition-slow);
     -webkit-overflow-scrolling: touch;
 }
@@ -611,13 +612,12 @@ video {
     cursor: pointer;
     transition:
         left var(--transition-slow),
-        color var(--transition-slow),
-        background-color var(--transition-slow);
+        color var(--transition-slow);
 }
 
 .nav__desktop__container--open .nav__desktop__toggle {
     left: calc(
-        clamp(0.1em, 2.5vw, var(--space-lg)) -
+        var(--desktop-sidebar-panel-inline) -
             (
                 (
                         var(--desktop-sidebar-rail-width) -
@@ -635,7 +635,7 @@ video {
     right: 0;
     bottom: 0;
     left: 0;
-    border-bottom: 0.0625em solid oklch(var(--lch-coal) / 0.1);
+    border-bottom: 0;
     opacity: 0;
     transition: opacity var(--transition-slow);
 }
@@ -658,12 +658,6 @@ video {
 .nav__desktop__toggle-panel {
     fill: currentColor;
     stroke: none;
-}
-
-.nav__desktop__container--closed .nav__desktop__toggle,
-.nav__desktop__container--open .nav__desktop__toggle {
-    background: var(--color-white);
-    background-color: var(--color-white);
 }
 
 .nav__desktop__toggle:focus-visible,
