@@ -69,6 +69,7 @@
     --desktop-sidebar-width: clamp(13.25rem, 30vw, 20.25rem);
     --desktop-sidebar-rail-width: 4rem;
     --desktop-sidebar-panel-inline: clamp(0.1em, 2.5vw, var(--space-md));
+    --desktop-toggle-top-offset: clamp(-1rem, calc(-0.3rem - 0vw), 0rem);
     --desktop-toggle-icon-width: var(--space-md);
     --desktop-toggle-icon-height: 0.6875em;
     --desktop-toggle-open-nudge-x: -0.25rem;
@@ -618,7 +619,7 @@ video {
 
 .nav__desktop__toggle {
     position: absolute;
-    top: 0;
+    top: var(--desktop-toggle-top-offset);
     left: 0;
     z-index: 2;
     display: grid;
@@ -670,6 +671,10 @@ video {
     color: currentColor;
 }
 
+.nav__desktop__container--open .nav__desktop__toggle-icon {
+    margin-left: 0.45em;
+}
+
 .nav__desktop__toggle-icon .menu__icon__bar {
     background-color: currentColor;
     transition:
@@ -700,8 +705,6 @@ video {
 @media (hover: hover) {
     .nav__desktop__toggle:hover,
     .nav__desktop__toggle:focus-visible {
-        background: var(--color-white);
-        background-color: var(--color-white);
         color: var(--color-blue);
     }
 
