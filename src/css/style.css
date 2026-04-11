@@ -67,7 +67,7 @@
 
     /* Layout */
     --desktop-sidebar-width: clamp(13.25rem, 30vw, 20.25rem);
-    --desktop-sidebar-rail-width: 3.5rem;
+    --desktop-sidebar-rail-width: 4rem;
     --desktop-sidebar-panel-inline: clamp(0.1em, 2.5vw, var(--space-md));
     --desktop-toggle-icon-width: var(--space-md);
     --desktop-toggle-icon-height: 1em;
