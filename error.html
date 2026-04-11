@@ -1,41 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Built by Underdogs - Static Website</title>
-    <link rel="stylesheet" href="/src/css/style.css" />
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"
-      defer
-    ></script>
-  </head>
-  <body>
-    <main class="main">
-      <div class="error">
-        <header>
-          <h1>Page not found...</h1>
-        </header>
-        <article>
-          <p>
-            Sorry, that thing you’re looking for isn’t here on <a
-              href="/index.html"
-              >Built by Underdogs.</a
-            >
-          </p>
-          <p>
-            Return back to <a href="/index.html">Built by Underdogs.</a> Or
-            <a href="/index.html">listen to our podcast</a>,
-            <a href="/index.html">browse through our latest posts</a>, or see
-            <a href="/index.html">everything we’ve ever shared.</a>
-          </p>
-          <div x-data>
-            <button @click="window.history.back()" class="button">
-              ← Go back where you came from
-            </button>
-          </div>
-        </article>
-      </div>
-    </main>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Built by Underdogs - Static Website</title>
+        <link rel="stylesheet" href="/src/css/style.css" />
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"
+            defer
+        ></script>
+    </head>
+    <body>
+        <main class="main">
+            <div class="error">
+                <header>
+                    <h1>Page not found...</h1>
+                </header>
+                <article>
+                    <p>
+                        Sorry, that thing you’re looking for isn’t here on <a
+                            href="/index.html"
+                            >Built by Underdogs.</a
+                        >
+                    </p>
+                    <p>
+                        Return back to
+                        <a href="/index.html">Built by Underdogs.</a> Or
+                        <a href="/index.html">listen to our category</a>,
+                        <a href="/index.html">browse through our latest posts</a
+                        >, or see
+                        <a href="/index.html">everything we’ve ever shared.</a>
+                    </p>
+                    <div x-data>
+                        <button @click="window.history.back()" class="button">
+                            ← Go back where you came from
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </body>
 </html>

@@ -82,7 +82,7 @@
                         <div>
                             <a href="/index.html">Home</a>
                             <a href="#">Membership</a>
-                            <a href="/podcast.html">Podcast</a>
+                            <a href="/category.html">category</a>
                             <a href="#">Behind the Scenes</a>
                             <a href="#">Underdog Principles</a>
                             <a href="#"> Tech & Tools </a>
@@ -129,22 +129,14 @@
                     type="button"
                     @click="isDesktopMenuOpen = !isDesktopMenuOpen"
                     :aria-expanded="isDesktopMenuOpen"
-                    :aria-label="isDesktopMenuOpen ? 'Close desktop menu' : 'Open desktop menu'"
+                    :aria-label="isDesktopMenuOpen ? 'Enter focus mode' : 'Exit focus mode'"
+                    :data-tooltip="isDesktopMenuOpen ? 'Enter focus mode' : 'Exit focus mode'"
                     aria-controls="desktop-menu"
                 >
-                    <svg
-                        class="nav__desktop__toggle-icon"
-                        viewBox="0 0 24 13"
-                        aria-hidden="true"
-                        focusable="false"
-                    >
-                        <!-- Sidebar icon kept for reference
-            <rect x="3.5" y="4" width="17" height="16" rx="2"></rect>
-            <rect class="nav__desktop__toggle-panel" x="14" y="4" width="6.5" height="16" rx="2"></rect>
-            -->
-            <rect x="0" y="0" width="24" height="2"></rect>
-            <rect x="0" y="9" width="24" height="2"></rect>
-                    </svg>
+                    <span class="nav__desktop__toggle-icon" aria-hidden="true">
+                        <span class="menu__icon__bar"></span>
+                        <span class="menu__icon__bar"></span>
+                    </span>
                 </button>
 
                 <div
@@ -175,13 +167,13 @@
                         </a>
                         <a
                             class="nav__desktop__rail-link"
-                            href="/podcast.html"
-                            aria-label="Podcast"
+                            href="/category.html"
+                            aria-label="category"
                         >
                             <svg aria-hidden="true" focusable="false">
-                                <use href="/src/icons/nav.svg#podcast"></use>
+                                <use href="/src/icons/nav.svg#category"></use>
                             </svg>
-                            <span aria-hidden="true">Podcast</span>
+                            <span aria-hidden="true">category</span>
                         </a>
                         <a
                             class="nav__desktop__rail-link"
@@ -397,7 +389,7 @@
                         <div>
                             <a href="/index.html">Home</a>
                             <a href="#">Membership</a>
-                            <a href="/podcast.html">Podcast</a>
+                            <a href="/category.html">category</a>
                             <a href="#">Behind the Scenes</a>
                             <a href="#">Underdog Principles</a>
                             <a href="#"> Tech & Tools </a>
@@ -630,7 +622,7 @@
                   ><a href="#">February 9, 2025</a></time
                 >
                 <span>•</span>
-                <p><a href="/post.html">Podcast</a></p>
+                <p><a href="/post.html">category</a></p>
               </div>
               <a href="/post.html"
                 ><h2>
@@ -685,7 +677,7 @@
                   ><a href="#">February 9, 2025</a></time
                 >
                 <span>•</span>
-                <p><a href="/post.html">Podcast</a></p>
+                <p><a href="/post.html">category</a></p>
               </div>
               <a href="/post.html"
                 ><h2>
@@ -714,7 +706,7 @@
                   ><a href="#">February 9, 2025</a></time
                 >
                 <span>•</span>
-                <p><a href="/post.html">Podcast</a></p>
+                <p><a href="/post.html">category</a></p>
               </div>
               <a href="/post.html"
                 ><h2>
@@ -774,7 +766,7 @@
                   ><a href="#">February 9, 2025</a></time
                 >
                 <span>•</span>
-                <p><a href="/post.html">Podcast</a></p>
+                <p><a href="/post.html">category</a></p>
               </div>
               <a href="/post.html"
                 ><h2>
