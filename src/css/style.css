@@ -67,7 +67,10 @@
 
     /* Layout */
     --desktop-sidebar-width: clamp(13.25rem, 30vw, 20.25rem);
-    --desktop-sidebar-rail-width: 3rem;
+    --desktop-sidebar-rail-width: 3.5rem;
+    --desktop-toggle-icon-width: var(--space-md);
+    --desktop-toggle-icon-height: 1em;
+    --desktop-toggle-open-nudge-x: -8px;
 
     /* Transitions & Animations */
     --transition: 0.08s ease;
@@ -570,7 +573,7 @@ video {
     height: 100%;
     max-height: 100vh;
     overflow-y: auto;
-    padding: 0 clamp(0.1em, 2.5vw, var(--space-lg));
+    padding: 0 clamp(0.1em, 2.5vw, var(--space-md));
     transition: opacity var(--transition-slow);
     -webkit-overflow-scrolling: touch;
 }
@@ -604,10 +607,26 @@ video {
     place-items: center;
     width: var(--desktop-sidebar-rail-width);
     height: var(--desktop-sidebar-rail-width);
-    background: var(--color-white);
-    background-color: var(--color-white);
     color: var(--color-black);
     cursor: pointer;
+    transition:
+        left var(--transition-slow),
+        color var(--transition-slow),
+        background-color var(--transition-slow);
+}
+
+.nav__desktop__container--open .nav__desktop__toggle {
+    left: calc(
+        clamp(0.1em, 2.5vw, var(--space-lg)) -
+            (
+                (
+                        var(--desktop-sidebar-rail-width) -
+                            var(--desktop-toggle-icon-width)
+                    ) /
+                    2
+            ) +
+            var(--desktop-toggle-open-nudge-x)
+    );
 }
 
 .nav__desktop__toggle::after {
@@ -628,8 +647,8 @@ video {
 
 .nav__desktop__toggle-icon {
     display: block;
-    width: 1.45rem;
-    height: 1.45rem;
+    width: var(--desktop-toggle-icon-width);
+    height: var(--desktop-toggle-icon-height);
     fill: currentColor;
     stroke: none;
     opacity: 1;
@@ -676,7 +695,6 @@ video {
     .nav__desktop__rail-link:focus {
         color: var(--color-blue);
     }
-
 }
 
 @media (min-width: 625px) {
