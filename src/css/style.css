@@ -74,6 +74,7 @@
     --desktop-toggle-icon-width: var(--space-md);
     --desktop-toggle-icon-height: 0.6875em;
     --desktop-toggle-open-nudge-x: -0.25rem;
+    --desktop-rail-toggle-gap: 0.2rem;
 
     /* Transitions & Animations */
     --transition: 0.08s ease;
@@ -671,7 +672,9 @@ video {
 }
 
 .theme-toggle__icon {
-    font-size: clamp(1rem, 2vw, 1.375rem);
+    width: clamp(1rem, 2vw, 1.375rem);
+    height: clamp(1rem, 2vw, 1.375rem);
+    display: block;
 }
 
 .theme-toggle__icon--sun {
@@ -700,6 +703,38 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 0.35em;
+}
+
+.theme-toggle--rail {
+    position: absolute;
+    top: calc(
+        var(--desktop-sidebar-rail-width) + var(--desktop-rail-toggle-gap)
+    );
+    left: 0;
+    z-index: 2;
+    width: var(--desktop-sidebar-rail-width);
+    height: var(--desktop-sidebar-rail-width);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity var(--transition-slow),
+        color var(--transition-slow);
+}
+
+.theme-toggle--rail::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--desktop-rail-toggle-gap) * -0.5);
+    left: 50%;
+    width: 4rem;
+    border-top: 0.0625em solid oklch(var(--lch-coal) / 0.1);
+    transform: translateX(-50%);
+}
+
+.nav__desktop__container--closed .theme-toggle--rail {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: var(--transition-slow);
 }
 
 .nav__desktop__toggle::after {
@@ -946,7 +981,8 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 }
 
 @media (max-width: 625px) {
-    .theme-toggle--desktop {
+    .theme-toggle--desktop,
+    .theme-toggle--rail {
         display: none;
     }
 
