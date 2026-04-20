@@ -9,8 +9,19 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"
             defer
         ></script>
+        <script src="/src/js/scripts.js"></script>
     </head>
     <body>
+        <button
+            class="theme-toggle theme-toggle--fixed"
+            type="button"
+            data-theme-toggle
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+        >
+            <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">&#9790;</span>
+            <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">&#9728;</span>
+        </button>
         <main class="main">
             <div class="error">
                 <header>

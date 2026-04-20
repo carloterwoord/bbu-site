@@ -9,6 +9,7 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"
             defer
         ></script>
+        <script src="/src/js/scripts.js"></script>
     </head>
     <body>
         <nav
@@ -42,22 +43,43 @@
                         <a href="/index.html">Built by Underdogs</a>
                     </div>
 
-                    <button
-                        type="button"
-                        @click="isMenuOpen = !isMenuOpen"
-                        aria-label="Navigation Toggle"
-                        :aria-expanded="isMenuOpen"
-                        aria-controls="mobile-menu"
-                    >
-                        <span
-                            class="menu__icon"
-                            :class="{ 'open': isMenuOpen }"
-                            aria-hidden="true"
+                    <div class="nav__mobile__actions">
+                        <button
+                            class="theme-toggle theme-toggle--mobile"
+                            type="button"
+                            data-theme-toggle
+                            aria-label="Switch to dark mode"
+                            aria-pressed="false"
                         >
-                            <span class="menu__icon__bar"></span>
-                            <span class="menu__icon__bar"></span>
-                        </span>
-                    </button>
+                            <span
+                                class="theme-toggle__icon theme-toggle__icon--moon"
+                                aria-hidden="true"
+                                >&#9790;</span
+                            >
+                            <span
+                                class="theme-toggle__icon theme-toggle__icon--sun"
+                                aria-hidden="true"
+                                >&#9728;</span
+                            >
+                        </button>
+
+                        <button
+                            type="button"
+                            @click="isMenuOpen = !isMenuOpen"
+                            aria-label="Navigation Toggle"
+                            :aria-expanded="isMenuOpen"
+                            aria-controls="mobile-menu"
+                        >
+                            <span
+                                class="menu__icon"
+                                :class="{ 'open': isMenuOpen }"
+                                aria-hidden="true"
+                            >
+                                <span class="menu__icon__bar"></span>
+                                <span class="menu__icon__bar"></span>
+                            </span>
+                        </button>
+                    </div>
                 </header>
 
                 <!-- Menu Content -->
@@ -137,6 +159,25 @@
                         <span class="menu__icon__bar"></span>
                         <span class="menu__icon__bar"></span>
                     </span>
+                </button>
+
+                <button
+                    class="theme-toggle theme-toggle--desktop"
+                    type="button"
+                    data-theme-toggle
+                    aria-label="Switch to dark mode"
+                    aria-pressed="false"
+                >
+                    <span
+                        class="theme-toggle__icon theme-toggle__icon--moon"
+                        aria-hidden="true"
+                        >&#9790;</span
+                    >
+                    <span
+                        class="theme-toggle__icon theme-toggle__icon--sun"
+                        aria-hidden="true"
+                        >&#9728;</span
+                    >
                 </button>
 
                 <div
