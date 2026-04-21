@@ -168,11 +168,13 @@
                     type="button"
                     @click="isDesktopMenuOpen = !isDesktopMenuOpen"
                     :aria-expanded="isDesktopMenuOpen"
-                    :aria-label="isDesktopMenuOpen ? 'Focus mode' : 'Menu'"
-                    :data-tooltip="isDesktopMenuOpen ? 'Focus mode' : 'Menu'"
+                    :aria-label="isDesktopMenuOpen ? 'Reader mode' : 'Menu'"
+                    :data-tooltip="isDesktopMenuOpen ? 'Reader mode' : 'Menu'"
                     aria-controls="desktop-menu"
                 >
                     <span class="nav__desktop__toggle-icon" aria-hidden="true">
+                        <span class="menu__icon__bar"></span>
+                        <span class="menu__icon__bar"></span>
                         <span class="menu__icon__bar"></span>
                         <span class="menu__icon__bar"></span>
                     </span>

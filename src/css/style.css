@@ -79,6 +79,7 @@
     --theme-toggle-tooltip-inline-offset-closed: 0.25rem;
     --desktop-toggle-icon-width: var(--space-md);
     --desktop-toggle-icon-height: 0.6875em;
+    --desktop-toggle-icon-height-open: 0.9em;
     --desktop-toggle-open-nudge-x: -0.25rem;
     --desktop-rail-toggle-gap: 0.2rem;
     --desktop-rail-control-size-closed: 2.5rem;
@@ -819,6 +820,11 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 }
 
 .nav__desktop__container--open .nav__desktop__toggle-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: var(--desktop-toggle-icon-height-open);
     margin-left: 0.45em;
 }
 
@@ -826,7 +832,19 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     background-color: currentColor;
     transition:
         transform 0.1s ease,
+        opacity 0.1s ease,
         background-color var(--transition-slow);
+}
+
+.nav__desktop__container--open .nav__desktop__toggle-icon .menu__icon__bar {
+    position: static;
+    transform: none;
+}
+
+.nav__desktop__container--open
+    .nav__desktop__toggle-icon
+    .menu__icon__bar:nth-child(4) {
+    width: 50%;
 }
 
 .nav__desktop__container--closed
@@ -839,6 +857,18 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     .nav__desktop__toggle-icon
     .menu__icon__bar:nth-child(2) {
     transform: rotate(45deg) translate(-3px, -3px);
+}
+
+.nav__desktop__container--closed
+    .nav__desktop__toggle-icon
+    .menu__icon__bar:nth-child(3) {
+    opacity: 0;
+}
+
+.nav__desktop__container--closed
+    .nav__desktop__toggle-icon
+    .menu__icon__bar:nth-child(4) {
+    opacity: 0;
 }
 
 .nav__desktop__toggle:focus-visible,
