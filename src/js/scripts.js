@@ -35,12 +35,12 @@
             nextTheme === THEME_DARK
                 ? "Switch to dark mode"
                 : "Switch to light mode";
-        const title =
-            nextTheme === THEME_DARK ? "Dark mode" : "Light mode";
+        const tooltip = nextTheme === THEME_DARK ? "Dark" : "Light";
 
         document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
             button.setAttribute("aria-label", label);
-            button.setAttribute("title", title);
+            button.setAttribute("title", tooltip);
+            button.setAttribute("data-tooltip", tooltip);
             button.setAttribute(
                 "aria-pressed",
                 theme === THEME_DARK ? "true" : "false"
