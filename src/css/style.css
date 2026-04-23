@@ -664,7 +664,7 @@ video {
     place-items: center;
     width: var(--desktop-sidebar-rail-width);
     height: var(--desktop-sidebar-rail-width);
-    color: var(--color-black);
+    color: oklch(var(--lch-coal) / 0.45);
     cursor: pointer;
     transition:
         left var(--transition-slow),
@@ -689,7 +689,7 @@ video {
     position: relative;
     border: 0;
     background: transparent;
-    color: var(--color-black);
+    color: oklch(var(--lch-coal) / 0.45);
     cursor: pointer;
     display: grid;
     place-items: center;
@@ -748,9 +748,14 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 }
 
 .theme-toggle--mobile {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: var(--theme-toggle-size);
+    height: var(--theme-toggle-size);
     border-radius: 0.35em;
+}
+
+.theme-toggle--mobile .theme-toggle__icon {
+    width: 1.375rem;
+    height: 1.375rem;
 }
 
 .theme-toggle--rail {
@@ -786,6 +791,7 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 
 .nav__desktop__container--closed .nav__desktop__toggle {
     top: var(--desktop-toggle-top-offset-closed);
+    color: var(--color-black);
 }
 
 .nav__desktop__container--closed .nav__desktop__toggle,
@@ -885,8 +891,8 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 }
 
 @media (hover: hover) {
-    .nav__desktop__toggle:hover,
-    .nav__desktop__toggle:focus-visible {
+    .nav__desktop__container--open .nav__desktop__toggle:hover,
+    .nav__desktop__container--open .nav__desktop__toggle:focus-visible {
         color: var(--color-blue);
     }
 
@@ -900,10 +906,6 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     .theme-toggle:hover::before,
     .theme-toggle:focus-visible::before {
         opacity: 1;
-    }
-
-    .nav__desktop__toggle:focus {
-        color: var(--color-black);
     }
 
     .nav__desktop__rail-logo:hover,
