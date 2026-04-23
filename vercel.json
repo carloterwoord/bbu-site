@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/index", "destination": "/index.html" },
+    { "source": "/post", "destination": "/post.html" },
+    { "source": "/page", "destination": "/page.html" },
+    { "source": "/category", "destination": "/category.html" },
+    { "source": "/author", "destination": "/author.html" },
+    { "source": "/search", "destination": "/search.html" },
+    { "source": "/results", "destination": "/results.html" },
+    { "source": "/error", "destination": "/error.html" },
+    { "source": "/post/:slug", "destination": "/post/:slug.html" },
+    { "source": "/category/:slug", "destination": "/category/:slug.html" },
+    { "source": "/author/:slug", "destination": "/author/:slug.html" }
+  ]
+}

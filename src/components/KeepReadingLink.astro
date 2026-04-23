@@ -1,0 +1,13 @@
+---
+interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<div class="article__keep-reading">
+  <a href={href} class="text-sm font-semibold underline text-gray-800 hover:text-black">
+    Keep reading
+  </a>
+</div>

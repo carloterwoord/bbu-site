@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import PostList from "../components/PostList.astro";
+import Pagination from "../components/Pagination.astro";
+import { getResolvedPosts, getCategories } from "../lib/content";
+
+const [posts, categories] = await Promise.all([getResolvedPosts(), getCategories()]);
+const currentCategory = categories.find((category) => category.data.slug === "category") ?? categories[0];
+---
+
+<BaseLayout>
+  <main class="main">
+    <PageHeader
+      title={currentCategory?.data.name ?? "Category"}
+      description={currentCategory?.data.description ?? "Everything you can listen to, we put here."}
+    />
+
+    <PostList posts={posts} />
+
+    <Pagination currentPage={1} totalPages={6} />
+  </main>
+</BaseLayout>

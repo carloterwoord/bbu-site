@@ -1,0 +1,21 @@
+---
+interface Props {
+  title: string;
+  items: { label: string; href: string }[];
+  ordered?: boolean;
+}
+
+const { title, items, ordered = false } = Astro.props;
+const ListTag = ordered ? "ol" : "ul";
+---
+
+<div class="search__content__tags__container">
+  <h3>{title}</h3>
+  <ListTag class="search__content__tags">
+    {items.map((item) => (
+      <li class="search__content__tag-item">
+        <a href={item.href}>{item.label}</a>
+      </li>
+    ))}
+  </ListTag>
+</div>

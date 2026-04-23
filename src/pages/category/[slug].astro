@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import PostList from "../../components/PostList.astro";
+import Pagination from "../../components/Pagination.astro";
+import {
+  getCategories,
+  getResolvedPostsByCategorySlug,
+} from "../../lib/content";
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+  return categories.map((category) => ({
+    params: { slug: category.data.slug },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props;
+const posts = await getResolvedPostsByCategorySlug(category.data.slug);
+---
+
+<BaseLayout title={`${category.data.name} - Built by Underdogs`}>
+  <main class="main">
+    <PageHeader title={category.data.name} description={category.data.description} />
+
+    <PostList posts={posts} />
+
+    <Pagination currentPage={1} totalPages={6} />
+  </main>
+</BaseLayout>

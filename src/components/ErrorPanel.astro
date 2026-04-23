@@ -1,0 +1,25 @@
+---
+import { withBase } from "../lib/paths";
+
+const homeHref = withBase("/index.html");
+---
+
+<div class="error">
+  <header>
+    <h1>Page not found...</h1>
+  </header>
+  <article>
+    <p>
+      Sorry, that thing you’re looking for isn’t here on <a href={homeHref}>Built by Underdogs.</a>
+    </p>
+    <p>
+      Return back to <a href={homeHref}>Built by Underdogs.</a> Or
+      <a href={homeHref}>listen to our category</a>,
+      <a href={homeHref}>browse through our latest posts</a>, or see
+      <a href={homeHref}>everything we’ve ever shared.</a>
+    </p>
+    <div>
+      <button onclick="window.history.back()" class="button">← Go back where you came from</button>
+    </div>
+  </article>
+</div>

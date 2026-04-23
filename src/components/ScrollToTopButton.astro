@@ -1,0 +1,70 @@
+<button
+  class="scroll-button"
+  x-data="scrollButton()"
+  x-init="init()"
+  @scroll.window="onScroll()"
+  @click="scrollToTop()"
+  x-show="visible"
+  x-transition.opacity
+>
+  <svg width="60" height="60">
+    <rect class="bg" x="2" y="2" width="56" height="56" rx="5" ry="5" fill="white" stroke-width="2"></rect>
+    <rect class="bg" x="2" y="2" width="56" height="56" rx="5" ry="5" fill="none" stroke-width="2"></rect>
+    <rect
+      class="progress"
+      x="2"
+      y="2"
+      width="56"
+      height="56"
+      rx="5"
+      ry="5"
+      fill="none"
+      stroke-width="2"
+      stroke-dasharray="163.36"
+      :stroke-dashoffset="dashOffset"
+    ></rect>
+  </svg>
+  <span>↑</span>
+</button>
+
+<script is:inline>
+  function scrollButton() {
+    const width = 56;
+    const height = 56;
+    const perimeter = 2 * (width + height);
+
+    return {
+      visible: false,
+      dashOffset: perimeter,
+
+      init() {
+        this.dashOffset = perimeter;
+        const progress = document.querySelector(".progress");
+        if (!progress) return;
+        progress.setAttribute("stroke-dasharray", String(perimeter));
+        this.updateProgress();
+      },
+
+      onScroll() {
+        this.updateProgress();
+        this.visible = window.scrollY > 100;
+      },
+
+      updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+        this.dashOffset = perimeter * (1 - scrollPercent);
+        const progress = document.querySelector(".progress");
+        if (!progress) return;
+        progress.setAttribute("stroke-dashoffset", String(this.dashOffset));
+      },
+
+      scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      },
+    };
+  }
+
+  window.scrollButton = scrollButton;
+</script>

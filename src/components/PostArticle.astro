@@ -1,0 +1,68 @@
+---
+import type { CollectionEntry } from "astro:content";
+import ArticleMeta from "./ArticleMeta.astro";
+import AuthorByline from "./AuthorByline.astro";
+import TagList from "./TagList.astro";
+import ShareButton from "./ShareButton.astro";
+import { formatDate, getCategoryHref } from "../lib/content";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+  categoryLabel: string;
+  authorName: string;
+  authorBio: string;
+  authorAvatar: string;
+}
+
+const { post, categoryLabel, authorName, authorBio, authorAvatar } = Astro.props;
+
+const categoryHref = getCategoryHref(post.data.categories[0] ?? "category");
+const toc = [
+  "Introducing Built by Underdogs",
+  "Whats in a movement?",
+  "Another chance at it",
+];
+---
+
+{post.data.coverImage && (
+  <div class="page__cover-wrapper">
+    <div class="page__cover">
+      <img src={post.data.coverImage} alt="Cover Image" />
+    </div>
+  </div>
+)}
+
+<article class="article space-top--3xl space-bottom--xl">
+  <header class="article__headline">
+    <ArticleMeta
+      dateISO={post.data.date.toISOString().slice(0, 10)}
+      dateLabel={formatDate(post.data.date)}
+      categoryLabel={categoryLabel}
+      categoryHref={categoryHref}
+      readTime={post.data.readTime}
+    />
+    <h1>{post.data.title}</h1>
+  </header>
+
+  <div class="article__table-of-contents">
+    <header><h2>Table of contents</h2></header>
+    <ol>
+      {toc.map((item, index) => (
+        <li>
+          <a href={`#section${index + 1}`}>{item}</a>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <div class="article__content space-top--base">
+    <slot />
+  </div>
+
+  <footer class="article__footer">
+    <AuthorByline name={authorName} bio={authorBio} avatar={authorAvatar} />
+    <TagList tags={post.data.tags} />
+    <hr class="article__footer__divider" />
+    <ShareButton />
+  </footer>
+</article>

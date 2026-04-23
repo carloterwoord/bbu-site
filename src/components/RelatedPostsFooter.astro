@@ -1,0 +1,32 @@
+---
+interface Item {
+  title: string;
+  href: string;
+}
+
+interface Props {
+  heading?: string;
+  items: Item[];
+}
+
+const { heading = "All other category episodes:", items } = Astro.props;
+---
+
+<footer class="page page__footer space-top--xl space-bottom--3xl">
+  <header>
+    <h2>{heading}</h2>
+    <hr class="page__footer__divider" />
+  </header>
+
+  <div class="space-bottom--2xl space-top--base">
+    <ul>
+      {items.map((item) => (
+        <li>
+          <a href={item.href}>{item.title}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <slot />
+</footer>

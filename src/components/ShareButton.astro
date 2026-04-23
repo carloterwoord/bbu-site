@@ -1,0 +1,20 @@
+<div x-data="{ copied: false }" class="article__footer__share__button">
+  <button
+    @click="navigator.clipboard.writeText(window.location.href).then(() => { copied = true; setTimeout(() => copied = false, 3000); }).catch(() => copied = false)"
+    aria-label="Copy the article link to clipboard"
+  >
+    <span>
+      <svg width="16" height="16" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M9.54969 4.50413V0.897461L13.4722 4.81996L16.6172 7.96496L13.4164 10.6325L9.54969 13.855V10.3258C2.76135 9.81413 0.383022 13.7425 0.383022 13.7425C0.383022 11.295 0.584688 8.75496 2.50885 6.83163C4.74552 4.59413 7.98469 4.43579 9.54969 4.50413Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+    </span>
+    <span>Share</span>
+  </button>
+
+  <p x-show="copied" x-transition.opacity..duration.100ms aria-live="polite" role="status">
+    Link copied to clipboard!
+  </p>
+</div>

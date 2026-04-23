@@ -1,0 +1,16 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+}
+
+const { src, alt = "Cover Image" } = Astro.props;
+---
+
+{src && (
+  <div class="article__cover-wrapper">
+    <div class="article__cover">
+      <img src={src} alt={alt} />
+    </div>
+  </div>
+)}

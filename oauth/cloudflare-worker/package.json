@@ -1,0 +1,12 @@
+{
+  "name": "sveltia-auth-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.13.2"
+  }
+}

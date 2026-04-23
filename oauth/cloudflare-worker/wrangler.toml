@@ -1,0 +1,6 @@
+name = "sveltia-auth-worker"
+main = "src/index.ts"
+compatibility_date = "2026-04-23"
+
+[observability]
+enabled = true

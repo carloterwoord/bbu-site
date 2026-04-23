@@ -1,0 +1,24 @@
+---
+interface Props {
+  name: string;
+  bio: string;
+  avatar: string;
+}
+
+const { name, bio, avatar } = Astro.props;
+---
+
+<aside class="author author__border">
+  <div class="author__header">
+    <figure class="author__avatar">
+      <img src={avatar} alt={`Avatar of ${name}`} />
+    </figure>
+    <div>
+      <span>About the Author</span>
+      <h2>
+        <a href="#" class="author__link">{name}</a>
+      </h2>
+      <p>{bio}</p>
+    </div>
+  </div>
+</aside>

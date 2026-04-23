@@ -1,0 +1,34 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AuthorCard from "../../components/AuthorCard.astro";
+import PostList from "../../components/PostList.astro";
+import { getAuthors, getResolvedPostsByAuthorSlug } from "../../lib/content";
+
+export async function getStaticPaths() {
+  const authors = await getAuthors();
+  return authors.map((author) => ({
+    params: { slug: author.data.slug },
+    props: { author },
+  }));
+}
+
+const { author } = Astro.props;
+const posts = await getResolvedPostsByAuthorSlug(author.data.slug);
+---
+
+<BaseLayout title={`${author.data.name} - Built by Underdogs`}>
+  <main class="main">
+    <div class="page">
+      <AuthorCard
+        name={author.data.name}
+        bio={author.data.bio}
+        avatar={author.data.avatar}
+        links={author.data.socialLinks}
+      />
+    </div>
+
+    <hr class="page__divider" />
+
+    <PostList posts={posts} />
+  </main>
+</BaseLayout>

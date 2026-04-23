@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import ErrorPanel from "../components/ErrorPanel.astro";
+---
+
+<BaseLayout showNav={false}>
+  <ThemeToggle className="theme-toggle--fixed" />
+  <main class="main">
+    <ErrorPanel />
+  </main>
+</BaseLayout>

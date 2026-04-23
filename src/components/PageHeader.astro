@@ -1,0 +1,22 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  wrapperClass?: string;
+}
+
+const { title, description = "", wrapperClass = "" } = Astro.props;
+---
+
+<div class={`page__header-wrapper ${wrapperClass}`.trim()}>
+  <div class="page__header">
+    <header>
+      <h1>{title}</h1>
+    </header>
+    {description && (
+      <article>
+        <p>{description}</p>
+      </article>
+    )}
+  </div>
+</div>

@@ -1,0 +1,52 @@
+---
+import ArticleMeta from "./ArticleMeta.astro";
+import ArticleCover from "./ArticleCover.astro";
+import KeepReadingLink from "./KeepReadingLink.astro";
+
+interface Props {
+  dateISO: string;
+  dateLabel: string;
+  categoryLabel: string;
+  categoryHref: string;
+  title: string;
+  href: string;
+  coverImage?: string;
+  excerptHtml: string;
+  showDivider?: boolean;
+}
+
+const {
+  dateISO,
+  dateLabel,
+  categoryLabel,
+  categoryHref,
+  title,
+  href,
+  coverImage = "",
+  excerptHtml,
+  showDivider = true,
+} = Astro.props;
+---
+
+<article class="article space-top--3xl space-bottom--3xl">
+  <header class="article__headline">
+    <ArticleMeta
+      dateISO={dateISO}
+      dateLabel={dateLabel}
+      categoryLabel={categoryLabel}
+      categoryHref={categoryHref}
+    />
+    <div class="article__headline__link">
+      <a href={href}>
+        <h2>{title}</h2>
+      </a>
+    </div>
+    <ArticleCover src={coverImage} />
+  </header>
+
+  <div class="article__content article__content-preview space-top--base" set:html={excerptHtml}></div>
+
+  <KeepReadingLink href={href} />
+</article>
+
+{showDivider && <hr class="page__divider" />}

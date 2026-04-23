@@ -1,0 +1,36 @@
+---
+interface SocialLink {
+  label: string;
+  url: string;
+}
+
+interface Props {
+  name: string;
+  bio: string;
+  avatar: string;
+  links?: SocialLink[];
+}
+
+const { name, bio, avatar, links = [] } = Astro.props;
+---
+
+<header class="author">
+  <div class="author__header">
+    <figure class="author__avatar">
+      <img src={avatar} alt={`Avatar of ${name}`} />
+    </figure>
+    <div>
+      <h2>
+        <a href="#" class="author__link">{name}</a>
+      </h2>
+      <p>{bio}</p>
+      {links.length > 0 && (
+        <ul>
+          {links.map((link) => (
+            <li><a href={link.url}>{link.label}</a></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,23 @@
+---
+interface Props {
+  dateISO: string;
+  dateLabel: string;
+  categoryLabel: string;
+  categoryHref: string;
+  readTime?: string;
+}
+
+const { dateISO, dateLabel, categoryLabel, categoryHref, readTime = "" } = Astro.props;
+---
+
+<div>
+  <time datetime={dateISO}><a href="#">{dateLabel}</a></time>
+  <span>•</span>
+  <p><a href={categoryHref}>{categoryLabel}</a></p>
+  {readTime && (
+    <>
+      <span>•</span>
+      <p>{readTime}</p>
+    </>
+  )}
+</div>

@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HomePageContent from "../components/HomePageContent.astro";
+import { getResolvedPosts } from "../lib/content";
+
+const posts = await getResolvedPosts();
+---
+
+<BaseLayout>
+  <HomePageContent posts={posts} />
+</BaseLayout>

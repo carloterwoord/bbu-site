@@ -1,0 +1,30 @@
+---
+import SiteNav from "../components/SiteNav.astro";
+import { withBase } from "../lib/paths";
+
+interface Props {
+  title?: string;
+  showNav?: boolean;
+}
+
+const {
+  title = "Built by Underdogs - Static Website",
+  showNav = true,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="stylesheet" href={withBase("/src/css/style.css")} />
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
+    <script is:inline src={withBase("/src/js/scripts.js")}></script>
+  </head>
+  <body>
+    {showNav && <SiteNav />}
+    <slot />
+  </body>
+</html>

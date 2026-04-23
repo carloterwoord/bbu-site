@@ -1,0 +1,31 @@
+---
+import type { ResolvedPost } from "../lib/content";
+import ArticlePreviewCard from "./ArticlePreviewCard.astro";
+import { formatDate, getCategoryHref, getPostHref } from "../lib/content";
+
+interface Props {
+  posts: ResolvedPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.map((post, index) => {
+  const firstCategory = post.categories[0];
+  const categoryLabel = firstCategory?.data.name ?? "Category";
+  const categoryHref = getCategoryHref(firstCategory?.data.slug ?? "category");
+
+  return (
+    <ArticlePreviewCard
+      dateISO={post.entry.data.date.toISOString().slice(0, 10)}
+      dateLabel={formatDate(post.entry.data.date)}
+      categoryLabel={categoryLabel}
+      categoryHref={categoryHref}
+      title={post.entry.data.title}
+      href={getPostHref(post.entry.data.slug)}
+      coverImage={post.entry.data.coverImage}
+      excerptHtml={post.entry.data.excerpt}
+      showDivider={index < posts.length - 1}
+    />
+  );
+})}

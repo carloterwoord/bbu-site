@@ -1,0 +1,14 @@
+---
+import type { ResolvedPost } from "../lib/content";
+import PostList from "./PostList.astro";
+
+interface Props {
+  posts: ResolvedPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+<main class="main">
+  <PostList posts={posts} />
+</main>
