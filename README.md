@@ -28,12 +28,22 @@ Collections are defined in `src/content.config.ts`:
 - `posts`
 - `authors`
 - `categories`
+- `pages`
 
 Content files live in:
 
 - `src/content/posts/*.md`
 - `src/content/authors/*.md`
 - `src/content/categories/*.md`
+- `src/content/pages/*.md`
+
+`pages` are rendered as top-level routes (`/about`, `/membership`, `/search`, `/results`, `/author`, `/category`, `/post`, etc.).
+The page with slug `home` controls the homepage intro content.
+
+Menu behavior is also controlled from `pages`:
+- `navGroup`: `primary`, `secondary`, `utility`, or `none`
+- `navOrder`: sort order within a group
+- `dividerBefore`: inserts a menu divider before that item
 
 ## One-time Migration Script
 
@@ -45,7 +55,7 @@ node scripts/migrate-html-to-content.mjs
 
 ## CMS Admin
 
-- Admin app: `public/admin/index.html`
+- Admin app route: `/admin` (`src/pages/admin/index.astro`)
 - CMS config: `public/admin/config.yml`
 
 Default backend target is:

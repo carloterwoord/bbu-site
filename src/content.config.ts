@@ -1,6 +1,12 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
+const navGroups = ["primary", "secondary", "utility", "none"] as const;
+const reservedPageSlugs = new Set([
+  "admin",
+  "error",
+]);
+
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/posts" }),
   schema: z.object({
@@ -44,8 +50,36 @@ const categories = defineCollection({
   }),
 });
 
+const pages = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/pages" }),
+  schema: z.object({
+    title: z.string(),
+    slug: z
+      .string()
+      .min(1)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+        message: "Use lowercase letters, numbers, and hyphens only.",
+      })
+      .refine((slug) => !reservedPageSlugs.has(slug), {
+        message: "This slug is reserved by a system route.",
+      }),
+    excerpt: z.string().default(""),
+    showHeader: z.boolean().default(true),
+    showTitle: z.boolean().default(true),
+    showExcerpt: z.boolean().default(true),
+    navLabel: z.string().optional(),
+    navGroup: z.enum(navGroups).default("none"),
+    navOrder: z.number().int().default(0),
+    dividerBefore: z.boolean().default(false),
+    dividerAfter: z.boolean().default(false),
+    icon: z.string().default("home"),
+    draft: z.boolean().default(false),
+  }),
+});
+
 export const collections = {
   posts,
   authors,
   categories,
+  pages,
 };

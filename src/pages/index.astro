@@ -1,11 +1,49 @@
 ---
+import { render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HomePageContent from "../components/HomePageContent.astro";
-import { getResolvedPosts } from "../lib/content";
+import { getPageBySlug, getResolvedPosts } from "../lib/content";
 
-const posts = await getResolvedPosts();
+const [posts, homePage] = await Promise.all([
+  getResolvedPosts(),
+  getPageBySlug("home"),
+]);
+
+const homeContent = homePage ? await render(homePage) : null;
+const HomePageBody = homeContent?.Content;
+const shouldShowHeader = homePage?.data.showHeader ?? true;
+const shouldShowTitle = homePage?.data.showTitle ?? true;
+const shouldShowExcerpt = (homePage?.data.showExcerpt ?? true) && Boolean(homePage?.data.excerpt);
+const shouldRenderHeadline = shouldShowHeader && (shouldShowTitle || shouldShowExcerpt);
+const hasHomeBody = Boolean(homePage?.body?.trim());
+const shouldRenderHomeIntro = shouldRenderHeadline || hasHomeBody;
 ---
 
-<BaseLayout>
-  <HomePageContent posts={posts} />
+<BaseLayout title={homePage ? `${homePage.data.title} - Built by Underdogs` : undefined}>
+  <main class="main">
+    {homePage && shouldRenderHomeIntro && (
+      <div class="page">
+        <article
+          class:list={[
+            "article__content",
+            "space-bottom--3xl",
+            shouldRenderHeadline && "space-top--3xl",
+          ]}
+        >
+          {shouldRenderHeadline && (
+            <header class="article__headline">
+              {shouldShowTitle && <h1>{homePage?.data.title}</h1>}
+              {shouldShowExcerpt && <p>{homePage?.data.excerpt}</p>}
+            </header>
+          )}
+          {hasHomeBody && homeContent && HomePageBody && (
+            <section class={shouldRenderHeadline ? "space-top--lg" : undefined}>
+              <HomePageBody />
+            </section>
+          )}
+        </article>
+      </div>
+    )}
+    <HomePageContent posts={posts} />
+  </main>
 </BaseLayout>

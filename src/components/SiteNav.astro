@@ -1,9 +1,42 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
-import { navGroups, siteTitle } from "../lib/site";
+import { getNavigationGroups } from "../lib/content";
+import { siteTitle } from "../lib/site";
 import { withBase } from "../lib/paths";
 
+const navGroups = await getNavigationGroups();
 const [primaryGroup, secondaryGroup, utilityGroup] = navGroups;
+const menuGroups = [primaryGroup, secondaryGroup, utilityGroup].filter(
+  (group) => group.length > 0
+);
+type MenuGroup = (typeof menuGroups)[number];
+
+function shouldRenderDividerBefore(group: MenuGroup, groupIndex: number, itemIndex: number) {
+  const item = group[itemIndex];
+  const previousItem = itemIndex > 0 ? group[itemIndex - 1] : undefined;
+
+  if (itemIndex === 0) {
+    // Allow a top divider only when explicitly requested on the first visible group.
+    return Boolean(item?.dividerBefore && groupIndex === 0);
+  }
+
+  return Boolean(item?.dividerBefore || previousItem?.dividerAfter);
+}
+
+function shouldRenderDividerAfter(group: MenuGroup, groupIndex: number, itemIndex: number) {
+  const item = group[itemIndex];
+  if (!item?.dividerAfter) return false;
+
+  const isLastItem = itemIndex === group.length - 1;
+  if (isLastItem) {
+    // Avoid duplicating the group separator; only show trailing divider on last group.
+    return groupIndex === menuGroups.length - 1;
+  }
+
+  const nextItem = group[itemIndex + 1];
+  return !nextItem?.dividerBefore;
+}
+
 const homeHref = withBase("/");
 const desktopMenuStorageKey = "bbu-desktop-menu-open";
 
@@ -111,31 +144,21 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
         </article>
       </div>
       <div class="nav__mobile">
-        <hr class="nav__divider space-top--lg" />
-
-        <div>
-          {primaryGroup.map((item) => (
-            <a href={withBase(item.href)}>{item.label}</a>
-          ))}
-        </div>
-
-        <hr class="nav__divider" />
-
-        <div>
-          {secondaryGroup.map((item) => (
-            <a href={withBase(item.href)}>{item.label}</a>
-          ))}
-        </div>
-
-        <hr class="nav__divider" />
-
-        <div>
-          {utilityGroup.map((item) => (
-            <a href={withBase(item.href)}>{item.label}</a>
-          ))}
-        </div>
-
-        <hr class="nav__divider" />
+        {menuGroups.length > 0 && <hr class="nav__divider space-top--lg" />}
+        {menuGroups.map((group, groupIndex) => (
+          <>
+            {groupIndex > 0 && <hr class="nav__divider" />}
+            <div class="nav__menu-group">
+              {group.map((item, itemIndex) => (
+                <>
+                  {shouldRenderDividerBefore(group, groupIndex, itemIndex) && <hr class="nav__divider" />}
+                  <a class="nav__menu-link" href={item.href}>{item.label}</a>
+                  {shouldRenderDividerAfter(group, groupIndex, itemIndex) && <hr class="nav__divider" />}
+                </>
+              ))}
+            </div>
+          </>
+        ))}
       </div>
 
       <footer x-data="{ year: new Date().getFullYear() }" class="space-top--lg space-bottom--base">
@@ -167,42 +190,25 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
     <ThemeToggle className="theme-toggle--desktop" />
 
     <div class="nav__desktop__rail-menu" :aria-hidden="isDesktopMenuOpen" :inert="isDesktopMenuOpen">
-      <div class="nav__desktop__rail-group">
-        {primaryGroup.map((item) => (
-          <a class="nav__desktop__rail-link" href={withBase(item.href)} aria-label={item.label}>
-            <svg aria-hidden="true" focusable="false">
-              <use href={withBase(`/src/icons/nav.svg#${item.icon ?? "home"}`)}></use>
-            </svg>
-            <span aria-hidden="true">{item.label}</span>
-          </a>
-        ))}
-      </div>
-
-      <hr />
-
-      <div class="nav__desktop__rail-group">
-        {secondaryGroup.map((item) => (
-          <a class="nav__desktop__rail-link" href={withBase(item.href)} aria-label={item.label}>
-            <svg aria-hidden="true" focusable="false">
-              <use href={withBase(`/src/icons/nav.svg#${item.icon ?? "home"}`)}></use>
-            </svg>
-            <span aria-hidden="true">{item.label}</span>
-          </a>
-        ))}
-      </div>
-
-      <hr />
-
-      <div class="nav__desktop__rail-group">
-        {utilityGroup.map((item) => (
-          <a class="nav__desktop__rail-link" href={withBase(item.href)} aria-label={item.label}>
-            <svg aria-hidden="true" focusable="false">
-              <use href={withBase(`/src/icons/nav.svg#${item.icon ?? "home"}`)}></use>
-            </svg>
-            <span aria-hidden="true">{item.label}</span>
-          </a>
-        ))}
-      </div>
+      {menuGroups.map((group, groupIndex) => (
+        <>
+          {groupIndex > 0 && <hr />}
+          <div class="nav__desktop__rail-group">
+            {group.map((item, itemIndex) => (
+              <>
+                {shouldRenderDividerBefore(group, groupIndex, itemIndex) && <hr />}
+                <a class="nav__desktop__rail-link" href={item.href} aria-label={item.label}>
+                  <svg aria-hidden="true" focusable="false">
+                    <use href={withBase(`/src/icons/nav.svg#${item.icon ?? "home"}`)}></use>
+                  </svg>
+                  <span aria-hidden="true">{item.label}</span>
+                </a>
+                {shouldRenderDividerAfter(group, groupIndex, itemIndex) && <hr />}
+              </>
+            ))}
+          </div>
+        </>
+      ))}
     </div>
 
     <a class="nav__desktop__rail-logo" href={homeHref} aria-label="Built by Underdogs">{siteTitle}</a>
@@ -220,7 +226,7 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
               ></path>
               <path
                 d="M119.599 26.5599L116.09 34.709H122.881L134.539 7.54528H126.918L123.145 18.7126L119.448 7.54528H111.827L119.599 26.5599Z"
-                fill=""
+                fill="currentColor"
               ></path>
               <path
                 d="M12.1482 62.3249C5.35729 62.3249 0 58.6653 0 51.3462V34.7084H7.69638V51.3462C7.69638 54.2135 9.43184 55.7227 12.1482 55.7227C14.8646 55.7227 16.6 54.2135 16.6 51.3462V34.7084H24.2964V51.3462C24.2964 58.6653 18.9391 62.3249 12.1482 62.3249Z"
@@ -294,31 +300,21 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
       </header>
 
       <div class="nav__desktop no-scrollbar">
-        <hr class="nav__divider space-top--lg" />
-
-        <div>
-          {primaryGroup.map((item) => (
-            <a href={withBase(item.href)}>{item.label}</a>
-          ))}
-        </div>
-
-        <hr class="nav__divider" />
-
-        <div>
-          {secondaryGroup.map((item) => (
-            <a href={withBase(item.href)}>{item.label}</a>
-          ))}
-        </div>
-
-        <hr class="nav__divider" />
-
-        <div>
-          {utilityGroup.map((item) => (
-            <a href={withBase(item.href)}>{item.label}</a>
-          ))}
-        </div>
-
-        <hr class="nav__divider" />
+        {menuGroups.length > 0 && <hr class="nav__divider space-top--lg" />}
+        {menuGroups.map((group, groupIndex) => (
+          <>
+            {groupIndex > 0 && <hr class="nav__divider" />}
+            <div class="nav__menu-group">
+              {group.map((item, itemIndex) => (
+                <>
+                  {shouldRenderDividerBefore(group, groupIndex, itemIndex) && <hr class="nav__divider" />}
+                  <a class="nav__menu-link" href={item.href}>{item.label}</a>
+                  {shouldRenderDividerAfter(group, groupIndex, itemIndex) && <hr class="nav__divider" />}
+                </>
+              ))}
+            </div>
+          </>
+        ))}
       </div>
 
       <footer x-data="{ year: new Date().getFullYear() }" class="nav__desktop__footer space-top--base">

@@ -1,0 +1,52 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPublishedPages } from "../lib/content";
+
+export async function getStaticPaths() {
+  const pages = await getPublishedPages();
+  return pages
+    .filter((page) => page.data.slug !== "home")
+    .map((page) => ({
+      params: { slug: page.data.slug },
+      props: { page },
+    }));
+}
+
+const { page } = Astro.props as { page: CollectionEntry<"pages"> };
+const { Content } = await render(page);
+const shouldShowHeader = page.data.showHeader;
+const shouldShowTitle = page.data.showTitle;
+const shouldShowExcerpt = page.data.showExcerpt && Boolean(page.data.excerpt);
+const shouldRenderHeadline = shouldShowHeader && (shouldShowTitle || shouldShowExcerpt);
+const hasPageBody = Boolean(page.body?.trim());
+const shouldRenderPageIntro = shouldRenderHeadline || hasPageBody;
+---
+
+<BaseLayout title={`${page.data.title} - Built by Underdogs`}>
+  <main class="main">
+    <div class="page">
+      {shouldRenderPageIntro && (
+        <article
+          class:list={[
+            "article__content",
+            "space-bottom--3xl",
+            shouldRenderHeadline && "space-top--3xl",
+          ]}
+        >
+        {shouldRenderHeadline && (
+          <header class="article__headline">
+            {shouldShowTitle && <h1>{page.data.title}</h1>}
+            {shouldShowExcerpt && <p>{page.data.excerpt}</p>}
+          </header>
+        )}
+          {hasPageBody && (
+            <section class={shouldRenderHeadline ? "space-top--lg" : undefined}>
+              <Content />
+            </section>
+          )}
+        </article>
+      )}
+    </div>
+  </main>
+</BaseLayout>

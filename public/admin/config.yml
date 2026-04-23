@@ -79,6 +79,56 @@ collections:
           - { label: URL, name: url, widget: string }
       - { label: Body, name: body, widget: hidden, default: "" }
 
+  - name: pages
+    label: Pages
+    label_singular: Page
+    folder: src/content/pages
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    identifier_field: slug
+    fields:
+      - { label: Title, name: title, widget: string }
+      - {
+          label: Slug,
+          name: slug,
+          widget: string,
+          hint: "Use lowercase and hyphens only. Reserved: admin, error."
+        }
+      - { label: Excerpt, name: excerpt, widget: text, required: false }
+      - { label: Show Header Block, name: showHeader, widget: boolean, default: true, required: false, hint: "Toggle the page headline area on/off." }
+      - { label: Show Title, name: showTitle, widget: boolean, default: true, required: false, hint: "Only affects on-page headline display, not nav labels." }
+      - { label: Show Description, name: showExcerpt, widget: boolean, default: true, required: false, hint: "Only affects on-page headline description display." }
+      - { label: Navigation Label, name: navLabel, widget: string, required: false }
+      - label: Navigation Group
+        name: navGroup
+        widget: select
+        default: none
+        options:
+          - { label: Primary, value: primary }
+          - { label: Secondary, value: secondary }
+          - { label: Utility, value: utility }
+          - { label: Hidden, value: none }
+      - { label: Navigation Order, name: navOrder, widget: number, value_type: int, default: 0, min: 0 }
+      - { label: Divider Before Item, name: dividerBefore, widget: boolean, default: false, required: false }
+      - { label: Divider After Item, name: dividerAfter, widget: boolean, default: false, required: false }
+      - {
+          label: Navigation Icon,
+          name: icon,
+          widget: select,
+          default: home,
+          options: [home, membership, category, behind, principles, tools, voice, business, search, about]
+        }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - {
+          label: Body,
+          name: body,
+          widget: markdown,
+          required: false,
+          hint: "Optional. Use slug 'home' to control homepage intro content."
+        }
+
   - name: categories
     label: Categories
     label_singular: Category

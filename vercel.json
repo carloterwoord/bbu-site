@@ -1,8 +1,9 @@
 {
   "redirects": [
+    { "source": "/admin", "destination": "/admin/", "permanent": true },
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/post.html", "destination": "/post", "permanent": true },
-    { "source": "/page.html", "destination": "/page", "permanent": true },
+    { "source": "/page.html", "destination": "/about", "permanent": true },
     { "source": "/category.html", "destination": "/category", "permanent": true },
     { "source": "/author.html", "destination": "/author", "permanent": true },
     { "source": "/search.html", "destination": "/search", "permanent": true },

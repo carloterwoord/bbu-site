@@ -1,7 +1,7 @@
 /admin /admin/ 301
 /index.html / 301
 /post.html /post 301
-/page.html /page 301
+/page.html /about 301
 /category.html /category 301
 /author.html /author 301
 /search.html /search 301

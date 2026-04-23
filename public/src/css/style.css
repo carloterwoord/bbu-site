@@ -429,6 +429,7 @@ video {
 .nav__divider {
     width: var(--space-2xl);
     border-top: 1px solid oklch(var(--lch-coal) / 0.1);
+    margin: 0;
 }
 
 .nav__desktop,
@@ -439,8 +440,13 @@ video {
     gap: var(--space-xs);
 }
 
-.nav__desktop a,
-.nav__mobile a {
+.nav__menu-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.nav__menu-link {
     display: block;
     width: 100%;
     color: var(--color-black);
@@ -448,10 +454,15 @@ video {
     line-height: var(--line-height-neutral);
     font-weight: 600;
     text-decoration: none;
-    margin: 0.2em 0;
+    margin: 0;
+    padding-block: 0.2em;
     user-select: none;
     -ms-user-select: none;
     -webkit-user-select: none;
+}
+
+.nav__menu-group .nav__divider {
+    margin-block: var(--space-xs);
 }
 
 .nav__desktop article p {
@@ -469,10 +480,8 @@ video {
 }
 
 @media (hover: hover) {
-    .nav__desktop a:focus,
-    .nav__mobile a:focus,
-    .nav__desktop a:hover,
-    .nav__mobile a:hover {
+    .nav__menu-link:focus,
+    .nav__menu-link:hover {
         color: var(--color-blue);
         text-decoration: underline;
         text-underline-offset: 0.0925em;
@@ -576,6 +585,11 @@ video {
     justify-self: center;
     width: 1.35rem;
     border-top: 0.0625em solid oklch(var(--lch-coal) / 0.1);
+    margin: 0;
+}
+
+.nav__desktop__rail-group hr {
+    margin-block: var(--space-xs);
 }
 
 .nav__desktop__rail-link {
@@ -908,8 +922,7 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
         opacity: 1;
     }
 
-    .nav__desktop__rail-logo:hover,
-    .nav__desktop__rail-logo:focus {
+    .nav__desktop__rail-logo:hover {
         color: var(--color-blue);
     }
 
@@ -934,10 +947,11 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 .nav__desktop__logo a {
     display: flex;
     align-items: center;
+    color: var(--color-black);
 }
 
 .nav__desktop__logo a svg {
-    fill: var(--color-black);
+    fill: currentColor;
     width: 100%;
     padding-right: var(--space-base);
     height: auto;
@@ -946,11 +960,8 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 }
 
 @media (hover: hover) {
-    .nav__desktop__logo a:hover svg,
-    .nav__desktop__logo a:focus svg,
-    .nav__mobile__logo a:focus,
-    .nav__mobile__logo a:hover {
-        fill: var(--color-blue);
+    .nav__desktop__logo a:hover {
+        color: var(--color-blue);
     }
 }
 
@@ -1008,7 +1019,6 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 }
 
 @media (hover: hover) {
-    .nav__mobile__logo a:focus,
     .nav__mobile__logo a:hover {
         color: var(--color-blue);
     }

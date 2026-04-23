@@ -70,6 +70,136 @@ const categories = [
   }
 ];
 
+const pages = [
+  {
+    title: "Home",
+    slug: "home",
+    excerpt:
+      "Thoughts, opinions, and insights on making, becoming independent, and finding your voice as an underdog.",
+    navLabel: "Home",
+    navGroup: "primary",
+    navOrder: 0,
+    dividerBefore: false,
+    icon: "home",
+    draft: false,
+    body: `Built by Underdogs is a platform for makers, builders, and independent thinkers.
+
+Use this page entry to control the homepage headline and intro text directly from the CMS.`
+  },
+  {
+    title: "Membership",
+    slug: "membership",
+    excerpt:
+      "Join the Built by Underdogs community and get access to deeper behind-the-scenes content.",
+    navLabel: "Membership",
+    navGroup: "primary",
+    navOrder: 10,
+    dividerBefore: false,
+    icon: "membership",
+    draft: false,
+    body: `Membership is where we share deeper process notes, experiments, and practical frameworks.
+
+You can fully edit this page from the CMS, including the navigation label and order.`
+  },
+  {
+    title: "About",
+    slug: "about",
+    excerpt: "Why Built by Underdogs exists and what we are building.",
+    navLabel: "About",
+    navGroup: "utility",
+    navOrder: 0,
+    dividerBefore: false,
+    icon: "about",
+    draft: false,
+    body: `Like any thing, when you slap a name on it, it makes it a thing. It gets a shape by hardly doing a thing.
+It has become something you can work on, in or with.
+
+There is an idea behind it. Built by Underdogs is a platform to distribute what we wanted to see on the internet.
+
+A place that celebrates making and the art of craft. How to build useful things and the journey of figuring out ways on becoming independent.
+
+## Why go through all this effort?
+
+Sharing teaches you more than you might think at first. You will learn how to write and how to present your ideas clearly.
+
+You can buy or earn attention. Built by Underdogs is a fan of the latter.
+
+Sharing what we and others have learned. Sometimes raw, sometimes polished.
+
+Why? Because we care and it is fun.`
+  },
+  {
+    title: "Category",
+    slug: "category",
+    excerpt: "Explore categories and discover posts by topic.",
+    navLabel: "Category",
+    navGroup: "primary",
+    navOrder: 20,
+    dividerBefore: false,
+    icon: "category",
+    draft: false,
+    body: `Browse all topics and category archives from this section.
+
+Use category detail pages like /category/underdog-principles for focused reading.`
+  },
+  {
+    title: "Search",
+    slug: "search",
+    excerpt: "Find specific posts, topics, and ideas across Built by Underdogs.",
+    navLabel: "Search stuff",
+    navGroup: "utility",
+    navOrder: 10,
+    dividerBefore: true,
+    icon: "search",
+    draft: false,
+    body: `Use your browser search or the site navigation to find topics quickly.
+
+Tip: if you want this hidden from the menu, set navGroup to none in CMS.`
+  },
+  {
+    title: "Results",
+    slug: "results",
+    excerpt: "A landing page for result-style or filtered content views.",
+    navLabel: "Results",
+    navGroup: "none",
+    navOrder: 0,
+    dividerBefore: false,
+    icon: "category",
+    draft: false,
+    body: `This route is now CMS-managed.
+
+Publish this page when you want /results available, or set it to draft to remove it.`
+  },
+  {
+    title: "Author",
+    slug: "author",
+    excerpt: "Entry page for author content and profile links.",
+    navLabel: "Author",
+    navGroup: "none",
+    navOrder: 0,
+    dividerBefore: false,
+    icon: "about",
+    draft: false,
+    body: `This route is now controlled from CMS.
+
+For author profile pages, use /author/{slug} entries from the Authors collection.`
+  },
+  {
+    title: "Post",
+    slug: "post",
+    excerpt: "Entry page for post archives and article navigation.",
+    navLabel: "Post",
+    navGroup: "none",
+    navOrder: 0,
+    dividerBefore: false,
+    icon: "home",
+    draft: false,
+    body: `This route is now CMS-managed.
+
+Individual article pages continue to live at /post/{slug}.`
+  }
+];
+
 const posts = [
   {
     title: "I've been trying to find something that appears not to exist.",
@@ -209,9 +339,12 @@ const run = async () => {
 
   await writeCollection("authors", authors.map((author) => ({ ...author, body: "" })));
   await writeCollection("categories", categories.map((category) => ({ ...category, body: "" })));
+  await writeCollection("pages", pages);
   await writeCollection("posts", dedupedPosts);
 
-  console.log(`Seeded ${authors.length} authors, ${categories.length} categories, ${dedupedPosts.length} posts.`);
+  console.log(
+    `Seeded ${authors.length} authors, ${categories.length} categories, ${pages.length} pages, ${dedupedPosts.length} posts.`
+  );
 };
 
 run().catch((error) => {
