@@ -3,6 +3,7 @@ title: About
 slug: about
 excerpt: Why Built by Underdogs exists and what we are building.
 showTitle: true
+showExcerpt: false
 navLabel: About
 navGroup: utility
 navOrder: 0

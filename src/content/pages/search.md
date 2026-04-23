@@ -2,7 +2,9 @@
 title: Search
 slug: search
 excerpt: Find specific posts, topics, and ideas across Built by Underdogs.
-navLabel: Search stuff
+showTitle: true
+showExcerpt: false
+navLabel: Search
 navGroup: utility
 navOrder: 10
 dividerBefore: false
@@ -10,6 +12,6 @@ icon: search
 draft: false
 ---
 
-Use your browser search or the site navigation to find topics quickly.
+This route uses a dedicated search template that indexes tags and post dates.
 
-Tip: if you want this hidden from the menu, set `navGroup` to `none` in CMS.
+Use CMS to manage navigation metadata for this page (label, group, order, icon).

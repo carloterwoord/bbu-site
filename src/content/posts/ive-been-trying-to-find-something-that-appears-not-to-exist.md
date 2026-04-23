@@ -1,22 +1,25 @@
 ---
-title: "I've been trying to find something that appears not to exist."
-slug: "ive-been-trying-to-find-something-that-appears-not-to-exist"
-date: "2025-02-09"
-excerpt: "<section><p>You used to be yourself, authentically and unapologetically. Whether in business meetings or social gatherings, your uniqueness was your strength.</p><p>Today, most people are copies. Not original, but <em>replicated</em>. <u class=\"underline--wavy\">Following the latest trends</u> enters you into an endless <u>cycle of conformity.</u></p></section>"
-author: "carlo-ter-woord"
+title: I've been trying to find something that appears not to exist.
+slug: ive-been-trying-to-find-something-that-appears-not-to-exist
+date: 2025-02-09
+excerpt: <section><p>You used to be yourself, authentically and unapologetically. Whether in business meetings or social gatherings, your uniqueness was your strength.</p><p>Today, most people are copies. Not original, but <em>replicated</em>. <u class="underline--wavy">Following the latest trends</u> enters you into an endless <u>cycle of conformity.</u></p></section>
+author: carlo-ter-woord
 categories:
-  - "category"
+  - category
+  - the-business-of-making
+  - underdog-principles
 tags:
-  - "Underdogs"
-  - "Less but better"
-  - "First principles"
-coverImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop"
-readTime: "4 min read"
+  - Underdogs
+  - Less but better
+  - First principles
+coverImage: https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop
+readTime: 4 min read
 draft: false
 ---
+
 You used to be yourself, authentically and unapologetically. Whether in business meetings or social gatherings, your uniqueness was your strength. And it was beautiful.
 
-Today, most people are copies. Not original, but *replicated*. <u class="underline--wavy">Following the latest trends</u> enters you into an endless <u>cycle of conformity.</u> Every day you wake up trying to be <u class="underline--red">someone else's version</u> of success.
+Today, most people are copies. Not original, but _replicated_. <u class="underline--wavy">Following the latest trends</u> enters you into an endless <u>cycle of conformity.</u> Every day you wake up trying to be <u class="underline--red">someone else's version</u> of success.
 
 <blockquote>
   <q>Simply put, we get more work done, quicker, and better. <mark class="highlight--blue">Productivity is up. Errors are down. Clients are happier.</mark></q>

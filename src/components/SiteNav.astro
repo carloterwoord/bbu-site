@@ -120,8 +120,6 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
       </div>
 
       <div class="nav__mobile__actions">
-        <ThemeToggle className="theme-toggle--mobile" />
-
         <button
           type="button"
           @click="isMenuOpen = !isMenuOpen"
@@ -159,6 +157,11 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
             </div>
           </>
         ))}
+      </div>
+
+      <div class="nav__mobile__theme nav__menu-group">
+        <hr class="nav__divider" />
+        <ThemeToggle className="theme-toggle--mobile theme-toggle--mobile-nav-item" />
       </div>
 
       <footer x-data="{ year: new Date().getFullYear() }" class="space-top--lg space-bottom--base">

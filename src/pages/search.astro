@@ -1,0 +1,86 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SearchForm from "../components/SearchForm.astro";
+import SearchTagSection from "../components/SearchTagSection.astro";
+import { getPageBySlug, getPublishedPosts } from "../lib/content";
+import { withBase } from "../lib/paths";
+
+const [posts, searchPage] = await Promise.all([
+  getPublishedPosts(),
+  getPageBySlug("search"),
+]);
+
+const pageTitle = searchPage?.data.title ?? "Search";
+const pageExcerpt = searchPage?.data.excerpt?.trim();
+
+const tags = Array.from(
+  new Set(
+    posts.flatMap((post) =>
+      post.data.tags.map((tag) => tag.trim()).filter(Boolean)
+    )
+  )
+)
+  .sort((a, b) => a.localeCompare(b))
+  .map((tag) => ({
+    label: tag,
+    href: withBase("/results"),
+  }));
+
+const postsByYear = posts.reduce<Record<string, string[]>>((acc, post) => {
+  const year = String(post.data.date.getFullYear());
+  const month = post.data.date.toLocaleString("en-US", { month: "long" });
+
+  if (!acc[year]) acc[year] = [];
+  if (!acc[year].includes(month)) acc[year].push(month);
+
+  return acc;
+}, {});
+
+const yearSections = Object.entries(postsByYear)
+  .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+  .map(([year, months]) => ({
+    year,
+    months: months.map((month) => ({ label: month, href: "#" })),
+  }));
+---
+
+<BaseLayout title={`${pageTitle} - Built by Underdogs`}>
+  <main class="main">
+    <div class="page page__header space-top--3xl">
+      <header class="article__headline">
+        <h1>{pageTitle === "Search" ? "Search Built by Underdogs" : pageTitle}</h1>
+        {pageExcerpt && <p>{pageExcerpt}</p>}
+      </header>
+      <hr class="page__header__divider" />
+      <div>
+        <SearchForm />
+      </div>
+      <hr class="page__header__divider" />
+    </div>
+
+    <div class="page page__content space-top--lg space-bottom--4xl">
+      <div>
+        <h2>Or, browse through the archives by tag or year</h2>
+      </div>
+
+      <SearchTagSection title="Tags" items={tags} />
+
+      {yearSections.map((section) => (
+        <SearchTagSection title={section.year} items={section.months} ordered={true} />
+      ))}
+    </div>
+  </main>
+
+  <script is:inline>
+    window.updateSiteSearch = function updateSiteSearch(event) {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement)) return true;
+      const input = form.querySelector("#siteSearch");
+      if (!(input instanceof HTMLInputElement)) return true;
+      if (!input.value) {
+        input.value = "builtbyunderdogs.com";
+      }
+      return true;
+    };
+  </script>
+</BaseLayout>

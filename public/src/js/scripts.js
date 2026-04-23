@@ -3,6 +3,7 @@
     const THEME_DARK = "dark";
     const THEME_LIGHT = "light";
     const TOGGLE_SELECTOR = "[data-theme-toggle]";
+    const THEME_INIT_FLAG = "__bbuThemeInitialized";
     const root = document.documentElement;
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -38,9 +39,17 @@
         const tooltip = nextTheme === THEME_DARK ? "Dark" : "Light";
 
         document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
+            const isMobileToggle = button.classList.contains(
+                "theme-toggle--mobile"
+            );
             button.setAttribute("aria-label", label);
-            button.setAttribute("title", tooltip);
-            button.setAttribute("data-tooltip", tooltip);
+            if (isMobileToggle) {
+                button.removeAttribute("title");
+                button.removeAttribute("data-tooltip");
+            } else {
+                button.setAttribute("title", tooltip);
+                button.setAttribute("data-tooltip", tooltip);
+            }
             button.setAttribute(
                 "aria-pressed",
                 theme === THEME_DARK ? "true" : "false"
@@ -53,40 +62,54 @@
         updateToggleState(theme);
     };
 
-    applyTheme(getPreferredTheme());
+    const syncThemeFromPreference = () => {
+        applyTheme(getPreferredTheme());
+    };
 
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
-            button.addEventListener("click", () => {
-                const currentTheme =
-                    root.getAttribute("data-theme") === THEME_DARK
-                        ? THEME_DARK
-                        : THEME_LIGHT;
-                const nextTheme =
-                    currentTheme === THEME_DARK
-                        ? THEME_LIGHT
-                        : THEME_DARK;
+    const onThemeToggleClick = (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
 
-                saveTheme(nextTheme);
-                applyTheme(nextTheme);
-            });
-        });
+        const toggle = target.closest(TOGGLE_SELECTOR);
+        if (!toggle) return;
 
-        const storedTheme = getStoredTheme();
-        if (!storedTheme) {
-            const syncThemeWithSystem = (event) => {
-                applyTheme(event.matches ? THEME_DARK : THEME_LIGHT);
-            };
+        const currentTheme =
+            root.getAttribute("data-theme") === THEME_DARK
+                ? THEME_DARK
+                : THEME_LIGHT;
+        const nextTheme =
+            currentTheme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
 
-            if (typeof mediaQuery.addEventListener === "function") {
-                mediaQuery.addEventListener("change", syncThemeWithSystem);
-            } else if (typeof mediaQuery.addListener === "function") {
-                mediaQuery.addListener(syncThemeWithSystem);
-            }
+        saveTheme(nextTheme);
+        applyTheme(nextTheme);
+    };
+
+    const syncThemeWithSystem = (event) => {
+        if (getStoredTheme()) return;
+        applyTheme(event.matches ? THEME_DARK : THEME_LIGHT);
+    };
+
+    syncThemeFromPreference();
+
+    if (!window[THEME_INIT_FLAG]) {
+        document.addEventListener("click", onThemeToggleClick);
+        document.addEventListener("astro:page-load", syncThemeFromPreference);
+        document.addEventListener("astro:after-swap", syncThemeFromPreference);
+
+        if (typeof mediaQuery.addEventListener === "function") {
+            mediaQuery.addEventListener("change", syncThemeWithSystem);
+        } else if (typeof mediaQuery.addListener === "function") {
+            mediaQuery.addListener(syncThemeWithSystem);
         }
 
-        updateToggleState(
-            root.getAttribute("data-theme") || THEME_LIGHT
-        );
-    });
+        window[THEME_INIT_FLAG] = true;
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", syncThemeFromPreference, {
+            once: true,
+        });
+    } else {
+        syncThemeFromPreference();
+    }
 })();

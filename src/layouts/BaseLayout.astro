@@ -23,6 +23,26 @@ const {
     <ClientRouter />
     <script is:inline>
       (() => {
+        const themeKey = "bbu-theme";
+        const darkTheme = "dark";
+        const lightTheme = "light";
+
+        let initialTheme = lightTheme;
+        try {
+          const storedTheme = window.localStorage.getItem(themeKey);
+          if (storedTheme === darkTheme || storedTheme === lightTheme) {
+            initialTheme = storedTheme;
+          } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            initialTheme = darkTheme;
+          }
+        } catch (_) {
+          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            initialTheme = darkTheme;
+          }
+        }
+
+        document.documentElement.setAttribute("data-theme", initialTheme);
+
         try {
           const stored = window.localStorage.getItem("bbu-desktop-menu-open");
           if (stored === "true" || stored === "false") {

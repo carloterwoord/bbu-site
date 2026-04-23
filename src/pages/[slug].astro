@@ -6,7 +6,7 @@ import { getPublishedPages } from "../lib/content";
 export async function getStaticPaths() {
   const pages = await getPublishedPages();
   return pages
-    .filter((page) => page.data.slug !== "home")
+    .filter((page) => page.data.slug !== "home" && page.data.slug !== "search")
     .map((page) => ({
       params: { slug: page.data.slug },
       props: { page },
