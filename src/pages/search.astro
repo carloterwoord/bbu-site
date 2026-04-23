@@ -9,7 +9,7 @@ const posts = await getPublishedPosts();
 
 const tags = Array.from(new Set(posts.flatMap((post) => post.data.tags))).map((tag) => ({
   label: tag,
-  href: withBase("/results.html"),
+  href: withBase("/results"),
 }));
 
 const postsByYear = posts.reduce<Record<string, string[]>>((acc, post) => {

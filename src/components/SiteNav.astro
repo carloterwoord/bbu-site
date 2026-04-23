@@ -4,19 +4,79 @@ import { navGroups, siteTitle } from "../lib/site";
 import { withBase } from "../lib/paths";
 
 const [primaryGroup, secondaryGroup, utilityGroup] = navGroups;
-const homeHref = withBase("/index.html");
+const homeHref = withBase("/");
+const desktopMenuStorageKey = "bbu-desktop-menu-open";
 
-const navData = "{ isMenuOpen: false, hasScrolled: false, isDesktopMenuOpen: true, isMobile: window.innerWidth <= 625 }";
+const navData = `{
+  isMenuOpen: false,
+  hasScrolled: false,
+  isDesktopMenuOpen: (() => {
+    try {
+      const stored = window.localStorage.getItem('${desktopMenuStorageKey}');
+      if (stored === 'true' || stored === 'false') {
+        return stored === 'true';
+      }
+    } catch (_) {}
+    return true;
+  })(),
+  isMobile: window.innerWidth <= 625,
+  init() {
+    try {
+      document.documentElement.setAttribute(
+        'data-desktop-menu-open',
+        String(this.isDesktopMenuOpen)
+      );
+    } catch (_) {}
+    requestAnimationFrame(() => {
+      this.$el.classList.remove('nav--no-transition');
+    });
+  },
+  toggleDesktopMenu() {
+    this.isDesktopMenuOpen = !this.isDesktopMenuOpen;
+    try {
+      window.localStorage.setItem(
+        '${desktopMenuStorageKey}',
+        String(this.isDesktopMenuOpen)
+      );
+      document.documentElement.setAttribute(
+        'data-desktop-menu-open',
+        String(this.isDesktopMenuOpen)
+      );
+    } catch (_) {}
+  }
+}`;
 const navClass = "{ 'nav--desktop-open': !isMobile && isDesktopMenuOpen, 'nav--desktop-closed': !isMobile && !isDesktopMenuOpen }";
 const mobileClass = "{ 'nav__mobile--scrolled': hasScrolled && !isMenuOpen, 'nav__mobile__container--open': isMenuOpen, 'nav__mobile__container--closed': !isMenuOpen }";
 const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav__desktop__container--closed': !isDesktopMenuOpen }";
 ---
 
+<style is:inline>
+  .nav.nav--no-transition,
+  .nav.nav--no-transition *,
+  .nav.nav--no-transition + .main {
+    transition: none !important;
+    animation: none !important;
+  }
+  html[data-desktop-menu-open="false"] .nav.nav--no-transition .nav__desktop__container {
+    transform: translateX(calc(100% - var(--desktop-sidebar-rail-width)));
+  }
+  html[data-desktop-menu-open="true"] .nav.nav--no-transition .nav__desktop__container {
+    transform: translateX(0);
+  }
+  html[data-desktop-menu-open="false"] .nav.nav--no-transition + .main {
+    --desktop-sidebar-space: var(--desktop-sidebar-rail-width);
+  }
+  html[data-desktop-menu-open="true"] .nav.nav--no-transition + .main {
+    --desktop-sidebar-space: var(--desktop-sidebar-width);
+  }
+</style>
+
 <nav
+  transition:persist="site-nav"
   x-data={navData}
   @scroll.window="hasScrolled = window.scrollY > 10"
   @resize.window="isMobile = window.innerWidth <= 625; if (!isMobile) isMenuOpen = false"
-  class="nav"
+  class="nav nav--no-transition"
   :class={navClass}
   aria-label="Main Navigation"
 >
@@ -89,7 +149,7 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
     <button
       class="nav__desktop__toggle"
       type="button"
-      @click="isDesktopMenuOpen = !isDesktopMenuOpen"
+      @click="toggleDesktopMenu()"
       :aria-expanded="isDesktopMenuOpen"
       :aria-label="isDesktopMenuOpen ? 'Reader mode' : 'Menu'"
       :data-tooltip="isDesktopMenuOpen ? 'Reader mode' : 'Menu'"

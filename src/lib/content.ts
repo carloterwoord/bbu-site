@@ -95,13 +95,13 @@ export function formatDate(date: Date) {
 }
 
 export function getPostHref(slug: string) {
-  return withBase(`/post/${slug}.html`);
+  return withBase(`/post/${slug}`);
 }
 
 export function getCategoryHref(slug: string) {
-  return withBase(`/category/${slug}.html`);
+  return withBase(`/category/${slug}`);
 }
 
 export function getAuthorHref(slug: string) {
-  return withBase(`/author/${slug}.html`);
+  return withBase(`/author/${slug}`);
 }

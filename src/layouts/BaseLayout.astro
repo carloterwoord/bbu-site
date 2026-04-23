@@ -1,6 +1,7 @@
 ---
 import SiteNav from "../components/SiteNav.astro";
 import { withBase } from "../lib/paths";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title?: string;
@@ -19,6 +20,17 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <ClientRouter />
+    <script is:inline>
+      (() => {
+        try {
+          const stored = window.localStorage.getItem("bbu-desktop-menu-open");
+          if (stored === "true" || stored === "false") {
+            document.documentElement.setAttribute("data-desktop-menu-open", stored);
+          }
+        } catch (_) {}
+      })();
+    </script>
     <link rel="stylesheet" href={withBase("/src/css/style.css")} />
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
     <script is:inline src={withBase("/src/js/scripts.js")}></script>

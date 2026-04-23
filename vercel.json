@@ -1,16 +1,15 @@
 {
-  "rewrites": [
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/index", "destination": "/index.html" },
-    { "source": "/post", "destination": "/post.html" },
-    { "source": "/page", "destination": "/page.html" },
-    { "source": "/category", "destination": "/category.html" },
-    { "source": "/author", "destination": "/author.html" },
-    { "source": "/search", "destination": "/search.html" },
-    { "source": "/results", "destination": "/results.html" },
-    { "source": "/error", "destination": "/error.html" },
-    { "source": "/post/:slug", "destination": "/post/:slug.html" },
-    { "source": "/category/:slug", "destination": "/category/:slug.html" },
-    { "source": "/author/:slug", "destination": "/author/:slug.html" }
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/post.html", "destination": "/post", "permanent": true },
+    { "source": "/page.html", "destination": "/page", "permanent": true },
+    { "source": "/category.html", "destination": "/category", "permanent": true },
+    { "source": "/author.html", "destination": "/author", "permanent": true },
+    { "source": "/search.html", "destination": "/search", "permanent": true },
+    { "source": "/results.html", "destination": "/results", "permanent": true },
+    { "source": "/error.html", "destination": "/error", "permanent": true },
+    { "source": "/post/:slug.html", "destination": "/post/:slug", "permanent": true },
+    { "source": "/category/:slug.html", "destination": "/category/:slug", "permanent": true },
+    { "source": "/author/:slug.html", "destination": "/author/:slug", "permanent": true }
   ]
 }
