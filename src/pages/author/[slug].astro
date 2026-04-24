@@ -1,8 +1,12 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AuthorCard from "../../components/AuthorCard.astro";
-import PostList from "../../components/PostList.astro";
-import { getAuthors, getResolvedPostsByAuthorSlug } from "../../lib/content";
+import PaginatedPostList from "../../components/PaginatedPostList.astro";
+import {
+  getAuthorHref,
+  getAuthors,
+  getResolvedPostsByAuthorSlug,
+} from "../../lib/content";
 
 export async function getStaticPaths() {
   const authors = await getAuthors();
@@ -29,6 +33,9 @@ const posts = await getResolvedPostsByAuthorSlug(author.data.slug);
 
     <hr class="page__divider" />
 
-    <PostList posts={posts} />
+    <PaginatedPostList
+      posts={posts}
+      basePath={getAuthorHref(author.data.slug)}
+    />
   </main>
 </BaseLayout>

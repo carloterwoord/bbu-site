@@ -26,6 +26,10 @@ const posts = defineCollection({
     tags: z.array(z.string()).default([]),
     coverImage: z.string().default(""),
     readTime: z.string().default(""),
+    showTableOfContents: z.boolean().default(true),
+    showRelatedPosts: z.boolean().default(true),
+    relatedPostsHeading: z.string().default("Related posts"),
+    relatedPosts: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),
 });

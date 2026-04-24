@@ -1,12 +1,18 @@
 ---
 import type { ResolvedPost } from "../lib/content";
-import PostList from "./PostList.astro";
+import { withBase } from "../lib/paths";
+import PaginatedPostList from "./PaginatedPostList.astro";
 
 interface Props {
   posts: ResolvedPost[];
+  currentPage?: number;
 }
 
-const { posts } = Astro.props;
+const { posts, currentPage = 1 } = Astro.props;
 ---
 
-<PostList posts={posts} />
+<PaginatedPostList
+  posts={posts}
+  basePath={withBase("/")}
+  currentPage={currentPage}
+/>

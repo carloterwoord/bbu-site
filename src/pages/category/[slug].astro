@@ -1,9 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import PostList from "../../components/PostList.astro";
+import PaginatedPostList from "../../components/PaginatedPostList.astro";
 import {
   getCategories,
+  getCategoryHref,
   getResolvedPostsByCategorySlug,
 } from "../../lib/content";
 
@@ -27,6 +28,9 @@ const posts = await getResolvedPostsByCategorySlug(category.data.slug);
       image={category.data.headerImage}
     />
 
-    <PostList posts={posts} />
+    <PaginatedPostList
+      posts={posts}
+      basePath={getCategoryHref(category.data.slug)}
+    />
   </main>
 </BaseLayout>

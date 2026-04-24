@@ -124,7 +124,8 @@ export async function getResolvedPostBySlug(slug: string) {
 export async function getResolvedPostsByCategorySlug(categorySlug: string) {
   const posts = await getResolvedPosts();
   return posts.filter((post) =>
-    post.entry.data.categories.includes(categorySlug)
+    post.entry.data.categories.includes(categorySlug) ||
+    post.entry.data.tags.some((tag) => getTaxonomySlug(tag) === categorySlug)
   );
 }
 

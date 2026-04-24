@@ -1,16 +1,18 @@
 ---
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import PageHeader from "../../../components/PageHeader.astro";
-import PaginatedPostList from "../../../components/PaginatedPostList.astro";
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import PageHeader from "../../../../../components/PageHeader.astro";
+import PaginatedPostList from "../../../../../components/PaginatedPostList.astro";
 import {
   getArchiveMonthHref,
   getPublishedPosts,
   getResolvedPostsByYearMonth,
-} from "../../../lib/content";
+} from "../../../../../lib/content";
+import { getPaginatedPageNumbers } from "../../../../../lib/pagination";
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
   const months = new Set<string>();
+  const paths = [];
 
   for (const post of posts) {
     const year = post.data.date.getFullYear();
@@ -18,23 +20,28 @@ export async function getStaticPaths() {
     months.add(`${year}-${month}`);
   }
 
-  return Array.from(months).map((yearMonth) => {
+  for (const yearMonth of months) {
     const [year, month] = yearMonth.split("-");
-    return {
-      params: { year, month },
-      props: { year, month },
-    };
-  });
+    const monthPosts = await getResolvedPostsByYearMonth(year, month);
+
+    for (const page of getPaginatedPageNumbers(monthPosts.length)) {
+      paths.push({
+        params: { page: String(page), year, month },
+        props: { page, posts: monthPosts, year, month },
+      });
+    }
+  }
+
+  return paths;
 }
 
-const { year, month } = Astro.props;
-const posts = await getResolvedPostsByYearMonth(year, month);
+const { page, posts, year, month } = Astro.props;
 const date = new Date(Number(year), Number(month) - 1, 1);
 const monthLabel = date.toLocaleString("en-US", { month: "long" });
 const resultLabel = posts.length === 1 ? "1 post" : `${posts.length} posts`;
 ---
 
-<BaseLayout title={`Archive: ${monthLabel} ${year} - Built by Underdogs`}>
+<BaseLayout title={`Archive: ${monthLabel} ${year} - Page ${page} - Built by Underdogs`}>
   <main class="main">
     <PageHeader
       title={`Archive: ${monthLabel} ${year}`}
@@ -44,6 +51,7 @@ const resultLabel = posts.length === 1 ? "1 post" : `${posts.length} posts`;
     <PaginatedPostList
       posts={posts}
       basePath={getArchiveMonthHref(year, month)}
+      currentPage={page}
     />
   </main>
 </BaseLayout>

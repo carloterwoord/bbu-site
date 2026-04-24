@@ -19,9 +19,9 @@ export async function getStaticPaths() {
   }));
 }
 
-const { post, allPosts } = Astro.props;
+const { post, allPosts = [] } = Astro.props;
 
-const { Content } = await render(post.entry);
+const { Content, headings } = await render(post.entry);
 
 const categoryLabel = post.categories[0]?.data.name ?? "Category";
 const categoryHref = getCategoryHref(post.categories[0]?.data.slug ?? "category");
@@ -30,13 +30,40 @@ const authorBio = post.author?.data.bio ?? "";
 const authorAvatar = post.author?.data.avatar ?? "";
 const authorHref = post.author ? getAuthorHref(post.author.data.slug) : "";
 
-const related = allPosts
+const postsBySlug = new Map(
+  allPosts.map((item) => [item.entry.data.slug, item])
+);
+const relatedPostSlugs = post.entry.data.relatedPosts ?? [];
+const postCategorySlugs = post.entry.data.categories ?? [];
+const manualRelated = relatedPostSlugs
+  .filter((slug) => slug !== post.entry.data.slug)
+  .map((slug) => postsBySlug.get(slug))
+  .filter((item): item is typeof allPosts[number] => Boolean(item));
+const categorySlugs = new Set(postCategorySlugs);
+const automaticRelated = allPosts
   .filter((item) => item.entry.id !== post.entry.id)
-  .slice(0, 3)
+  .sort((a, b) => {
+    const aSharesCategory = (a.entry.data.categories ?? []).some((slug) =>
+      categorySlugs.has(slug)
+    );
+    const bSharesCategory = (b.entry.data.categories ?? []).some((slug) =>
+      categorySlugs.has(slug)
+    );
+
+    if (aSharesCategory === bSharesCategory) return 0;
+    return aSharesCategory ? -1 : 1;
+  })
+  .slice(0, 3);
+const relatedSource = manualRelated.length > 0 ? manualRelated : automaticRelated;
+const related = relatedSource
   .map((item) => ({
     title: item.entry.data.title,
     href: getPostHref(item.entry.data.slug),
   }));
+const relatedHeading =
+  post.entry.data.relatedPostsHeading?.trim() || "Related posts";
+const shouldShowRelatedPosts =
+  (post.entry.data.showRelatedPosts ?? true) && related.length > 0;
 ---
 
 <BaseLayout title={`${post.entry.data.title} - Built by Underdogs`}>
@@ -49,12 +76,15 @@ const related = allPosts
       authorBio={authorBio}
       authorAvatar={authorAvatar}
       authorHref={authorHref}
+      headings={headings}
     >
       <Content />
     </PostArticle>
 
-    <RelatedPostsFooter items={related}>
-      <ScrollToTopButton />
-    </RelatedPostsFooter>
+    {shouldShowRelatedPosts && (
+      <RelatedPostsFooter heading={relatedHeading} items={related}>
+        <ScrollToTopButton />
+      </RelatedPostsFooter>
+    )}
   </main>
 </BaseLayout>

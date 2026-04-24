@@ -1,0 +1,33 @@
+---
+import type { ResolvedPost } from "../lib/content";
+import { getPageItems, getTotalPages, POSTS_PER_PAGE } from "../lib/pagination";
+import Pagination from "./Pagination.astro";
+import PostList from "./PostList.astro";
+
+interface Props {
+  posts: ResolvedPost[];
+  basePath: string;
+  currentPage?: number;
+  pageSize?: number;
+}
+
+const {
+  posts,
+  basePath,
+  currentPage = 1,
+  pageSize = POSTS_PER_PAGE,
+} = Astro.props;
+
+const totalPages = getTotalPages(posts.length, pageSize);
+const visiblePosts = getPageItems(posts, currentPage, pageSize);
+---
+
+<PostList posts={visiblePosts} />
+
+{totalPages > 1 && (
+  <Pagination
+    basePath={basePath}
+    currentPage={currentPage}
+    totalPages={totalPages}
+  />
+)}

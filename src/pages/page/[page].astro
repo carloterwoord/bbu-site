@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import HomePageContent from "../../components/HomePageContent.astro";
+import { getResolvedPosts } from "../../lib/content";
+import { getPaginatedPageNumbers } from "../../lib/pagination";
+
+export async function getStaticPaths() {
+  const posts = await getResolvedPosts();
+
+  return getPaginatedPageNumbers(posts.length).map((page) => ({
+    params: { page: String(page) },
+    props: { page, posts },
+  }));
+}
+
+const { page, posts } = Astro.props;
+---
+
+<BaseLayout title={`Built by Underdogs - Page ${page}`}>
+  <main class="main">
+    <HomePageContent posts={posts} currentPage={page} />
+  </main>
+</BaseLayout>

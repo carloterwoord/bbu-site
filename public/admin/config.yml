@@ -48,6 +48,21 @@ collections:
       - { label: Tags, name: tags, widget: list, required: false }
       - { label: Cover Image, name: coverImage, widget: image, required: false }
       - { label: Read Time, name: readTime, widget: string, required: false }
+      - { label: Show Table of Contents, name: showTableOfContents, widget: boolean, default: true, required: false }
+      - { label: Show Related Posts, name: showRelatedPosts, widget: boolean, default: true, required: false }
+      - { label: Related Posts Heading, name: relatedPostsHeading, widget: string, default: Related posts, required: false }
+      - {
+          label: Related Posts,
+          name: relatedPosts,
+          widget: relation,
+          collection: posts,
+          search_fields: [title, slug],
+          value_field: slug,
+          display_fields: [title],
+          multiple: true,
+          required: false,
+          hint: "Choose posts for the related-posts footer. Leave empty to use automatic related posts."
+        }
       - { label: Draft, name: draft, widget: boolean, default: false }
       - {
           label: Body,

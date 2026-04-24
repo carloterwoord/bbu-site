@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import type { MarkdownHeading } from "astro";
 import ArticleMeta from "./ArticleMeta.astro";
 import AuthorByline from "./AuthorByline.astro";
 import TagList from "./TagList.astro";
@@ -14,6 +15,7 @@ interface Props {
   authorBio: string;
   authorAvatar: string;
   authorHref?: string;
+  headings?: MarkdownHeading[];
 }
 
 const {
@@ -24,18 +26,23 @@ const {
   authorBio,
   authorAvatar,
   authorHref = "",
+  headings = [],
 } = Astro.props;
 
-const resolvedCategoryHref = categoryHref || getCategoryHref(post.data.categories[0] ?? "category");
+const resolvedCategoryHref = categoryHref || getCategoryHref(post.data.categories?.[0] ?? "category");
 const dateHref = getArchiveMonthHref(
   post.data.date.getFullYear(),
   post.data.date.getMonth() + 1
 );
-const toc = [
-  "Introducing Built by Underdogs",
-  "Whats in a movement?",
-  "Another chance at it",
-];
+const toc = headings
+  .filter((heading) => heading.depth >= 2 && heading.depth <= 3)
+  .map((heading) => ({
+    depth: heading.depth,
+    href: `#${heading.slug}`,
+    text: heading.text,
+  }));
+const shouldShowTableOfContents =
+  (post.data.showTableOfContents ?? true) && toc.length > 0;
 ---
 
 {post.data.coverImage && (
@@ -59,16 +66,18 @@ const toc = [
     <h1>{post.data.title}</h1>
   </header>
 
-  <div class="article__table-of-contents">
-    <header><h2>Table of contents</h2></header>
+  {shouldShowTableOfContents && (
+  <nav class="article__table-of-contents" aria-labelledby="post-table-of-contents">
+    <header><h2 id="post-table-of-contents">Table of contents</h2></header>
     <ol>
-      {toc.map((item, index) => (
-        <li>
-          <a href={`#section${index + 1}`}>{item}</a>
+      {toc.map((item) => (
+        <li class={`article__table-of-contents__item article__table-of-contents__item--depth-${item.depth}`}>
+          <a href={item.href}>{item.text}</a>
         </li>
       ))}
     </ol>
-  </div>
+  </nav>
+  )}
 
   <div class="article__content space-top--base">
     <slot />

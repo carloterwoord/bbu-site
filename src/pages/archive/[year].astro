@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import PostList from "../../components/PostList.astro";
+import PaginatedPostList from "../../components/PaginatedPostList.astro";
 import {
+  getArchiveYearHref,
   getPublishedPosts,
   getResolvedPostsByYear,
 } from "../../lib/content";
@@ -28,6 +29,6 @@ const resultLabel = posts.length === 1 ? "1 post" : `${posts.length} posts`;
   <main class="main">
     <PageHeader title={`Archive: ${year}`} description={resultLabel} />
 
-    <PostList posts={posts} />
+    <PaginatedPostList posts={posts} basePath={getArchiveYearHref(year)} />
   </main>
 </BaseLayout>

@@ -1,0 +1,52 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import AuthorCard from "../../../../components/AuthorCard.astro";
+import PaginatedPostList from "../../../../components/PaginatedPostList.astro";
+import {
+  getAuthorHref,
+  getAuthors,
+  getResolvedPostsByAuthorSlug,
+} from "../../../../lib/content";
+import { getPaginatedPageNumbers } from "../../../../lib/pagination";
+
+export async function getStaticPaths() {
+  const authors = await getAuthors();
+  const paths = [];
+
+  for (const author of authors) {
+    const posts = await getResolvedPostsByAuthorSlug(author.data.slug);
+
+    for (const page of getPaginatedPageNumbers(posts.length)) {
+      paths.push({
+        params: { slug: author.data.slug, page: String(page) },
+        props: { author, page, posts },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { author, page, posts } = Astro.props;
+---
+
+<BaseLayout title={`${author.data.name} - Page ${page} - Built by Underdogs`}>
+  <main class="main">
+    <div class="page">
+      <AuthorCard
+        name={author.data.name}
+        bio={author.data.bio}
+        avatar={author.data.avatar}
+        links={author.data.socialLinks}
+      />
+    </div>
+
+    <hr class="page__divider" />
+
+    <PaginatedPostList
+      posts={posts}
+      basePath={getAuthorHref(author.data.slug)}
+      currentPage={page}
+    />
+  </main>
+</BaseLayout>

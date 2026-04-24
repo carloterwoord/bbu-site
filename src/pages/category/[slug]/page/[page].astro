@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import PageHeader from "../../../../components/PageHeader.astro";
+import PaginatedPostList from "../../../../components/PaginatedPostList.astro";
+import {
+  getCategories,
+  getCategoryHref,
+  getResolvedPostsByCategorySlug,
+} from "../../../../lib/content";
+import { getPaginatedPageNumbers } from "../../../../lib/pagination";
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+  const paths = [];
+
+  for (const category of categories) {
+    const posts = await getResolvedPostsByCategorySlug(category.data.slug);
+
+    for (const page of getPaginatedPageNumbers(posts.length)) {
+      paths.push({
+        params: { slug: category.data.slug, page: String(page) },
+        props: { category, page, posts },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { category, page, posts } = Astro.props;
+---
+
+<BaseLayout title={`${category.data.name} - Page ${page} - Built by Underdogs`}>
+  <main class="main">
+    <PageHeader
+      title={category.data.name}
+      description={category.data.description}
+      image={category.data.headerImage}
+    />
+
+    <PaginatedPostList
+      posts={posts}
+      basePath={getCategoryHref(category.data.slug)}
+      currentPage={page}
+    />
+  </main>
+</BaseLayout>

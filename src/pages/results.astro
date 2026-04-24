@@ -11,6 +11,7 @@ import {
 } from "../lib/content";
 
 const posts = await getResolvedPosts();
+const RESULTS_PER_PAGE = 6;
 
 function textFromHtml(value: string) {
   return value
@@ -97,7 +98,11 @@ const resultItems = posts.map((post) => {
     <div class="page page__content space-top--xl space-bottom--4xl">
       <SearchForm />
 
-      <div class="search__results__container" data-search-results>
+      <div
+        class="search__results__container"
+        data-search-results
+        data-page-size={RESULTS_PER_PAGE}
+      >
         {resultItems.map((item, index) => (
           <>
             <div
@@ -140,6 +145,9 @@ const resultItems = posts.map((post) => {
       <p class="search__results-empty" data-search-empty hidden>
         No posts matched this search.
       </p>
+
+      <hr class="page__divider" data-results-pagination-divider hidden />
+      <div class="page__pagination-wrapper" data-results-pagination hidden></div>
     </div>
   </main>
 
@@ -169,7 +177,12 @@ const resultItems = posts.map((post) => {
       const summary = document.querySelector("[data-results-summary]");
       const empty = document.querySelector("[data-search-empty]");
       const input = document.querySelector('.search-form input[name="q"]');
+      const resultsContainer = document.querySelector("[data-search-results]");
+      const paginationDivider = document.querySelector("[data-results-pagination-divider]");
+      const paginationContainer = document.querySelector("[data-results-pagination]");
       const items = Array.from(document.querySelectorAll("[data-search-item]"));
+      const pageSize = Number(resultsContainer?.dataset.pageSize || 6);
+      const requestedPage = Math.max(1, Math.floor(Number(params.get("page")) || 1));
 
       if (input instanceof HTMLInputElement && query) {
         input.value = query;
@@ -216,14 +229,23 @@ const resultItems = posts.map((post) => {
           matchesYear &&
           matchesMonth;
 
-        item.hidden = !isMatch;
+        item.hidden = true;
         if (isMatch) {
           matches += 1;
           visibleItems.push(item);
         }
       }
 
-      for (const item of visibleItems.slice(0, -1)) {
+      const totalPages = Math.max(1, Math.ceil(visibleItems.length / pageSize));
+      const currentPage = Math.min(requestedPage, totalPages);
+      const pageStart = (currentPage - 1) * pageSize;
+      const pagedItems = visibleItems.slice(pageStart, pageStart + pageSize);
+
+      for (const item of pagedItems) {
+        item.hidden = false;
+      }
+
+      for (const item of pagedItems.slice(0, -1)) {
         const divider = item.nextElementSibling;
         if (divider?.hasAttribute("data-search-divider")) {
           divider.hidden = false;
@@ -233,6 +255,9 @@ const resultItems = posts.map((post) => {
       if (summary) {
         if (matches === 1) {
           summary.textContent = "1 post found.";
+        } else if (totalPages > 1) {
+          const pageEnd = pageStart + pagedItems.length;
+          summary.textContent = `Showing ${pageStart + 1}-${pageEnd} of ${matches} posts.`;
         } else if (label) {
           summary.textContent = `${matches} posts found.`;
         } else {
@@ -241,6 +266,97 @@ const resultItems = posts.map((post) => {
       }
 
       if (empty) empty.hidden = matches !== 0;
+
+      const getPageUrl = (page) => {
+        const nextParams = new URLSearchParams(window.location.search);
+        if (page <= 1) {
+          nextParams.delete("page");
+        } else {
+          nextParams.set("page", String(page));
+        }
+        const queryString = nextParams.toString();
+        return `${window.location.pathname}${queryString ? `?${queryString}` : ""}`;
+      };
+      const createButton = (page, label, className, disabled = false) => {
+        const element = document.createElement(disabled ? "span" : "a");
+        element.className = `pagination__button ${className}${
+          disabled ? " pagination__button--disabled" : ""
+        }`;
+        if (disabled) {
+          element.setAttribute("aria-disabled", "true");
+        } else {
+          element.setAttribute("href", getPageUrl(page));
+        }
+        element.append(label);
+        return element;
+      };
+
+      if (paginationContainer) {
+        paginationContainer.replaceChildren();
+        paginationContainer.hidden = totalPages <= 1;
+        if (paginationDivider) paginationDivider.hidden = totalPages <= 1;
+
+        if (totalPages > 1) {
+          const inner = document.createElement("div");
+          inner.className = "page__pagination";
+
+          const nav = document.createElement("nav");
+          nav.className = "pagination";
+          nav.setAttribute("aria-label", "Results pagination");
+
+          const previousLabel = document.createDocumentFragment();
+          previousLabel.append("← ");
+          const previousText = document.createElement("span");
+          previousText.className = "pagination__button__text";
+          previousText.textContent = "Previous";
+          previousLabel.append(previousText);
+
+          nav.append(
+            createButton(
+              currentPage - 1,
+              previousLabel,
+              "pagination__button--prev",
+              currentPage === 1
+            )
+          );
+
+          const list = document.createElement("ul");
+          list.className = "pagination__list";
+
+          for (let page = 1; page <= totalPages; page += 1) {
+            const listItem = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = getPageUrl(page);
+            link.className = `pagination__link${
+              page === currentPage ? " pagination__link--active" : ""
+            }`;
+            if (page === currentPage) link.setAttribute("aria-current", "page");
+            link.textContent = String(page);
+            listItem.append(link);
+            list.append(listItem);
+          }
+
+          nav.append(list);
+
+          const nextLabel = document.createDocumentFragment();
+          const nextText = document.createElement("span");
+          nextText.className = "pagination__button__text";
+          nextText.textContent = "Next";
+          nextLabel.append(nextText, " →");
+
+          nav.append(
+            createButton(
+              currentPage + 1,
+              nextLabel,
+              "pagination__button--next",
+              currentPage === totalPages
+            )
+          );
+
+          inner.append(nav);
+          paginationContainer.append(inner);
+        }
+      }
     })();
   </script>
 </BaseLayout>

@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import PageHeader from "../../../../components/PageHeader.astro";
+import PaginatedPostList from "../../../../components/PaginatedPostList.astro";
+import {
+  getArchiveYearHref,
+  getPublishedPosts,
+  getResolvedPostsByYear,
+} from "../../../../lib/content";
+import { getPaginatedPageNumbers } from "../../../../lib/pagination";
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const years = Array.from(
+    new Set(posts.map((post) => String(post.data.date.getFullYear())))
+  );
+  const paths = [];
+
+  for (const year of years) {
+    const yearPosts = await getResolvedPostsByYear(year);
+
+    for (const page of getPaginatedPageNumbers(yearPosts.length)) {
+      paths.push({
+        params: { page: String(page), year },
+        props: { page, posts: yearPosts, year },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { page, posts, year } = Astro.props;
+const resultLabel = posts.length === 1 ? "1 post" : `${posts.length} posts`;
+---
+
+<BaseLayout title={`Archive: ${year} - Page ${page} - Built by Underdogs`}>
+  <main class="main">
+    <PageHeader title={`Archive: ${year}`} description={resultLabel} />
+
+    <PaginatedPostList
+      posts={posts}
+      basePath={getArchiveYearHref(year)}
+      currentPage={page}
+    />
+  </main>
+</BaseLayout>

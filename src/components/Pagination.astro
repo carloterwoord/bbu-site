@@ -1,40 +1,92 @@
 ---
 interface Props {
-  currentPage?: number;
-  totalPages?: number;
+    basePath: string;
+    currentPage?: number;
+    totalPages?: number;
 }
 
-const { currentPage = 1, totalPages = 6 } = Astro.props;
+const { basePath, currentPage = 1, totalPages = 1 } = Astro.props;
 
 const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+
+function normalizeBasePath(path: string) {
+    const trimmedPath = path.trim();
+    if (!trimmedPath || trimmedPath === "/") return "/";
+    return trimmedPath.replace(/\/+$/, "");
+}
+
+const normalizedBasePath = normalizeBasePath(basePath);
+const firstPageHref =
+    normalizedBasePath === "/" ? "/" : `${normalizedBasePath}/`;
+const getPageHref = (page: number) =>
+    page === 1
+        ? firstPageHref
+        : `${normalizedBasePath === "/" ? "" : normalizedBasePath}/page/${page}/`;
+const hasPreviousPage = currentPage > 1;
+const hasNextPage = currentPage < totalPages;
 ---
 
+<hr class="page__divider" />
 <div class="page__pagination-wrapper">
-  <div class="page__pagination">
-    <hr class="page__divider" />
-    <nav class="pagination">
-      <a href="#" class="pagination__button pagination__prev"
-        >← <span class="pagination__button__text">Previous</span></a
-      >
+    <div class="page__pagination">
+        <nav class="pagination" aria-label="Pagination">
+            {
+                hasPreviousPage ? (
+                    <a
+                        href={getPageHref(currentPage - 1)}
+                        class="pagination__button pagination__button--prev"
+                    >
+                        ← <span class="pagination__button__text">Previous</span>
+                    </a>
+                ) : (
+                    <span
+                        class="pagination__button pagination__button--prev pagination__button--disabled"
+                        aria-disabled="true"
+                    >
+                        ← <span class="pagination__button__text">Previous</span>
+                    </span>
+                )
+            }
 
-      <ul class="pagination__list">
-        {pages.map((page) => (
-          <li>
-            <a
-              href="#"
-              class={`pagination__link ${
-                page === currentPage ? "pagination__link--active" : ""
-              }`.trim()}
-            >
-              {page}
-            </a>
-          </li>
-        ))}
-      </ul>
+            <ul class="pagination__list">
+                {
+                    pages.map((page) => (
+                        <li>
+                            <a
+                                href={getPageHref(page)}
+                                aria-current={
+                                    page === currentPage ? "page" : undefined
+                                }
+                                class={`pagination__link ${
+                                    page === currentPage
+                                        ? "pagination__link--active"
+                                        : ""
+                                }`.trim()}
+                            >
+                                {page}
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
 
-      <a href="#" class="pagination__button pagination__next"
-        ><span class="pagination__button__text">Next</span> →</a
-      >
-    </nav>
-  </div>
+            {
+                hasNextPage ? (
+                    <a
+                        href={getPageHref(currentPage + 1)}
+                        class="pagination__button pagination__button--next"
+                    >
+                        <span class="pagination__button__text">Next</span> →
+                    </a>
+                ) : (
+                    <span
+                        class="pagination__button pagination__button--next pagination__button--disabled"
+                        aria-disabled="true"
+                    >
+                        <span class="pagination__button__text">Next</span> →
+                    </span>
+                )
+            }
+        </nav>
+    </div>
 </div>
