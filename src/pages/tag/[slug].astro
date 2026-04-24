@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import PostList from "../../components/PostList.astro";
+import {
+  getResolvedTags,
+  getResolvedPostsByTagSlug,
+} from "../../lib/content";
+
+export async function getStaticPaths() {
+  const tags = await getResolvedTags();
+
+  return tags.map((tag) => ({
+    params: { slug: tag.slug },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const posts = await getResolvedPostsByTagSlug(tag.slug);
+const resultLabel = posts.length === 1 ? "1 post" : `${posts.length} posts`;
+const description = tag.description || `${resultLabel} filed under this tag.`;
+---
+
+<BaseLayout title={`Tag: ${tag.label} - Built by Underdogs`}>
+  <main class="main">
+    <PageHeader
+      title={`Tag: ${tag.label}`}
+      description={description}
+      image={tag.headerImage}
+    />
+
+    <PostList posts={posts} />
+  </main>
+</BaseLayout>

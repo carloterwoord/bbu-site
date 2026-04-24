@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import PostList from "../../components/PostList.astro";
+import {
+  getPublishedPosts,
+  getResolvedPostsByYear,
+} from "../../lib/content";
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const years = Array.from(
+    new Set(posts.map((post) => String(post.data.date.getFullYear())))
+  );
+
+  return years.map((year) => ({
+    params: { year },
+    props: { year },
+  }));
+}
+
+const { year } = Astro.props;
+const posts = await getResolvedPostsByYear(year);
+const resultLabel = posts.length === 1 ? "1 post" : `${posts.length} posts`;
+---
+
+<BaseLayout title={`Archive: ${year} - Built by Underdogs`}>
+  <main class="main">
+    <PageHeader title={`Archive: ${year}`} description={resultLabel} />
+
+    <PostList posts={posts} />
+  </main>
+</BaseLayout>

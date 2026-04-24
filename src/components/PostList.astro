@@ -1,7 +1,13 @@
 ---
 import type { ResolvedPost } from "../lib/content";
 import ArticlePreviewCard from "./ArticlePreviewCard.astro";
-import { formatDate, getCategoryHref, getPostHref } from "../lib/content";
+import {
+  formatDate,
+  getArchiveMonthHref,
+  getCategoryHref,
+  getPostHref,
+} from "../lib/content";
+import { getPostPreviewHtml } from "../lib/preview";
 
 interface Props {
   posts: ResolvedPost[];
@@ -14,17 +20,24 @@ const { posts } = Astro.props;
   const firstCategory = post.categories[0];
   const categoryLabel = firstCategory?.data.name ?? "Category";
   const categoryHref = getCategoryHref(firstCategory?.data.slug ?? "category");
+  const year = post.entry.data.date.getFullYear();
+  const month = post.entry.data.date.getMonth() + 1;
+  const previewHtml = getPostPreviewHtml(
+    post.entry.body,
+    post.entry.data.excerpt
+  );
 
   return (
     <ArticlePreviewCard
       dateISO={post.entry.data.date.toISOString().slice(0, 10)}
       dateLabel={formatDate(post.entry.data.date)}
+      dateHref={getArchiveMonthHref(year, month)}
       categoryLabel={categoryLabel}
       categoryHref={categoryHref}
       title={post.entry.data.title}
       href={getPostHref(post.entry.data.slug)}
       coverImage={post.entry.data.coverImage}
-      excerptHtml={post.entry.data.excerpt}
+      previewHtml={previewHtml}
       showDivider={index < posts.length - 1}
     />
   );

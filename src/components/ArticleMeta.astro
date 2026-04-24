@@ -4,14 +4,24 @@ interface Props {
   dateLabel: string;
   categoryLabel: string;
   categoryHref: string;
+  dateHref?: string;
   readTime?: string;
 }
 
-const { dateISO, dateLabel, categoryLabel, categoryHref, readTime = "" } = Astro.props;
+const {
+  dateISO,
+  dateLabel,
+  categoryLabel,
+  categoryHref,
+  dateHref = "",
+  readTime = "",
+} = Astro.props;
 ---
 
 <div>
-  <time datetime={dateISO}><a href="#">{dateLabel}</a></time>
+  <time datetime={dateISO}>
+    {dateHref ? <a href={dateHref}>{dateLabel}</a> : dateLabel}
+  </time>
   <span>•</span>
   <p><a href={categoryHref}>{categoryLabel}</a></p>
   {readTime && (

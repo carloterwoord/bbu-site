@@ -4,7 +4,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostArticle from "../../components/PostArticle.astro";
 import RelatedPostsFooter from "../../components/RelatedPostsFooter.astro";
 import ScrollToTopButton from "../../components/ScrollToTopButton.astro";
-import { getPostHref, getResolvedPosts } from "../../lib/content";
+import {
+  getAuthorHref,
+  getCategoryHref,
+  getPostHref,
+  getResolvedPosts,
+} from "../../lib/content";
 
 export async function getStaticPaths() {
   const posts = await getResolvedPosts();
@@ -19,9 +24,11 @@ const { post, allPosts } = Astro.props;
 const { Content } = await render(post.entry);
 
 const categoryLabel = post.categories[0]?.data.name ?? "Category";
+const categoryHref = getCategoryHref(post.categories[0]?.data.slug ?? "category");
 const authorName = post.author?.data.name ?? "Built by Underdogs";
 const authorBio = post.author?.data.bio ?? "";
 const authorAvatar = post.author?.data.avatar ?? "";
+const authorHref = post.author ? getAuthorHref(post.author.data.slug) : "";
 
 const related = allPosts
   .filter((item) => item.entry.id !== post.entry.id)
@@ -37,9 +44,11 @@ const related = allPosts
     <PostArticle
       post={post.entry}
       categoryLabel={categoryLabel}
+      categoryHref={categoryHref}
       authorName={authorName}
       authorBio={authorBio}
       authorAvatar={authorAvatar}
+      authorHref={authorHref}
     >
       <Content />
     </PostArticle>

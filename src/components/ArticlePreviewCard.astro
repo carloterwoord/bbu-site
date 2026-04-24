@@ -6,24 +6,26 @@ import KeepReadingLink from "./KeepReadingLink.astro";
 interface Props {
   dateISO: string;
   dateLabel: string;
+  dateHref?: string;
   categoryLabel: string;
   categoryHref: string;
   title: string;
   href: string;
   coverImage?: string;
-  excerptHtml: string;
+  previewHtml?: string;
   showDivider?: boolean;
 }
 
 const {
   dateISO,
   dateLabel,
+  dateHref = "",
   categoryLabel,
   categoryHref,
   title,
   href,
   coverImage = "",
-  excerptHtml,
+  previewHtml = "",
   showDivider = true,
 } = Astro.props;
 ---
@@ -33,6 +35,7 @@ const {
     <ArticleMeta
       dateISO={dateISO}
       dateLabel={dateLabel}
+      dateHref={dateHref}
       categoryLabel={categoryLabel}
       categoryHref={categoryHref}
     />
@@ -44,7 +47,12 @@ const {
     <ArticleCover src={coverImage} />
   </header>
 
-  <div class="article__content article__content-preview space-top--base" set:html={excerptHtml}></div>
+  {previewHtml && (
+    <div
+      class="article__content article__content-preview space-top--base"
+      set:html={previewHtml}
+    />
+  )}
 
   <KeepReadingLink href={href} />
 </article>

@@ -2,15 +2,16 @@
 interface Props {
   title: string;
   items: { label: string; href: string }[];
+  titleHref?: string;
   ordered?: boolean;
 }
 
-const { title, items, ordered = false } = Astro.props;
+const { title, items, titleHref = "", ordered = false } = Astro.props;
 const ListTag = ordered ? "ol" : "ul";
 ---
 
 <div class="search__content__tags__container">
-  <h3>{title}</h3>
+  <h3>{titleHref ? <a href={titleHref}>{title}</a> : title}</h3>
   <ListTag class="search__content__tags">
     {items.map((item) => (
       <li class="search__content__tag-item">

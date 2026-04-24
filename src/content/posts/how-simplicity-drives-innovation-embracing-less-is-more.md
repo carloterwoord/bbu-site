@@ -15,7 +15,7 @@ readTime: 5 min read
 draft: false
 ---
 
-a lot of mumbo jumbo
+## a lot of mumbo jumbo
 
 Innovation is often seen as complex, a realm for the overly ambitious, with intricate solutions for complicated problems. But in reality, simplicity is the true catalyst for groundbreaking ideas.
 

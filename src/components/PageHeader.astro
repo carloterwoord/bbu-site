@@ -2,13 +2,28 @@
 interface Props {
   title: string;
   description?: string;
+  image?: string;
   wrapperClass?: string;
 }
 
-const { title, description = "", wrapperClass = "" } = Astro.props;
+const {
+  title,
+  description = "",
+  image = "",
+  wrapperClass = "",
+} = Astro.props;
+
+const headerClass = [
+  "page__header-wrapper",
+  image && "page__header-wrapper--image",
+  wrapperClass,
+].filter(Boolean).join(" ");
+const imageStyle = image
+  ? `--page-header-image: url("${image.replace(/"/g, "%22")}");`
+  : undefined;
 ---
 
-<div class={`page__header-wrapper ${wrapperClass}`.trim()}>
+<div class={headerClass} style={imageStyle}>
   <div class="page__header">
     <header>
       <h1>{title}</h1>

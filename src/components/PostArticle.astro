@@ -4,19 +4,33 @@ import ArticleMeta from "./ArticleMeta.astro";
 import AuthorByline from "./AuthorByline.astro";
 import TagList from "./TagList.astro";
 import ShareButton from "./ShareButton.astro";
-import { formatDate, getCategoryHref } from "../lib/content";
+import { formatDate, getArchiveMonthHref, getCategoryHref } from "../lib/content";
 
 interface Props {
   post: CollectionEntry<"posts">;
   categoryLabel: string;
+  categoryHref?: string;
   authorName: string;
   authorBio: string;
   authorAvatar: string;
+  authorHref?: string;
 }
 
-const { post, categoryLabel, authorName, authorBio, authorAvatar } = Astro.props;
+const {
+  post,
+  categoryLabel,
+  categoryHref = "",
+  authorName,
+  authorBio,
+  authorAvatar,
+  authorHref = "",
+} = Astro.props;
 
-const categoryHref = getCategoryHref(post.data.categories[0] ?? "category");
+const resolvedCategoryHref = categoryHref || getCategoryHref(post.data.categories[0] ?? "category");
+const dateHref = getArchiveMonthHref(
+  post.data.date.getFullYear(),
+  post.data.date.getMonth() + 1
+);
 const toc = [
   "Introducing Built by Underdogs",
   "Whats in a movement?",
@@ -37,8 +51,9 @@ const toc = [
     <ArticleMeta
       dateISO={post.data.date.toISOString().slice(0, 10)}
       dateLabel={formatDate(post.data.date)}
+      dateHref={dateHref}
       categoryLabel={categoryLabel}
-      categoryHref={categoryHref}
+      categoryHref={resolvedCategoryHref}
       readTime={post.data.readTime}
     />
     <h1>{post.data.title}</h1>
@@ -60,7 +75,12 @@ const toc = [
   </div>
 
   <footer class="article__footer">
-    <AuthorByline name={authorName} bio={authorBio} avatar={authorAvatar} />
+    <AuthorByline
+      name={authorName}
+      bio={authorBio}
+      avatar={authorAvatar}
+      href={authorHref}
+    />
     <TagList tags={post.data.tags} />
     <hr class="article__footer__divider" />
     <ShareButton />

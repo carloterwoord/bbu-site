@@ -1,6 +1,23 @@
-<form method="get" class="search-form" action="https://www.google.com/search" onsubmit="updateSiteSearch(event)">
-  <span class="screen-reader-text">Search for:</span>
-  <input id="siteSearch" type="hidden" name="sitesearch" value="builtbyunderdogs.com" />
-  <input name="q" class="search-field" placeholder="Search Built by Underdogs…" type="text" required />
+---
+import { getResultsHref } from "../lib/content";
+
+interface Props {
+  value?: string;
+}
+
+const { value = "" } = Astro.props;
+---
+
+<form method="get" class="search-form" action={getResultsHref()}>
+  <label class="screen-reader-text" for="siteSearch">Search for:</label>
+  <input
+    id="siteSearch"
+    name="q"
+    class="search-field"
+    placeholder="Search Built by Underdogs..."
+    type="text"
+    value={value}
+    required
+  />
   <input type="submit" class="search-submit" value="Search" />
 </form>

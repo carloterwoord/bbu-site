@@ -1,0 +1,246 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SearchForm from "../components/SearchForm.astro";
+import {
+  formatDate,
+  getArchiveMonthHref,
+  getCategoryHref,
+  getPostHref,
+  getResolvedPosts,
+  getTaxonomySlug,
+} from "../lib/content";
+
+const posts = await getResolvedPosts();
+
+function textFromHtml(value: string) {
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function textFromMarkdown(value: string) {
+  return textFromHtml(value)
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[#*_>~-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function truncate(value: string, maxLength = 260) {
+  if (value.length <= maxLength) return value;
+  return value.slice(0, maxLength).trimEnd().replace(/[,\s]+$/g, "");
+}
+
+const resultItems = posts.map((post) => {
+  const firstCategory = post.categories[0];
+  const categoryLabel = firstCategory?.data.name ?? "Category";
+  const categoryHref = getCategoryHref(firstCategory?.data.slug ?? "category");
+  const year = post.entry.data.date.getFullYear();
+  const month = post.entry.data.date.getMonth() + 1;
+  const excerptText = textFromHtml(post.entry.data.excerpt);
+  const bodyText = textFromMarkdown(post.entry.body ?? "");
+  const previewText = truncate(excerptText || bodyText);
+  const tagSlugs = post.entry.data.tags.map(getTaxonomySlug);
+  const searchText = [
+    post.entry.data.title,
+    excerptText,
+    bodyText,
+    post.entry.data.tags.join(" "),
+    categoryLabel,
+    post.author?.data.name ?? "",
+  ].join(" ");
+
+  return {
+    title: post.entry.data.title,
+    href: getPostHref(post.entry.data.slug),
+    coverImage: post.entry.data.coverImage,
+    dateISO: post.entry.data.date.toISOString().slice(0, 10),
+    dateLabel: formatDate(post.entry.data.date),
+    dateHref: getArchiveMonthHref(year, month),
+    categoryLabel,
+    categoryHref,
+    authorSlug: post.author?.data.slug ?? "",
+    authorName: post.author?.data.name ?? "",
+    year: String(year),
+    month: `${year}-${String(month).padStart(2, "0")}`,
+    tagSlugs: tagSlugs.join(" "),
+    searchText,
+    previewText,
+  };
+});
+---
+
+<BaseLayout title="Results - Built by Underdogs">
+  <main class="main">
+    <div class="page__header-wrapper">
+      <div class="page__header">
+        <header>
+          <h1 data-results-title>Results</h1>
+        </header>
+        <article>
+          <p data-results-summary>Showing all posts.</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="page page__content space-top--xl space-bottom--4xl">
+      <SearchForm />
+
+      <div class="search__results__container" data-search-results>
+        {resultItems.map((item, index) => (
+          <>
+            <div
+              class="search__results__item"
+              data-search-item
+              data-search-text={item.searchText}
+              data-tags={item.tagSlugs}
+              data-author={item.authorSlug}
+              data-year={item.year}
+              data-month={item.month}
+            >
+              <header class="search__results__item__headline">
+                <div>
+                  <time datetime={item.dateISO}>
+                    <a href={item.dateHref}>{item.dateLabel}</a>
+                  </time>
+                  <span>•</span>
+                  <p><a href={item.categoryHref}>{item.categoryLabel}</a></p>
+                </div>
+                <a href={item.href}><h2>{item.title}</h2></a>
+                {item.coverImage && (
+                  <picture>
+                    <img src={item.coverImage} alt="Cover Image" loading="lazy" />
+                  </picture>
+                )}
+              </header>
+              <article>
+                <p class="article__excerpt">{item.previewText}</p>
+                <a href={item.href} class="article__keep-reading">keep reading</a>
+              </article>
+            </div>
+
+            {index < resultItems.length - 1 && (
+              <hr class="search__results__item__divider" data-search-divider />
+            )}
+          </>
+        ))}
+      </div>
+
+      <p class="search__results-empty" data-search-empty hidden>
+        No posts matched this search.
+      </p>
+    </div>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const normalize = (value) =>
+        value
+          .toLowerCase()
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "");
+      const slugify = (value) =>
+        normalize(value)
+          .trim()
+          .replace(/&/g, " and ")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+      const params = new URLSearchParams(window.location.search);
+      const query = (params.get("q") || "").trim();
+      const tag = slugify(params.get("tag") || "");
+      const author = slugify(params.get("author") || "");
+      const year = (params.get("year") || "").trim();
+      const month = (params.get("month") || "").trim();
+      const terms = normalize(query).split(/\s+/).filter(Boolean);
+
+      const title = document.querySelector("[data-results-title]");
+      const summary = document.querySelector("[data-results-summary]");
+      const empty = document.querySelector("[data-search-empty]");
+      const input = document.querySelector('.search-form input[name="q"]');
+      const items = Array.from(document.querySelectorAll("[data-search-item]"));
+
+      if (input instanceof HTMLInputElement && query) {
+        input.value = query;
+      }
+
+      const label =
+        query ||
+        (tag ? tag.replace(/-/g, " ") : "") ||
+        (author ? author.replace(/-/g, " ") : "") ||
+        month ||
+        year;
+
+      if (title) {
+        title.textContent = label ? `Results for: ${label}` : "Results";
+      }
+
+      let matches = 0;
+      const visibleItems = [];
+      const dividers = Array.from(
+        document.querySelectorAll("[data-search-divider]")
+      );
+
+      for (const divider of dividers) {
+        divider.hidden = true;
+      }
+
+      for (const item of items) {
+        const searchText = normalize(item.dataset.searchText || "");
+        const tags = (item.dataset.tags || "").split(/\s+/).filter(Boolean);
+        const itemAuthor = item.dataset.author || "";
+        const itemYear = item.dataset.year || "";
+        const itemMonth = item.dataset.month || "";
+
+        const matchesQuery =
+          terms.length === 0 || terms.every((term) => searchText.includes(term));
+        const matchesTag = !tag || tags.includes(tag);
+        const matchesAuthor = !author || itemAuthor === author;
+        const matchesYear = !year || itemYear === year;
+        const matchesMonth = !month || itemMonth === month;
+        const isMatch =
+          matchesQuery &&
+          matchesTag &&
+          matchesAuthor &&
+          matchesYear &&
+          matchesMonth;
+
+        item.hidden = !isMatch;
+        if (isMatch) {
+          matches += 1;
+          visibleItems.push(item);
+        }
+      }
+
+      for (const item of visibleItems.slice(0, -1)) {
+        const divider = item.nextElementSibling;
+        if (divider?.hasAttribute("data-search-divider")) {
+          divider.hidden = false;
+        }
+      }
+
+      if (summary) {
+        if (matches === 1) {
+          summary.textContent = "1 post found.";
+        } else if (label) {
+          summary.textContent = `${matches} posts found.`;
+        } else {
+          summary.textContent = `Showing ${matches} posts.`;
+        }
+      }
+
+      if (empty) empty.hidden = matches !== 0;
+    })();
+  </script>
+</BaseLayout>

@@ -1,13 +1,34 @@
 ---
+import {
+  getTagHref,
+  getTags,
+  getTaxonomyLabel,
+  getTaxonomySlug,
+} from "../lib/content";
+
 interface Props {
   tags: string[];
 }
 
 const { tags } = Astro.props;
+const tagsBySlug = new Map(
+  (await getTags()).map((tag) => [tag.data.slug, tag])
+);
+const resolvedTags = tags
+  .map((tag) => {
+    const slug = getTaxonomySlug(tag);
+    const tagEntry = tagsBySlug.get(slug);
+
+    return {
+      label: tagEntry?.data.name ?? getTaxonomyLabel(tag),
+      href: getTagHref(slug),
+    };
+  })
+  .filter((tag) => tag.label);
 ---
 
 <div class="article__footer__tags">
-  {tags.map((tag) => (
-    <a class="article__footer__tags-item" href="#">{tag}</a>
+  {resolvedTags.map((tag) => (
+    <a class="article__footer__tags-item" href={tag.href}>{tag.label}</a>
   ))}
 </div>

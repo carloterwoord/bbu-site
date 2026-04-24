@@ -2,45 +2,63 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SearchForm from "../components/SearchForm.astro";
 import SearchTagSection from "../components/SearchTagSection.astro";
-import { getPageBySlug, getPublishedPosts } from "../lib/content";
-import { withBase } from "../lib/paths";
+import {
+  getArchiveMonthHref,
+  getArchiveYearHref,
+  getAuthorHref,
+  getAuthors,
+  getPageBySlug,
+  getPublishedPosts,
+  getResolvedTags,
+  getTagHref,
+} from "../lib/content";
 
-const [posts, searchPage] = await Promise.all([
+const [posts, authors, resolvedTags, searchPage] = await Promise.all([
   getPublishedPosts(),
+  getAuthors(),
+  getResolvedTags(),
   getPageBySlug("search"),
 ]);
 
 const pageTitle = searchPage?.data.title ?? "Search";
 const pageExcerpt = searchPage?.data.excerpt?.trim();
 
-const tags = Array.from(
-  new Set(
-    posts.flatMap((post) =>
-      post.data.tags.map((tag) => tag.trim()).filter(Boolean)
-    )
-  )
-)
-  .sort((a, b) => a.localeCompare(b))
-  .map((tag) => ({
-    label: tag,
-    href: withBase("/results"),
+const tags = resolvedTags.map((tag) => ({
+  label: tag.label,
+  href: getTagHref(tag.slug),
+}));
+
+const authorSlugsWithPosts = new Set(posts.map((post) => post.data.author));
+const authorItems = authors
+  .filter((author) => authorSlugsWithPosts.has(author.data.slug))
+  .sort((a, b) => a.data.name.localeCompare(b.data.name))
+  .map((author) => ({
+    label: author.data.name,
+    href: getAuthorHref(author.data.slug),
   }));
 
-const postsByYear = posts.reduce<Record<string, string[]>>((acc, post) => {
+const postsByYear = posts.reduce<Record<string, Map<number, string>>>((acc, post) => {
   const year = String(post.data.date.getFullYear());
-  const month = post.data.date.toLocaleString("en-US", { month: "long" });
+  const monthNumber = post.data.date.getMonth() + 1;
+  const monthName = post.data.date.toLocaleString("en-US", { month: "long" });
 
-  if (!acc[year]) acc[year] = [];
-  if (!acc[year].includes(month)) acc[year].push(month);
+  if (!acc[year]) acc[year] = new Map();
+  if (!acc[year].has(monthNumber)) acc[year].set(monthNumber, monthName);
 
   return acc;
 }, {});
 
 const yearSections = Object.entries(postsByYear)
   .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
-  .map(([year, months]) => ({
+  .map(([year, monthMap]) => ({
     year,
-    months: months.map((month) => ({ label: month, href: "#" })),
+    href: getArchiveYearHref(year),
+    months: Array.from(monthMap.entries())
+      .sort(([monthA], [monthB]) => monthB - monthA)
+      .map(([monthNumber, monthName]) => ({
+        label: monthName,
+        href: getArchiveMonthHref(year, monthNumber),
+      })),
   }));
 ---
 
@@ -60,27 +78,20 @@ const yearSections = Object.entries(postsByYear)
 
     <div class="page page__content space-top--lg space-bottom--4xl">
       <div>
-        <h2>Or, browse through the archives by tag or year</h2>
+        <h2>Or, browse through the archives by tag, author, or year</h2>
       </div>
 
       <SearchTagSection title="Tags" items={tags} />
+      <SearchTagSection title="Authors" items={authorItems} />
 
       {yearSections.map((section) => (
-        <SearchTagSection title={section.year} items={section.months} ordered={true} />
+        <SearchTagSection
+          title={section.year}
+          titleHref={section.href}
+          items={section.months}
+          ordered={true}
+        />
       ))}
     </div>
   </main>
-
-  <script is:inline>
-    window.updateSiteSearch = function updateSiteSearch(event) {
-      const form = event.target;
-      if (!(form instanceof HTMLFormElement)) return true;
-      const input = form.querySelector("#siteSearch");
-      if (!(input instanceof HTMLInputElement)) return true;
-      if (!input.value) {
-        input.value = "builtbyunderdogs.com";
-      }
-      return true;
-    };
-  </script>
 </BaseLayout>

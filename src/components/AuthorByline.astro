@@ -3,9 +3,10 @@ interface Props {
   name: string;
   bio: string;
   avatar: string;
+  href?: string;
 }
 
-const { name, bio, avatar } = Astro.props;
+const { name, bio, avatar, href = "" } = Astro.props;
 ---
 
 <aside class="author author__border">
@@ -16,7 +17,7 @@ const { name, bio, avatar } = Astro.props;
     <div>
       <span>About the Author</span>
       <h2>
-        <a href="#" class="author__link">{name}</a>
+        {href ? <a href={href} class="author__link">{name}</a> : name}
       </h2>
       <p>{bio}</p>
     </div>

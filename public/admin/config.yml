@@ -142,4 +142,41 @@ collections:
       - { label: Name, name: name, widget: string }
       - { label: Slug, name: slug, widget: string, hint: "Used in /category/[slug].html" }
       - { label: Description, name: description, widget: text, required: false }
+      - { label: Header Image, name: headerImage, widget: image, required: false }
+      - { label: Navigation Label, name: navLabel, widget: string, required: false }
+      - label: Navigation Group
+        name: navGroup
+        widget: select
+        default: none
+        options:
+          - { label: Primary, value: primary }
+          - { label: Secondary, value: secondary }
+          - { label: Utility, value: utility }
+          - { label: Hidden, value: none }
+      - { label: Navigation Order, name: navOrder, widget: number, value_type: int, default: 0, min: 0 }
+      - { label: Divider Before Item, name: dividerBefore, widget: boolean, default: false, required: false }
+      - { label: Divider After Item, name: dividerAfter, widget: boolean, default: false, required: false }
+      - {
+          label: Navigation Icon,
+          name: icon,
+          widget: select,
+          default: category,
+          options: [home, membership, category, behind, principles, tools, voice, business, search, about]
+        }
+      - { label: Body, name: body, widget: hidden, default: "" }
+
+  - name: tags
+    label: Tags
+    label_singular: Tag
+    folder: src/content/tags
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    identifier_field: slug
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Slug, name: slug, widget: string, hint: "Used in /tag/[slug].html. Match post tag slugs to attach metadata and header images." }
+      - { label: Description, name: description, widget: text, required: false }
+      - { label: Header Image, name: headerImage, widget: image, required: false }
       - { label: Body, name: body, widget: hidden, default: "" }

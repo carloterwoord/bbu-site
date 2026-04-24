@@ -2,6 +2,13 @@ import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
 const navGroups = ["primary", "secondary", "utility", "none"] as const;
+const navFields = {
+  navLabel: z.string().optional(),
+  navGroup: z.enum(navGroups).default("none"),
+  navOrder: z.number().int().default(0),
+  dividerBefore: z.boolean().default(false),
+  dividerAfter: z.boolean().default(false),
+};
 const reservedPageSlugs = new Set([
   "admin",
   "error",
@@ -47,6 +54,19 @@ const categories = defineCollection({
     name: z.string(),
     slug: z.string(),
     description: z.string().default(""),
+    headerImage: z.string().default(""),
+    ...navFields,
+    icon: z.string().default("category"),
+  }),
+});
+
+const tags = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/tags" }),
+  schema: z.object({
+    name: z.string(),
+    slug: z.string(),
+    description: z.string().default(""),
+    headerImage: z.string().default(""),
   }),
 });
 
@@ -67,11 +87,7 @@ const pages = defineCollection({
     showHeader: z.boolean().default(true),
     showTitle: z.boolean().default(true),
     showExcerpt: z.boolean().default(true),
-    navLabel: z.string().optional(),
-    navGroup: z.enum(navGroups).default("none"),
-    navOrder: z.number().int().default(0),
-    dividerBefore: z.boolean().default(false),
-    dividerAfter: z.boolean().default(false),
+    ...navFields,
     icon: z.string().default("home"),
     draft: z.boolean().default(false),
   }),
@@ -81,5 +97,6 @@ export const collections = {
   posts,
   authors,
   categories,
+  tags,
   pages,
 };
