@@ -1,20 +1,137 @@
-<div x-data="{ copied: false }" class="article__footer__share__button">
-  <button
-    @click="navigator.clipboard.writeText(window.location.href).then(() => { copied = true; setTimeout(() => copied = false, 3000); }).catch(() => copied = false)"
-    aria-label="Copy the article link to clipboard"
-  >
-    <span>
-      <svg width="16" height="16" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M9.54969 4.50413V0.897461L13.4722 4.81996L16.6172 7.96496L13.4164 10.6325L9.54969 13.855V10.3258C2.76135 9.81413 0.383022 13.7425 0.383022 13.7425C0.383022 11.295 0.584688 8.75496 2.50885 6.83163C4.74552 4.59413 7.98469 4.43579 9.54969 4.50413Z"
-          fill="currentColor"
-        ></path>
-      </svg>
-    </span>
-    <span>Share</span>
-  </button>
+---
+const shareMenuData = `{
+  open: false,
+  copied: false,
+  get pageUrl() {
+    return document.querySelector('link[rel="canonical"]')?.href || window.location.href;
+  },
+  get pageTitle() {
+    return document.title || 'Built by Underdogs';
+  },
+  get shareText() {
+    return this.pageTitle + ' ' + this.pageUrl;
+  },
+  shareHref(type) {
+    const url = encodeURIComponent(this.pageUrl);
+    const title = encodeURIComponent(this.pageTitle);
+    const text = encodeURIComponent(this.shareText);
+    const emailBody = encodeURIComponent(this.pageTitle + '\\n\\n' + this.pageUrl);
+    const links = {
+      translate: 'https://translate.google.com/translate?sl=auto&tl=en&u=' + url,
+      twitter: 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title,
+      linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + url,
+      bluesky: 'https://bsky.app/intent/compose?text=' + text,
+      reddit: 'https://www.reddit.com/submit?url=' + url + '&title=' + title,
+      threads: 'https://www.threads.net/intent/post?text=' + text,
+      email: 'mailto:?subject=' + title + '&body=' + emailBody,
+      whatsapp: 'https://wa.me/?text=' + text
+    };
 
-  <p x-show="copied" x-transition.opacity..duration.100ms aria-live="polite" role="status">
-    Link copied to clipboard!
-  </p>
+    return links[type] || this.pageUrl;
+  },
+  copyLink() {
+    navigator.clipboard.writeText(this.pageUrl)
+      .then(() => {
+        this.copied = true;
+        this.open = false;
+        setTimeout(() => this.copied = false, 3000);
+      })
+      .catch(() => {
+        this.copied = false;
+      });
+  }
+}`;
+---
+
+<div
+    x-data={shareMenuData}
+    @keydown.escape.window="open = false"
+    @click.outside="open = false"
+    class="article__footer__share__button"
+>
+    <button
+        type="button"
+        class="article__footer__share__trigger"
+        @click="open = !open"
+        :aria-expanded="open.toString()"
+        aria-controls="article-share-menu"
+        aria-haspopup="true"
+        aria-label="Share this article"
+    >
+        <span aria-hidden="true">
+            <svg
+                width="16"
+                height="16"
+                viewBox="0 0 18 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M9.54969 4.50413V0.897461L13.4722 4.81996L16.6172 7.96496L13.4164 10.6325L9.54969 13.855V10.3258C2.76135 9.81413 0.383022 13.7425 0.383022 13.7425C0.383022 11.295 0.584688 8.75496 2.50885 6.83163C4.74552 4.59413 7.98469 4.43579 9.54969 4.50413Z"
+                    fill="currentColor"></path>
+            </svg>
+        </span>
+        <span>Share</span>
+    </button>
+
+    <div
+        id="article-share-menu"
+        x-cloak
+        x-show="open"
+        x-transition.opacity.duration.100ms
+        class="article__share-menu"
+    >
+        <ul aria-label="Share options">
+            <li>
+                <button type="button" @click="copyLink()">Copy link</button>
+            </li>
+            <li>
+                <a :href="shareHref('translate')" target="_blank" rel="noopener"
+                    >Translate</a
+                >
+            </li>
+            <li class="article__share-menu-separator">
+                <a :href="shareHref('twitter')" target="_blank" rel="noopener"
+                    >X/Twitter</a
+                >
+            </li>
+            <li>
+                <a :href="shareHref('linkedin')" target="_blank" rel="noopener"
+                    >LinkedIn</a
+                >
+            </li>
+            <li>
+                <a :href="shareHref('bluesky')" target="_blank" rel="noopener"
+                    >Bluesky</a
+                >
+            </li>
+            <li>
+                <a :href="shareHref('reddit')" target="_blank" rel="noopener"
+                    >Reddit</a
+                >
+            </li>
+            <li>
+                <a :href="shareHref('threads')" target="_blank" rel="noopener"
+                    >Threads</a
+                >
+            </li>
+            <li class="article__share-menu-separator">
+                <a :href="shareHref('email')">Email</a>
+            </li>
+            <li>
+                <a :href="shareHref('whatsapp')" target="_blank" rel="noopener"
+                    >WhatsApp</a
+                >
+            </li>
+        </ul>
+    </div>
+
+    <p
+        x-show="copied"
+        x-transition.opacity.duration.100ms
+        aria-live="polite"
+        role="status"
+    >
+        Link copied to clipboard!
+    </p>
 </div>

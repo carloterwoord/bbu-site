@@ -1530,9 +1530,42 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     text-decoration: none;
 }
 
+.article--preview .article__headline__link h2 {
+    color: var(--color-black);
+    text-decoration: none;
+}
+
+.article--preview {
+    position: relative;
+}
+
+.article__preview-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.article--preview .article__headline > div:first-child,
+.article--preview .article__headline__link,
+.article--preview .article__cover-wrapper,
+.article--preview .article__content-preview,
+.article--preview .article__keep-reading {
+    position: relative;
+    z-index: 2;
+}
+
+.article--preview .article__headline__link,
+.article--preview .article__cover-wrapper,
+.article--preview .article__content-preview,
+.article--preview .article__keep-reading {
+    pointer-events: none;
+}
+
 @media (hover: hover) {
     .article__headline__link a:focus,
-    .article__headline__link a:hover {
+    .article__headline__link a:hover,
+    .article--preview:hover .article__headline__link h2,
+    .article--preview:focus-within .article__headline__link h2 {
         color: var(--color-blue);
         text-decoration: underline;
         text-underline-offset: 0.15em;
@@ -1864,8 +1897,11 @@ strong {
 
 @media (hover: hover) {
     .article__keep-reading a:hover,
-    .article__keep-reading a:focus {
+    .article__keep-reading a:focus,
+    .article--preview:hover .article__keep-reading--preview a,
+    .article--preview:focus-within .article__keep-reading--preview a {
         border-top: 0.09375em solid var(--color-black);
+        color: var(--color-black);
         text-decoration: none;
     }
 }
@@ -1920,32 +1956,37 @@ strong {
     justify-content: center;
     border: 0.09375rem solid oklch(var(--lch-coal) / 0.1);
     border-radius: calc(infinity * 1px);
-    padding: 0.35em 0.75em;
+    padding: 0.35em 1em;
 }
 
 @media (hover: hover) {
-    .article__footer__share__button button,
+    .article__footer__share__trigger,
     .article__footer__tags-item {
         transition: var(--transition);
     }
 
     .article__footer__tags a:hover,
     .article__footer__tags a:focus-visible,
-    .article__footer__share__button button:hover,
-    .article__footer__share__button button:focus-visible {
+    .article__footer__share__trigger:hover,
+    .article__footer__share__trigger:focus-visible {
         border-color: var(--color-black);
         color: var(--color-black);
     }
+}
+
+[x-cloak] {
+    display: none !important;
 }
 
 .article__footer__share__button {
     display: flex;
     gap: 0.8em;
     align-items: center;
+    position: relative;
 }
 
-.article__footer__share__button button {
-    display: block;
+.article__footer__share__trigger {
+    display: flex;
     gap: 0.4em;
     cursor: pointer;
     color: oklch(var(--lch-coal) / 0.7);
@@ -1961,15 +2002,78 @@ strong {
     color: oklch(var(--lch-coal) / 0.5);
 }
 
-.article__footer__share__button button span {
+.article__footer__share__trigger span {
     display: inline-block;
 }
 
-.article__footer__share__button button svg {
+.article__footer__share__trigger svg {
     width: var(--space-base);
     height: var(--space-base);
     flex-shrink: 0;
     display: block;
+}
+
+.article__share-menu {
+    position: absolute;
+    top: calc(100% + 0.4em);
+    left: 0;
+    z-index: 20;
+    min-width: 10em;
+    overflow: hidden;
+    background: var(--color-white);
+    border: 0.0625rem solid oklch(var(--lch-coal) / 0.1);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5em 1.5em oklch(var(--lch-black) / 0.08);
+}
+
+.article__share-menu ul {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.article__share-menu li {
+    list-style: none;
+    margin: 0;
+    padding: 0.25em;
+}
+
+.article__share-menu-separator {
+    border-top: 0.0625rem solid oklch(var(--lch-coal) / 0.1);
+    padding-top: 0.25em !important;
+}
+
+.article__share-menu a,
+.article__share-menu button {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-black);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-base);
+    line-height: var(--line-height-base);
+    padding: 0.6em 1em;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+@media (hover: hover) {
+    .article__share-menu a:hover,
+    .article__share-menu a:focus-visible,
+    .article__share-menu button:hover,
+    .article__share-menu button:focus-visible {
+        background: oklch(var(--lch-coal) / 0.06);
+        color: var(--color-black);
+        text-decoration: none;
+        border-radius: 0.125rem;
+    }
 }
 
 .article__footer__divider {
@@ -2248,14 +2352,14 @@ html[data-theme="dark"] .search-form .search-submit {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-auto-rows: auto;
-    gap: var(--space-3xl) var(--space-lg);
+    gap: calc(var(--space-3xl) / 2) calc(var(--space-lg) / 2);
     align-items: start;
 }
 
 @media (max-width: 1080px) {
     .search__results__container {
         grid-template-columns: 1fr;
-        gap: var(--space-2xl);
+        gap: calc(var(--space-2xl) / 2);
     }
 }
 
@@ -2272,10 +2376,17 @@ html[data-theme="dark"] .search-form .search-submit {
 }
 
 .search__results__item .article {
+    gap: calc(var(--space-base) / 2);
     max-width: none;
     margin: 0 !important;
     padding: 0;
     width: 100%;
+}
+
+.search__results__item .article__headline time,
+.search__results__item .article__headline p,
+.search__results__item .article__headline span {
+    margin-bottom: 0.5em;
 }
 
 .search__results__item .article__headline h2 {
@@ -2304,6 +2415,11 @@ html[data-theme="dark"] .search-form .search-submit {
 
 .search__results__item .article__content-preview {
     min-height: 7.5rem;
+    margin-top: calc(var(--space-base) / 2) !important;
+}
+
+.search__results__item .article__keep-reading {
+    margin-top: calc(var(--space-base) / 2);
 }
 
 .search__results__item .article__content-preview > *:not(:first-child) {
@@ -2320,6 +2436,10 @@ html[data-theme="dark"] .search-form .search-submit {
 
 .search__results__item .article__cover {
     height: clamp(11rem, 20vw, 14rem);
+}
+
+.search__results__item .article__cover-wrapper {
+    margin-top: calc(var(--space-lg) / 2);
 }
 
 .search__results__item .article__cover img {

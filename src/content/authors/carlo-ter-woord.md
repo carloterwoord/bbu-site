@@ -4,7 +4,7 @@ slug: carlo-ter-woord
 bio: Maker and breaker of things. Writes occasionally. Fascinated by underdogs and simplicity.
 avatar: /uploads/profiel-foto-klein-675x675.jpeg
 socialLinks:
-  - label: Twitter
+  - label: X/Twitter
     url: '#'
   - label: LinkedIn
     url: '#'
