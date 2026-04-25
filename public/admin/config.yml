@@ -18,12 +18,20 @@ collections:
     create: true
     extension: md
     format: frontmatter
-    slug: "{{slug}}"
-    identifier_field: slug
+    slug: "{{title}}"
+    identifier_field: title
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Slug, name: slug, widget: string, hint: "Used in /post/[slug].html" }
-      - { label: Date, name: date, widget: datetime, date_format: YYYY-MM-DD, time_format: false }
+      - { label: Slug, name: slug, widget: hidden, default: "" }
+      - {
+          label: Publish Date,
+          name: date,
+          widget: datetime,
+          date_format: YYYY-MM-DD,
+          time_format: HH:mm,
+          picker_utc: false,
+          hint: "Future dates schedule the post. Scheduled posts are excluded until the site is rebuilt after this date/time."
+        }
       - { label: Excerpt, name: excerpt, widget: text }
       - {
           label: Author,
@@ -63,6 +71,42 @@ collections:
           required: false,
           hint: "Choose posts for the related-posts footer. Leave empty to use automatic related posts."
         }
+      - label: SEO & GEO
+        name: seo
+        widget: object
+        required: false
+        collapsed: true
+        summary: "{{fields.title}}"
+        fields:
+          - { label: SEO Title, name: title, widget: string, required: false, hint: "Defaults to the post title." }
+          - { label: Meta Description, name: description, widget: text, required: false, hint: "Defaults to the post excerpt. Keep this clear and specific." }
+          - { label: Canonical URL, name: canonicalUrl, widget: string, required: false, hint: "Optional absolute URL. Leave empty to use this post URL." }
+          - { label: Keywords, name: keywords, widget: list, required: false, hint: "Optional. Use focused topics, not a large keyword dump." }
+          - { label: Noindex, name: noindex, widget: boolean, default: false, required: false }
+          - { label: Nofollow, name: nofollow, widget: boolean, default: false, required: false }
+          - { label: Open Graph Title, name: openGraphTitle, widget: string, required: false, hint: "Defaults to the SEO title." }
+          - { label: Open Graph Description, name: openGraphDescription, widget: text, required: false, hint: "Defaults to the meta description." }
+          - { label: Open Graph Image, name: openGraphImage, widget: image, required: false, hint: "Defaults to the cover image." }
+          - { label: Twitter Title, name: twitterTitle, widget: string, required: false, hint: "Defaults to the Open Graph title." }
+          - { label: Twitter Description, name: twitterDescription, widget: text, required: false, hint: "Defaults to the Open Graph description." }
+          - { label: Twitter Image, name: twitterImage, widget: image, required: false, hint: "Defaults to the Open Graph image." }
+          - {
+              label: Structured Data Type,
+              name: structuredDataType,
+              widget: select,
+              default: BlogPosting,
+              options: [BlogPosting, Article, NewsArticle]
+            }
+          - { label: GEO Summary, name: geoSummary, widget: text, required: false, hint: "Concise answer-engine summary. Defaults to the meta description." }
+          - { label: GEO Key Takeaways, name: geoKeyTakeaways, widget: list, required: false, hint: "Short, direct takeaways useful for AI answer engines." }
+          - label: FAQ
+            name: faq
+            widget: list
+            required: false
+            summary: "{{fields.question}}"
+            fields:
+              - { label: Question, name: question, widget: string }
+              - { label: Answer, name: answer, widget: text }
       - { label: Draft, name: draft, widget: boolean, default: false }
       - {
           label: Body,

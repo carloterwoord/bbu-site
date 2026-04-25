@@ -1,17 +1,62 @@
 ---
 import SiteNav from "../components/SiteNav.astro";
 import { withBase } from "../lib/paths";
+import {
+  defaultSocialImageUrl,
+  siteDescription,
+  siteTitle,
+  siteUrl,
+} from "../lib/site";
 import { ClientRouter } from "astro:transitions";
+
+type SeoMetadata = {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+  image?: string;
+  openGraphTitle?: string;
+  openGraphDescription?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+  type?: string;
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  keywords?: string[];
+  robots?: string;
+  jsonLd?: unknown;
+};
 
 interface Props {
   title?: string;
   showNav?: boolean;
+  metadata?: SeoMetadata;
 }
 
 const {
   title = "Built by Underdogs - Static Website",
   showNav = true,
+  metadata,
 } = Astro.props;
+
+const pageTitle = metadata?.title || title;
+const description = metadata?.description?.trim() || siteDescription;
+const canonicalUrl =
+  metadata?.canonicalUrl?.trim() ||
+  new URL(Astro.url.pathname, siteUrl).toString();
+const image = metadata?.image?.trim() || defaultSocialImageUrl;
+const openGraphTitle = metadata?.openGraphTitle?.trim() || pageTitle;
+const openGraphDescription = metadata?.openGraphDescription?.trim() || description;
+const twitterTitle = metadata?.twitterTitle?.trim() || openGraphTitle;
+const twitterDescription =
+  metadata?.twitterDescription?.trim() || openGraphDescription;
+const twitterImage = metadata?.twitterImage?.trim() || image;
+const robots = metadata?.robots?.trim();
+const keywords = metadata?.keywords?.filter(Boolean).join(", ");
+const jsonLd = metadata?.jsonLd
+  ? JSON.stringify(metadata.jsonLd).replace(/</g, "\\u003c")
+  : "";
 ---
 
 <!doctype html>
@@ -19,7 +64,25 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {robots && <meta name="robots" content={robots} />}
+    {keywords && <meta name="keywords" content={keywords} />}
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:title" content={openGraphTitle} />
+    {openGraphDescription && <meta property="og:description" content={openGraphDescription} />}
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:type" content={metadata?.type ?? "website"} />
+    {image && <meta property="og:image" content={image} />}
+    {metadata?.publishedTime && <meta property="article:published_time" content={metadata.publishedTime} />}
+    {metadata?.modifiedTime && <meta property="article:modified_time" content={metadata.modifiedTime} />}
+    {metadata?.author && <meta property="article:author" content={metadata.author} />}
+    <meta name="twitter:card" content={twitterImage ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={twitterTitle} />
+    {twitterDescription && <meta name="twitter:description" content={twitterDescription} />}
+    {twitterImage && <meta name="twitter:image" content={twitterImage} />}
+    {jsonLd && <script is:inline type="application/ld+json" set:html={jsonLd}></script>}
     <ClientRouter />
     <script is:inline>
       (() => {

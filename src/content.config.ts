@@ -2,6 +2,7 @@ import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
 const navGroups = ["primary", "secondary", "utility", "none"] as const;
+const structuredDataTypes = ["BlogPosting", "Article", "NewsArticle"] as const;
 const navFields = {
   navLabel: z.string().optional(),
   navGroup: z.enum(navGroups).default("none"),
@@ -14,24 +15,90 @@ const reservedPageSlugs = new Set([
   "error",
 ]);
 
+function normalizeSlug(value: string) {
+  const slug = value
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || "untitled";
+}
+
+const defaultPostSeo = {
+  title: "",
+  description: "",
+  canonicalUrl: "",
+  keywords: [],
+  noindex: false,
+  nofollow: false,
+  openGraphTitle: "",
+  openGraphDescription: "",
+  openGraphImage: "",
+  twitterTitle: "",
+  twitterDescription: "",
+  twitterImage: "",
+  geoSummary: "",
+  geoKeyTakeaways: [],
+  faq: [],
+  structuredDataType: "BlogPosting" as const,
+};
+
+const postSeoSchema = z
+  .object({
+    title: z.string().default(""),
+    description: z.string().default(""),
+    canonicalUrl: z.string().default(""),
+    keywords: z.array(z.string()).default([]),
+    noindex: z.boolean().default(false),
+    nofollow: z.boolean().default(false),
+    openGraphTitle: z.string().default(""),
+    openGraphDescription: z.string().default(""),
+    openGraphImage: z.string().default(""),
+    twitterTitle: z.string().default(""),
+    twitterDescription: z.string().default(""),
+    twitterImage: z.string().default(""),
+    geoSummary: z.string().default(""),
+    geoKeyTakeaways: z.array(z.string()).default([]),
+    faq: z
+      .array(
+        z.object({
+          question: z.string(),
+          answer: z.string(),
+        })
+      )
+      .default([]),
+    structuredDataType: z.enum(structuredDataTypes).default("BlogPosting"),
+  })
+  .default(defaultPostSeo);
+
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/posts" }),
-  schema: z.object({
-    title: z.string(),
-    slug: z.string(),
-    date: z.coerce.date(),
-    excerpt: z.string(),
-    author: z.string(),
-    categories: z.array(z.string()).default([]),
-    tags: z.array(z.string()).default([]),
-    coverImage: z.string().default(""),
-    readTime: z.string().default(""),
-    showTableOfContents: z.boolean().default(true),
-    showRelatedPosts: z.boolean().default(true),
-    relatedPostsHeading: z.string().default("Related posts"),
-    relatedPosts: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
-  }),
+  schema: z
+    .object({
+      title: z.string(),
+      slug: z.string().default(""),
+      date: z.coerce.date(),
+      excerpt: z.string(),
+      author: z.string(),
+      categories: z.array(z.string()).default([]),
+      tags: z.array(z.string()).default([]),
+      coverImage: z.string().default(""),
+      readTime: z.string().default(""),
+      showTableOfContents: z.boolean().default(true),
+      showRelatedPosts: z.boolean().default(true),
+      relatedPostsHeading: z.string().default("Related posts"),
+      relatedPosts: z.array(z.string()).default([]),
+      draft: z.boolean().default(false),
+      seo: postSeoSchema,
+    })
+    .transform((data) => ({
+      ...data,
+      slug: normalizeSlug(data.slug || data.title),
+    })),
 });
 
 const authors = defineCollection({

@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PUBLIC_SITE_URL: https://www.buildbyunderdogs.com
 
     steps:
       - name: Checkout

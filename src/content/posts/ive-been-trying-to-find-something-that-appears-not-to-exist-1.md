@@ -14,6 +14,7 @@ tags:
   - First principles
 coverImage: https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop
 readTime: 4 min read
+relatedPostsHeading: ''
 draft: false
 ---
 

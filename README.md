@@ -21,6 +21,28 @@ npm run check
 npm run build
 ```
 
+Set the production URL for canonical links, sitemap URLs, and structured data:
+
+```bash
+PUBLIC_SITE_URL=https://www.buildbyunderdogs.com
+```
+
+## Scheduled Publishing
+
+Posts with a future `Publish Date` are excluded from generated pages until a
+build runs after that date/time.
+
+This repo includes `.github/workflows/scheduled-rebuild.yml`, which runs hourly
+and triggers a Vercel rebuild through a deploy hook. Add this GitHub Actions
+secret before relying on scheduled posts:
+
+```text
+VERCEL_DEPLOY_HOOK_URL
+```
+
+Create the hook in Vercel for this project, then paste the hook URL into that
+secret.
+
 ## Content Collections
 
 Collections are defined in `src/content.config.ts`:

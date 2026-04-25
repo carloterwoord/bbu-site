@@ -10,6 +10,7 @@ import {
   getPostHref,
   getResolvedPosts,
 } from "../../lib/content";
+import { defaultSocialImageUrl, siteTitle, siteUrl } from "../../lib/site";
 
 export async function getStaticPaths() {
   const posts = await getResolvedPosts();
@@ -64,9 +65,102 @@ const relatedHeading =
   post.entry.data.relatedPostsHeading?.trim() || "Related posts";
 const shouldShowRelatedPosts =
   (post.entry.data.showRelatedPosts ?? true) && related.length > 0;
+const seo = post.entry.data.seo ?? {};
+const seoKeywords = seo.keywords ?? [];
+const geoKeyTakeaways = seo.geoKeyTakeaways ?? [];
+const faq = seo.faq ?? [];
+const absoluteUrl = (value: string) => {
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  return new URL(value.startsWith("/") ? value : `/${value}`, siteUrl).toString();
+};
+const postUrl = absoluteUrl(getPostHref(post.entry.data.slug));
+const seoTitle = seo.title?.trim() || post.entry.data.title;
+const metaTitle = `${seoTitle} - ${siteTitle}`;
+const metaDescription =
+  seo.description?.trim() || post.entry.data.excerpt.trim();
+const canonicalUrl = seo.canonicalUrl?.trim() || postUrl;
+const socialTitle = seo.openGraphTitle?.trim() || seoTitle;
+const socialDescription =
+  seo.openGraphDescription?.trim() || metaDescription;
+const twitterTitle = seo.twitterTitle?.trim() || socialTitle;
+const twitterDescription =
+  seo.twitterDescription?.trim() || socialDescription;
+const socialImage = absoluteUrl(
+  seo.openGraphImage?.trim() ||
+  seo.twitterImage?.trim() ||
+  post.entry.data.coverImage ||
+  defaultSocialImageUrl
+);
+const twitterImage = absoluteUrl(
+  seo.twitterImage?.trim() || socialImage
+);
+const robots = [
+  seo.noindex ? "noindex" : "index",
+  seo.nofollow ? "nofollow" : "follow",
+].join(", ");
+const keywords = [
+  ...seoKeywords,
+  ...post.entry.data.tags,
+].filter(Boolean);
+const geoSummary = seo.geoSummary?.trim() || metaDescription;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": seo.structuredDataType || "BlogPosting",
+  headline: seoTitle,
+  description: metaDescription,
+  abstract: geoSummary,
+  url: canonicalUrl,
+  datePublished: post.entry.data.date.toISOString(),
+  dateModified: post.entry.data.date.toISOString(),
+  author: {
+    "@type": "Person",
+    name: authorName,
+    url: authorHref ? absoluteUrl(authorHref) : undefined,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: siteTitle,
+    url: siteUrl,
+  },
+  image: socialImage || undefined,
+  keywords: keywords.length > 0 ? keywords.join(", ") : undefined,
+  about: geoKeyTakeaways.length > 0 ? geoKeyTakeaways : undefined,
+  mainEntity:
+    faq.length > 0
+      ? faq.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
+          },
+        }))
+      : undefined,
+};
 ---
 
-<BaseLayout title={`${post.entry.data.title} - Built by Underdogs`}>
+<BaseLayout
+  title={metaTitle}
+  metadata={{
+    title: metaTitle,
+    description: metaDescription,
+    canonicalUrl,
+    image: socialImage,
+    openGraphTitle: socialTitle,
+    openGraphDescription: socialDescription,
+    twitterTitle,
+    twitterDescription,
+    twitterImage,
+    type: "article",
+    publishedTime: post.entry.data.date.toISOString(),
+    modifiedTime: post.entry.data.date.toISOString(),
+    author: authorName,
+    keywords,
+    robots,
+    jsonLd,
+  }}
+>
   <main class="main">
     <PostArticle
       post={post.entry}
