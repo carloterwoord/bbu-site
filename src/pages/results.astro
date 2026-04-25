@@ -9,6 +9,7 @@ import {
   getResolvedPosts,
   getTaxonomySlug,
 } from "../lib/content";
+import { getPostPreviewHtml } from "../lib/preview";
 
 const posts = await getResolvedPosts();
 const RESULTS_PER_PAGE = 6;
@@ -38,11 +39,6 @@ function textFromMarkdown(value: string) {
     .trim();
 }
 
-function truncate(value: string, maxLength = 260) {
-  if (value.length <= maxLength) return value;
-  return value.slice(0, maxLength).trimEnd().replace(/[,\s]+$/g, "");
-}
-
 const resultItems = posts.map((post) => {
   const firstCategory = post.categories[0];
   const categoryLabel = firstCategory?.data.name ?? "Category";
@@ -51,7 +47,11 @@ const resultItems = posts.map((post) => {
   const month = post.entry.data.date.getMonth() + 1;
   const excerptText = textFromHtml(post.entry.data.excerpt);
   const bodyText = textFromMarkdown(post.entry.body ?? "");
-  const previewText = truncate(excerptText || bodyText);
+  const previewHtml = getPostPreviewHtml(
+    post.entry.body,
+    post.entry.data.excerpt,
+    1
+  );
   const tagSlugs = post.entry.data.tags.map(getTaxonomySlug);
   const searchText = [
     post.entry.data.title,
@@ -72,14 +72,18 @@ const resultItems = posts.map((post) => {
     categoryLabel,
     categoryHref,
     authorSlug: post.author?.data.slug ?? "",
-    authorName: post.author?.data.name ?? "",
     year: String(year),
     month: `${year}-${String(month).padStart(2, "0")}`,
     tagSlugs: tagSlugs.join(" "),
     searchText,
-    previewText,
+    previewHtml,
   };
 });
+
+const resultItemsJson = JSON.stringify(resultItems)
+  .replace(/</g, "\\u003c")
+  .replace(/\u2028/g, "\\u2028")
+  .replace(/\u2029/g, "\\u2029");
 ---
 
 <BaseLayout title="Results - Built by Underdogs">
@@ -90,59 +94,23 @@ const resultItems = posts.map((post) => {
           <h1 data-results-title>Results</h1>
         </header>
         <article>
-          <p data-results-summary>Showing all posts.</p>
+          <p data-results-summary>No posts found.</p>
         </article>
       </div>
     </div>
 
-    <div class="page page__content space-top--xl space-bottom--4xl">
+    <div class="page page__content page__content--search-results space-top--xl space-bottom--4xl">
       <SearchForm />
 
-      <div
-        class="search__results__container"
-        data-search-results
+      <script
+        is:inline
+        type="application/json"
+        data-search-results-data
         data-page-size={RESULTS_PER_PAGE}
-      >
-        {resultItems.map((item, index) => (
-          <>
-            <div
-              class="search__results__item"
-              data-search-item
-              data-search-text={item.searchText}
-              data-tags={item.tagSlugs}
-              data-author={item.authorSlug}
-              data-year={item.year}
-              data-month={item.month}
-            >
-              <header class="search__results__item__headline">
-                <div>
-                  <time datetime={item.dateISO}>
-                    <a href={item.dateHref}>{item.dateLabel}</a>
-                  </time>
-                  <span>•</span>
-                  <p><a href={item.categoryHref}>{item.categoryLabel}</a></p>
-                </div>
-                <a href={item.href}><h2>{item.title}</h2></a>
-                {item.coverImage && (
-                  <picture>
-                    <img src={item.coverImage} alt="Cover Image" loading="lazy" />
-                  </picture>
-                )}
-              </header>
-              <article>
-                <p class="article__excerpt">{item.previewText}</p>
-                <a href={item.href} class="article__keep-reading">keep reading</a>
-              </article>
-            </div>
+        set:html={resultItemsJson}
+      ></script>
 
-            {index < resultItems.length - 1 && (
-              <hr class="search__results__item__divider" data-search-divider />
-            )}
-          </>
-        ))}
-      </div>
-
-      <p class="search__results-empty" data-search-empty hidden>
+      <p class="search__results-empty" data-search-empty>
         No posts matched this search.
       </p>
 
@@ -151,212 +119,4 @@ const resultItems = posts.map((post) => {
     </div>
   </main>
 
-  <script is:inline>
-    (() => {
-      const normalize = (value) =>
-        value
-          .toLowerCase()
-          .normalize("NFKD")
-          .replace(/[\u0300-\u036f]/g, "");
-      const slugify = (value) =>
-        normalize(value)
-          .trim()
-          .replace(/&/g, " and ")
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "");
-
-      const params = new URLSearchParams(window.location.search);
-      const query = (params.get("q") || "").trim();
-      const tag = slugify(params.get("tag") || "");
-      const author = slugify(params.get("author") || "");
-      const year = (params.get("year") || "").trim();
-      const month = (params.get("month") || "").trim();
-      const terms = normalize(query).split(/\s+/).filter(Boolean);
-
-      const title = document.querySelector("[data-results-title]");
-      const summary = document.querySelector("[data-results-summary]");
-      const empty = document.querySelector("[data-search-empty]");
-      const input = document.querySelector('.search-form input[name="q"]');
-      const resultsContainer = document.querySelector("[data-search-results]");
-      const paginationDivider = document.querySelector("[data-results-pagination-divider]");
-      const paginationContainer = document.querySelector("[data-results-pagination]");
-      const items = Array.from(document.querySelectorAll("[data-search-item]"));
-      const pageSize = Number(resultsContainer?.dataset.pageSize || 6);
-      const requestedPage = Math.max(1, Math.floor(Number(params.get("page")) || 1));
-
-      if (input instanceof HTMLInputElement && query) {
-        input.value = query;
-      }
-
-      const label =
-        query ||
-        (tag ? tag.replace(/-/g, " ") : "") ||
-        (author ? author.replace(/-/g, " ") : "") ||
-        month ||
-        year;
-
-      if (title) {
-        title.textContent = label ? `Results for: ${label}` : "Results";
-      }
-
-      let matches = 0;
-      const visibleItems = [];
-      const dividers = Array.from(
-        document.querySelectorAll("[data-search-divider]")
-      );
-
-      for (const divider of dividers) {
-        divider.hidden = true;
-      }
-
-      for (const item of items) {
-        const searchText = normalize(item.dataset.searchText || "");
-        const tags = (item.dataset.tags || "").split(/\s+/).filter(Boolean);
-        const itemAuthor = item.dataset.author || "";
-        const itemYear = item.dataset.year || "";
-        const itemMonth = item.dataset.month || "";
-
-        const matchesQuery =
-          terms.length === 0 || terms.every((term) => searchText.includes(term));
-        const matchesTag = !tag || tags.includes(tag);
-        const matchesAuthor = !author || itemAuthor === author;
-        const matchesYear = !year || itemYear === year;
-        const matchesMonth = !month || itemMonth === month;
-        const isMatch =
-          matchesQuery &&
-          matchesTag &&
-          matchesAuthor &&
-          matchesYear &&
-          matchesMonth;
-
-        item.hidden = true;
-        if (isMatch) {
-          matches += 1;
-          visibleItems.push(item);
-        }
-      }
-
-      const totalPages = Math.max(1, Math.ceil(visibleItems.length / pageSize));
-      const currentPage = Math.min(requestedPage, totalPages);
-      const pageStart = (currentPage - 1) * pageSize;
-      const pagedItems = visibleItems.slice(pageStart, pageStart + pageSize);
-
-      for (const item of pagedItems) {
-        item.hidden = false;
-      }
-
-      for (const item of pagedItems.slice(0, -1)) {
-        const divider = item.nextElementSibling;
-        if (divider?.hasAttribute("data-search-divider")) {
-          divider.hidden = false;
-        }
-      }
-
-      if (summary) {
-        if (matches === 1) {
-          summary.textContent = "1 post found.";
-        } else if (totalPages > 1) {
-          const pageEnd = pageStart + pagedItems.length;
-          summary.textContent = `Showing ${pageStart + 1}-${pageEnd} of ${matches} posts.`;
-        } else if (label) {
-          summary.textContent = `${matches} posts found.`;
-        } else {
-          summary.textContent = `Showing ${matches} posts.`;
-        }
-      }
-
-      if (empty) empty.hidden = matches !== 0;
-
-      const getPageUrl = (page) => {
-        const nextParams = new URLSearchParams(window.location.search);
-        if (page <= 1) {
-          nextParams.delete("page");
-        } else {
-          nextParams.set("page", String(page));
-        }
-        const queryString = nextParams.toString();
-        return `${window.location.pathname}${queryString ? `?${queryString}` : ""}`;
-      };
-      const createButton = (page, label, className, disabled = false) => {
-        const element = document.createElement(disabled ? "span" : "a");
-        element.className = `pagination__button ${className}${
-          disabled ? " pagination__button--disabled" : ""
-        }`;
-        if (disabled) {
-          element.setAttribute("aria-disabled", "true");
-        } else {
-          element.setAttribute("href", getPageUrl(page));
-        }
-        element.append(label);
-        return element;
-      };
-
-      if (paginationContainer) {
-        paginationContainer.replaceChildren();
-        paginationContainer.hidden = totalPages <= 1;
-        if (paginationDivider) paginationDivider.hidden = totalPages <= 1;
-
-        if (totalPages > 1) {
-          const inner = document.createElement("div");
-          inner.className = "page__pagination";
-
-          const nav = document.createElement("nav");
-          nav.className = "pagination";
-          nav.setAttribute("aria-label", "Results pagination");
-
-          const previousLabel = document.createDocumentFragment();
-          previousLabel.append("← ");
-          const previousText = document.createElement("span");
-          previousText.className = "pagination__button__text";
-          previousText.textContent = "Previous";
-          previousLabel.append(previousText);
-
-          nav.append(
-            createButton(
-              currentPage - 1,
-              previousLabel,
-              "pagination__button--prev",
-              currentPage === 1
-            )
-          );
-
-          const list = document.createElement("ul");
-          list.className = "pagination__list";
-
-          for (let page = 1; page <= totalPages; page += 1) {
-            const listItem = document.createElement("li");
-            const link = document.createElement("a");
-            link.href = getPageUrl(page);
-            link.className = `pagination__link${
-              page === currentPage ? " pagination__link--active" : ""
-            }`;
-            if (page === currentPage) link.setAttribute("aria-current", "page");
-            link.textContent = String(page);
-            listItem.append(link);
-            list.append(listItem);
-          }
-
-          nav.append(list);
-
-          const nextLabel = document.createDocumentFragment();
-          const nextText = document.createElement("span");
-          nextText.className = "pagination__button__text";
-          nextText.textContent = "Next";
-          nextLabel.append(nextText, " →");
-
-          nav.append(
-            createButton(
-              currentPage + 1,
-              nextLabel,
-              "pagination__button--next",
-              currentPage === totalPages
-            )
-          );
-
-          inner.append(nav);
-          paginationContainer.append(inner);
-        }
-      }
-    })();
-  </script>
 </BaseLayout>
