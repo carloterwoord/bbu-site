@@ -5,6 +5,7 @@ import ArticleMeta from "./ArticleMeta.astro";
 import AuthorByline from "./AuthorByline.astro";
 import TagList from "./TagList.astro";
 import ShareButton from "./ShareButton.astro";
+import ProgressiveImage from "./ProgressiveImage.astro";
 import { formatDate, getArchiveMonthHref, getCategoryHref } from "../lib/content";
 import { getAvatarAlt, getPostCoverAlt } from "../lib/images";
 
@@ -53,7 +54,7 @@ const resolvedAuthorAvatarAlt = getAvatarAlt(authorAvatarAlt, authorName);
 {post.data.coverImage && (
   <div class="page__cover-wrapper">
     <div class="page__cover">
-      <img src={post.data.coverImage} alt={coverImageAlt} />
+      <ProgressiveImage src={post.data.coverImage} alt={coverImageAlt} loading="eager" />
     </div>
   </div>
 )}

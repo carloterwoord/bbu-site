@@ -1254,6 +1254,13 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     aspect-ratio: 16 / 9;
 }
 
+.article__cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .page__cover {
     height: clamp(12em, 30vw, 16em);
     aspect-ratio: 16 / 9;
@@ -1265,6 +1272,31 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     height: auto;
     max-height: 32em;
     object-fit: cover;
+}
+
+.progressive-image {
+    opacity: 0.88;
+    filter: blur(1rem);
+    transform: scale(1.025);
+    transform-origin: center;
+    transition:
+        opacity 0.45s ease,
+        filter 0.45s ease,
+        transform 0.45s ease;
+    will-change: opacity, filter, transform;
+}
+
+.progressive-image--loaded {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .progressive-image {
+        transition: none;
+        transform: none;
+    }
 }
 
 .page__header-wrapper {

@@ -1,4 +1,6 @@
 ---
+import ProgressiveImage from "./ProgressiveImage.astro";
+
 interface Props {
   src: string;
   alt: string;
@@ -10,7 +12,7 @@ const { src, alt } = Astro.props;
 {src && (
   <div class="article__cover-wrapper">
     <div class="article__cover">
-      <img src={src} alt={alt} loading="lazy" />
+      <ProgressiveImage src={src} alt={alt} />
     </div>
   </div>
 )}

@@ -1,4 +1,6 @@
 ---
+import ProgressiveImage from "./ProgressiveImage.astro";
+
 interface Props {
   title: string;
   description?: string;
@@ -24,7 +26,7 @@ const headerClass = [
 
 <div class={headerClass}>
   {image && (
-    <img class="page__header-image" src={image} alt={imageAlt} loading="lazy" />
+    <ProgressiveImage className="page__header-image" src={image} alt={imageAlt} />
   )}
   <div class="page__header">
     <header>

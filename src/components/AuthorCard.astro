@@ -1,4 +1,5 @@
 ---
+import ProgressiveImage from "./ProgressiveImage.astro";
 import { getAvatarAlt } from "../lib/images";
 
 interface SocialLink {
@@ -21,7 +22,7 @@ const resolvedAvatarAlt = getAvatarAlt(avatarAlt, name);
 <header class="author">
   <div class="author__header">
     <figure class="author__avatar">
-      <img src={avatar} alt={resolvedAvatarAlt} />
+      <ProgressiveImage src={avatar} alt={resolvedAvatarAlt} />
     </figure>
     <div>
       <h2>

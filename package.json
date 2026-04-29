@@ -25,7 +25,9 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "@sveltia/cms": "0.156.3",
+    "@types/node": "^22.19.17",
     "astro": "6.1.9",
+    "sharp": "^0.34.5",
     "typescript": "5.9.3"
   }
 }

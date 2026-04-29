@@ -9,6 +9,7 @@ import {
   getResolvedPosts,
   getTaxonomySlug,
 } from "../lib/content";
+import { getProgressiveImagePlaceholder } from "../lib/images";
 import { getPostPreviewHtml } from "../lib/preview";
 
 const posts = await getResolvedPosts();
@@ -39,47 +40,52 @@ function textFromMarkdown(value: string) {
     .trim();
 }
 
-const resultItems = posts.map((post) => {
-  const firstCategory = post.categories[0];
-  const categoryLabel = firstCategory?.data.name ?? "Category";
-  const categoryHref = getCategoryHref(firstCategory?.data.slug ?? "category");
-  const year = post.entry.data.date.getFullYear();
-  const month = post.entry.data.date.getMonth() + 1;
-  const excerptText = textFromHtml(post.entry.data.excerpt);
-  const bodyText = textFromMarkdown(post.entry.body ?? "");
-  const previewHtml = getPostPreviewHtml(
-    post.entry.body,
-    post.entry.data.excerpt,
-    1
-  );
-  const tagSlugs = post.entry.data.tags.map(getTaxonomySlug);
-  const searchText = [
-    post.entry.data.title,
-    excerptText,
-    bodyText,
-    post.entry.data.tags.join(" "),
-    categoryLabel,
-    post.author?.data.name ?? "",
-  ].join(" ");
+const resultItems = await Promise.all(
+  posts.map(async (post) => {
+    const firstCategory = post.categories[0];
+    const categoryLabel = firstCategory?.data.name ?? "Category";
+    const categoryHref = getCategoryHref(firstCategory?.data.slug ?? "category");
+    const year = post.entry.data.date.getFullYear();
+    const month = post.entry.data.date.getMonth() + 1;
+    const excerptText = textFromHtml(post.entry.data.excerpt);
+    const bodyText = textFromMarkdown(post.entry.body ?? "");
+    const previewHtml = getPostPreviewHtml(
+      post.entry.body,
+      post.entry.data.excerpt,
+      1
+    );
+    const tagSlugs = post.entry.data.tags.map(getTaxonomySlug);
+    const searchText = [
+      post.entry.data.title,
+      excerptText,
+      bodyText,
+      post.entry.data.tags.join(" "),
+      categoryLabel,
+      post.author?.data.name ?? "",
+    ].join(" ");
 
-  return {
-    title: post.entry.data.title,
-    href: getPostHref(post.entry.data.slug),
-    coverImage: post.entry.data.coverImage,
-    coverImageAlt: post.entry.data.coverImageAlt,
-    dateISO: post.entry.data.date.toISOString().slice(0, 10),
-    dateLabel: formatDate(post.entry.data.date),
-    dateHref: getArchiveMonthHref(year, month),
-    categoryLabel,
-    categoryHref,
-    authorSlug: post.author?.data.slug ?? "",
-    year: String(year),
-    month: `${year}-${String(month).padStart(2, "0")}`,
-    tagSlugs: tagSlugs.join(" "),
-    searchText,
-    previewHtml,
-  };
-});
+    return {
+      title: post.entry.data.title,
+      href: getPostHref(post.entry.data.slug),
+      coverImage: post.entry.data.coverImage,
+      coverImagePlaceholder: await getProgressiveImagePlaceholder(
+        post.entry.data.coverImage
+      ),
+      coverImageAlt: post.entry.data.coverImageAlt,
+      dateISO: post.entry.data.date.toISOString().slice(0, 10),
+      dateLabel: formatDate(post.entry.data.date),
+      dateHref: getArchiveMonthHref(year, month),
+      categoryLabel,
+      categoryHref,
+      authorSlug: post.author?.data.slug ?? "",
+      year: String(year),
+      month: `${year}-${String(month).padStart(2, "0")}`,
+      tagSlugs: tagSlugs.join(" "),
+      searchText,
+      previewHtml,
+    };
+  })
+);
 
 const resultItemsJson = JSON.stringify(resultItems)
   .replace(/</g, "\\u003c")

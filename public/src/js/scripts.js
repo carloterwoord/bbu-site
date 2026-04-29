@@ -1,4 +1,162 @@
 (() => {
+    const PROGRESSIVE_SELECTOR = "img";
+    const FULL_SRC_ATTR = "progressiveSrc";
+    const PLACEHOLDER_SRC_ATTR = "progressivePlaceholderSrc";
+    const INITIALIZED_ATTR = "progressiveInitialized";
+
+    const normalizeUrl = (value) => {
+        try {
+            return new URL(value, window.location.href).toString();
+        } catch {
+            return value;
+        }
+    };
+
+    const getUnsplashPlaceholder = (url) => {
+        url.searchParams.set("auto", "format");
+        url.searchParams.set("fit", url.searchParams.get("fit") || "crop");
+        url.searchParams.set("q", "20");
+        url.searchParams.set("w", "32");
+        return url.toString();
+    };
+
+    const getPicsumPlaceholder = (url) => {
+        const match = url.pathname.match(
+            /^\/id\/([^/]+)\/(\d+)\/(\d+)(\.[a-z0-9]+)?$/i
+        );
+        if (!match) return "";
+
+        const width = Number(match[2]);
+        const height = Number(match[3]);
+        if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0) {
+            return "";
+        }
+
+        const placeholderWidth = 32;
+        const placeholderHeight = Math.max(
+            1,
+            Math.round((height / width) * placeholderWidth)
+        );
+        url.pathname = `/id/${match[1]}/${placeholderWidth}/${placeholderHeight}${match[4] || ""}`;
+        return url.toString();
+    };
+
+    const getPlaceholderSrc = (src) => {
+        if (!src || src.startsWith("data:") || src.startsWith("blob:")) {
+            return "";
+        }
+
+        try {
+            const url = new URL(src, window.location.href);
+            const host = url.hostname.toLowerCase();
+
+            if (host === "images.unsplash.com") {
+                return getUnsplashPlaceholder(url);
+            }
+
+            if (host === "picsum.photos") {
+                return getPicsumPlaceholder(url);
+            }
+        } catch {
+            return "";
+        }
+
+        return "";
+    };
+
+    const markLoaded = (image) => {
+        image.classList.add("progressive-image--loaded");
+    };
+
+    const loadFullImage = (image, fullSrc) => {
+        const loader = new Image();
+
+        loader.onload = async () => {
+            image.src = fullSrc;
+            try {
+                await image.decode();
+            } catch {
+                /* Some browsers reject decode for cached or cross-origin images. */
+            }
+            markLoaded(image);
+        };
+
+        loader.onerror = () => {
+            image.src = fullSrc;
+            markLoaded(image);
+        };
+
+        loader.src = fullSrc;
+    };
+
+    const prepareImage = (image) => {
+        if (!(image instanceof HTMLImageElement)) return;
+        if (image.dataset[INITIALIZED_ATTR] === "true") return;
+
+        const fullSrc =
+            image.dataset[FULL_SRC_ATTR] ||
+            image.getAttribute("src") ||
+            image.currentSrc ||
+            "";
+        if (!fullSrc) return;
+
+        const normalizedFullSrc = normalizeUrl(fullSrc);
+        const placeholderSrc =
+            image.dataset[PLACEHOLDER_SRC_ATTR] ||
+            getPlaceholderSrc(normalizedFullSrc);
+
+        image.dataset[INITIALIZED_ATTR] = "true";
+        image.dataset[FULL_SRC_ATTR] = normalizedFullSrc;
+        image.classList.add("progressive-image");
+
+        if (placeholderSrc && normalizeUrl(placeholderSrc) !== normalizedFullSrc) {
+            image.src = placeholderSrc;
+            loadFullImage(image, normalizedFullSrc);
+            return;
+        }
+
+        if (image.complete) {
+            markLoaded(image);
+        } else {
+            image.addEventListener("load", () => markLoaded(image), { once: true });
+            image.addEventListener("error", () => markLoaded(image), { once: true });
+        }
+    };
+
+    const prepareImages = (root = document) => {
+        if (root instanceof HTMLImageElement) {
+            prepareImage(root);
+            return;
+        }
+
+        if (!root.querySelectorAll) return;
+        root.querySelectorAll(PROGRESSIVE_SELECTOR).forEach(prepareImage);
+    };
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (!(node instanceof Element)) return;
+                prepareImages(node);
+            });
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+    });
+
+    document.addEventListener("DOMContentLoaded", () => prepareImages());
+    document.addEventListener("astro:page-load", () => prepareImages());
+    window["BBUProgressiveImages"] = {
+        getPlaceholderSrc,
+        prepareImage,
+        prepareImages,
+    };
+})();
+
+(() => {
     const THEME_KEY = "bbu-theme";
     const THEME_DARK = "dark";
     const THEME_LIGHT = "light";
@@ -304,14 +462,25 @@
             const cover = document.createElement("div");
             cover.className = "article__cover";
             const image = document.createElement("img");
-            image.src = item.coverImage;
+            const placeholderSrc =
+                item.coverImagePlaceholder ||
+                window["BBUProgressiveImages"]?.getPlaceholderSrc(item.coverImage) ||
+                "";
+            image.src = placeholderSrc || item.coverImage;
+            image.dataset.progressiveImage = "";
+            image.dataset.progressiveSrc = item.coverImage;
+            if (placeholderSrc) {
+                image.dataset.progressivePlaceholderSrc = placeholderSrc;
+            }
             image.alt =
                 (item.coverImageAlt || "").trim() ||
                 `Featured image for ${item.title || "this post"}`;
             image.loading = "lazy";
+            image.decoding = "async";
             cover.append(image);
             coverWrapper.append(cover);
             header.append(coverWrapper);
+            window["BBUProgressiveImages"]?.prepareImage(image);
         }
 
         article.append(header);
