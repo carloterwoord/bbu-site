@@ -40,6 +40,7 @@ export type ResolvedTag = {
   label: string;
   description: string;
   headerImage: string;
+  headerImageAlt: string;
   entry: TagEntry | null;
 };
 
@@ -156,6 +157,7 @@ export async function getResolvedTags() {
       label: tag.data.name,
       description: tag.data.description,
       headerImage: tag.data.headerImage,
+      headerImageAlt: tag.data.headerImageAlt,
       entry: tag,
     });
   }
@@ -174,6 +176,7 @@ export async function getResolvedTags() {
         label: tagEntry?.data.name ?? getTaxonomyLabel(trimmedTag),
         description: tagEntry?.data.description ?? "",
         headerImage: tagEntry?.data.headerImage ?? "",
+        headerImageAlt: tagEntry?.data.headerImageAlt ?? "",
         entry: tagEntry,
       });
     }

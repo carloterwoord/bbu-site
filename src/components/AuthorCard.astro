@@ -1,4 +1,6 @@
 ---
+import { getAvatarAlt } from "../lib/images";
+
 interface SocialLink {
   label: string;
   url: string;
@@ -8,16 +10,18 @@ interface Props {
   name: string;
   bio: string;
   avatar: string;
+  avatarAlt?: string;
   links?: SocialLink[];
 }
 
-const { name, bio, avatar, links = [] } = Astro.props;
+const { name, bio, avatar, avatarAlt = "", links = [] } = Astro.props;
+const resolvedAvatarAlt = getAvatarAlt(avatarAlt, name);
 ---
 
 <header class="author">
   <div class="author__header">
     <figure class="author__avatar">
-      <img src={avatar} alt={`Avatar of ${name}`} />
+      <img src={avatar} alt={resolvedAvatarAlt} />
     </figure>
     <div>
       <h2>

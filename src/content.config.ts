@@ -38,9 +38,11 @@ const defaultPostSeo = {
   openGraphTitle: "",
   openGraphDescription: "",
   openGraphImage: "",
+  openGraphImageAlt: "",
   twitterTitle: "",
   twitterDescription: "",
   twitterImage: "",
+  twitterImageAlt: "",
   geoSummary: "",
   geoKeyTakeaways: [],
   faq: [],
@@ -58,9 +60,11 @@ const postSeoSchema = z
     openGraphTitle: z.string().default(""),
     openGraphDescription: z.string().default(""),
     openGraphImage: z.string().default(""),
+    openGraphImageAlt: z.string().default(""),
     twitterTitle: z.string().default(""),
     twitterDescription: z.string().default(""),
     twitterImage: z.string().default(""),
+    twitterImageAlt: z.string().default(""),
     geoSummary: z.string().default(""),
     geoKeyTakeaways: z.array(z.string()).default([]),
     faq: z
@@ -87,6 +91,7 @@ const posts = defineCollection({
       categories: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
       coverImage: z.string().default(""),
+      coverImageAlt: z.string().default(""),
       readTime: z.string().default(""),
       showTableOfContents: z.boolean().default(true),
       showRelatedPosts: z.boolean().default(true),
@@ -108,6 +113,7 @@ const authors = defineCollection({
     slug: z.string(),
     bio: z.string(),
     avatar: z.string().default(""),
+    avatarAlt: z.string().default(""),
     socialLinks: z
       .array(
         z.object({
@@ -126,6 +132,7 @@ const categories = defineCollection({
     slug: z.string(),
     description: z.string().default(""),
     headerImage: z.string().default(""),
+    headerImageAlt: z.string().default(""),
     ...navFields,
     icon: z.string().default("category"),
   }),
@@ -138,6 +145,7 @@ const tags = defineCollection({
     slug: z.string(),
     description: z.string().default(""),
     headerImage: z.string().default(""),
+    headerImageAlt: z.string().default(""),
   }),
 });
 

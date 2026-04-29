@@ -55,6 +55,7 @@ collections:
         }
       - { label: Tags, name: tags, widget: list, required: false }
       - { label: Cover Image, name: coverImage, widget: image, required: false }
+      - { label: Cover Image Alt Text, name: coverImageAlt, widget: string, required: false, hint: "Describe the visual content. If left empty, the site falls back to the post title." }
       - { label: Read Time, name: readTime, widget: string, required: false }
       - { label: Show Table of Contents, name: showTableOfContents, widget: boolean, default: true, required: false }
       - { label: Show Related Posts, name: showRelatedPosts, widget: boolean, default: true, required: false }
@@ -87,9 +88,11 @@ collections:
           - { label: Open Graph Title, name: openGraphTitle, widget: string, required: false, hint: "Defaults to the SEO title." }
           - { label: Open Graph Description, name: openGraphDescription, widget: text, required: false, hint: "Defaults to the meta description." }
           - { label: Open Graph Image, name: openGraphImage, widget: image, required: false, hint: "Defaults to the cover image." }
+          - { label: Open Graph Image Alt Text, name: openGraphImageAlt, widget: string, required: false, hint: "Defaults to the cover image alt text, then the post title." }
           - { label: Twitter Title, name: twitterTitle, widget: string, required: false, hint: "Defaults to the Open Graph title." }
           - { label: Twitter Description, name: twitterDescription, widget: text, required: false, hint: "Defaults to the Open Graph description." }
           - { label: Twitter Image, name: twitterImage, widget: image, required: false, hint: "Defaults to the Open Graph image." }
+          - { label: Twitter Image Alt Text, name: twitterImageAlt, widget: string, required: false, hint: "Defaults to the Open Graph image alt text." }
           - {
               label: Structured Data Type,
               name: structuredDataType,
@@ -129,6 +132,7 @@ collections:
       - { label: Slug, name: slug, widget: string, hint: "Used in /author/[slug].html" }
       - { label: Bio, name: bio, widget: text }
       - { label: Avatar, name: avatar, widget: image, required: false }
+      - { label: Avatar Alt Text, name: avatarAlt, widget: string, required: false, hint: "Describe the avatar. If left empty, the site falls back to the author's name." }
       - label: Social Links
         name: socialLinks
         widget: list
@@ -202,6 +206,7 @@ collections:
       - { label: Slug, name: slug, widget: string, hint: "Used in /category/[slug].html" }
       - { label: Description, name: description, widget: text, required: false }
       - { label: Header Image, name: headerImage, widget: image, required: false }
+      - { label: Header Image Alt Text, name: headerImageAlt, widget: string, required: false, hint: "Describe the header image. If left empty, the site falls back to the category name." }
       - { label: Navigation Label, name: navLabel, widget: string, required: false }
       - label: Navigation Group
         name: navGroup
@@ -238,4 +243,5 @@ collections:
       - { label: Slug, name: slug, widget: string, hint: "Used in /tag/[slug].html. Match post tag slugs to attach metadata and header images." }
       - { label: Description, name: description, widget: text, required: false }
       - { label: Header Image, name: headerImage, widget: image, required: false }
+      - { label: Header Image Alt Text, name: headerImageAlt, widget: string, required: false, hint: "Describe the header image. If left empty, the site falls back to the tag name." }
       - { label: Body, name: body, widget: hidden, default: "" }

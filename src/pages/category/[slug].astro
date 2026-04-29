@@ -7,6 +7,7 @@ import {
   getCategoryHref,
   getResolvedPostsByCategorySlug,
 } from "../../lib/content";
+import { getHeaderImageAlt } from "../../lib/images";
 
 export async function getStaticPaths() {
   const categories = await getCategories();
@@ -26,6 +27,7 @@ const posts = await getResolvedPostsByCategorySlug(category.data.slug);
       title={category.data.name}
       description={category.data.description}
       image={category.data.headerImage}
+      imageAlt={getHeaderImageAlt(category.data.headerImageAlt, category.data.name)}
     />
 
     <PaginatedPostList

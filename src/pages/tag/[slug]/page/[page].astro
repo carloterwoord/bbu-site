@@ -7,6 +7,7 @@ import {
   getResolvedTags,
   getTagHref,
 } from "../../../../lib/content";
+import { getHeaderImageAlt } from "../../../../lib/images";
 import { getPaginatedPageNumbers } from "../../../../lib/pagination";
 
 export async function getStaticPaths() {
@@ -38,6 +39,7 @@ const description = tag.description || `${resultLabel} filed under this tag.`;
       title={`Tag: ${tag.label}`}
       description={description}
       image={tag.headerImage}
+      imageAlt={getHeaderImageAlt(tag.headerImageAlt, tag.label)}
     />
 
     <PaginatedPostList

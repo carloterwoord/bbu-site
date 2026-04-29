@@ -7,6 +7,7 @@ import {
   getResolvedPostsByTagSlug,
   getTagHref,
 } from "../../lib/content";
+import { getHeaderImageAlt } from "../../lib/images";
 
 export async function getStaticPaths() {
   const tags = await getResolvedTags();
@@ -29,6 +30,7 @@ const description = tag.description || `${resultLabel} filed under this tag.`;
       title={`Tag: ${tag.label}`}
       description={description}
       image={tag.headerImage}
+      imageAlt={getHeaderImageAlt(tag.headerImageAlt, tag.label)}
     />
 
     <PaginatedPostList posts={posts} basePath={getTagHref(tag.slug)} />

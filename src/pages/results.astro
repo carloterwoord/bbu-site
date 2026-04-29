@@ -66,6 +66,7 @@ const resultItems = posts.map((post) => {
     title: post.entry.data.title,
     href: getPostHref(post.entry.data.slug),
     coverImage: post.entry.data.coverImage,
+    coverImageAlt: post.entry.data.coverImageAlt,
     dateISO: post.entry.data.date.toISOString().slice(0, 10),
     dateLabel: formatDate(post.entry.data.date),
     dateHref: getArchiveMonthHref(year, month),

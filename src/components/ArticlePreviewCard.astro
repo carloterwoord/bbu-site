@@ -1,6 +1,7 @@
 ---
 import ArticleMeta from "./ArticleMeta.astro";
 import ArticleCover from "./ArticleCover.astro";
+import { getPostCoverAlt } from "../lib/images";
 
 interface Props {
   dateISO: string;
@@ -11,6 +12,7 @@ interface Props {
   title: string;
   href: string;
   coverImage?: string;
+  coverImageAlt?: string;
   previewHtml?: string;
   showDivider?: boolean;
 }
@@ -24,9 +26,12 @@ const {
   title,
   href,
   coverImage = "",
+  coverImageAlt = "",
   previewHtml = "",
   showDivider = true,
 } = Astro.props;
+
+const resolvedCoverImageAlt = getPostCoverAlt(coverImageAlt, title);
 ---
 
 <article class="article article--preview space-top--3xl space-bottom--3xl">
@@ -43,7 +48,7 @@ const {
     <div class="article__headline__link">
       <h2>{title}</h2>
     </div>
-    <ArticleCover src={coverImage} />
+    <ArticleCover src={coverImage} alt={resolvedCoverImageAlt} />
   </header>
 
   {previewHtml && (

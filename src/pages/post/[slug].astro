@@ -10,6 +10,7 @@ import {
   getPostHref,
   getResolvedPosts,
 } from "../../lib/content";
+import { getPostCoverAlt } from "../../lib/images";
 import { defaultSocialImageUrl, siteTitle, siteUrl } from "../../lib/site";
 
 export async function getStaticPaths() {
@@ -29,6 +30,7 @@ const categoryHref = getCategoryHref(post.categories[0]?.data.slug ?? "category"
 const authorName = post.author?.data.name ?? "Built by Underdogs";
 const authorBio = post.author?.data.bio ?? "";
 const authorAvatar = post.author?.data.avatar ?? "";
+const authorAvatarAlt = post.author?.data.avatarAlt ?? "";
 const authorHref = post.author ? getAuthorHref(post.author.data.slug) : "";
 
 const postsBySlug = new Map(
@@ -86,15 +88,22 @@ const socialDescription =
 const twitterTitle = seo.twitterTitle?.trim() || socialTitle;
 const twitterDescription =
   seo.twitterDescription?.trim() || socialDescription;
-const socialImage = absoluteUrl(
+const socialImageSource =
   seo.openGraphImage?.trim() ||
   seo.twitterImage?.trim() ||
-  post.entry.data.coverImage ||
-  defaultSocialImageUrl
-);
+  post.entry.data.coverImage;
+const socialImage = absoluteUrl(socialImageSource || defaultSocialImageUrl);
 const twitterImage = absoluteUrl(
   seo.twitterImage?.trim() || socialImage
 );
+const openGraphImageAlt = getPostCoverAlt(
+  seo.openGraphImageAlt?.trim() ||
+    post.entry.data.coverImageAlt ||
+    (!socialImageSource ? `${siteTitle} default social sharing image` : ""),
+  post.entry.data.title
+);
+const twitterImageAlt =
+  seo.twitterImageAlt?.trim() || openGraphImageAlt;
 const robots = [
   seo.noindex ? "noindex" : "index",
   seo.nofollow ? "nofollow" : "follow",
@@ -147,11 +156,13 @@ const jsonLd = {
     description: metaDescription,
     canonicalUrl,
     image: socialImage,
+    openGraphImageAlt,
     openGraphTitle: socialTitle,
     openGraphDescription: socialDescription,
     twitterTitle,
     twitterDescription,
     twitterImage,
+    twitterImageAlt,
     type: "article",
     publishedTime: post.entry.data.date.toISOString(),
     modifiedTime: post.entry.data.date.toISOString(),
@@ -169,6 +180,7 @@ const jsonLd = {
       authorName={authorName}
       authorBio={authorBio}
       authorAvatar={authorAvatar}
+      authorAvatarAlt={authorAvatarAlt}
       authorHref={authorHref}
       headings={headings}
     >

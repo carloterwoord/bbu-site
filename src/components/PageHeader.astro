@@ -3,6 +3,7 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
   wrapperClass?: string;
 }
 
@@ -10,6 +11,7 @@ const {
   title,
   description = "",
   image = "",
+  imageAlt = "",
   wrapperClass = "",
 } = Astro.props;
 
@@ -18,12 +20,12 @@ const headerClass = [
   image && "page__header-wrapper--image",
   wrapperClass,
 ].filter(Boolean).join(" ");
-const imageStyle = image
-  ? `--page-header-image: url("${image.replace(/"/g, "%22")}");`
-  : undefined;
 ---
 
-<div class={headerClass} style={imageStyle}>
+<div class={headerClass}>
+  {image && (
+    <img class="page__header-image" src={image} alt={imageAlt} loading="lazy" />
+  )}
   <div class="page__header">
     <header>
       <h1>{title}</h1>

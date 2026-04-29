@@ -3,9 +3,11 @@
     const THEME_DARK = "dark";
     const THEME_LIGHT = "light";
     const TOGGLE_SELECTOR = "[data-theme-toggle]";
+    const DESKTOP_NAV_TOGGLE_SELECTOR = ".theme-toggle--desktop-nav-item";
     const THEME_INIT_FLAG = "__bbuThemeInitialized";
     const root = document.documentElement;
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    let activeTooltipToggle = null;
 
     const getStoredTheme = () => {
         try {
@@ -42,10 +44,16 @@
             const isMobileToggle = button.classList.contains(
                 "theme-toggle--mobile"
             );
+            const isDesktopNavToggle = button.classList.contains(
+                "theme-toggle--desktop-nav-item"
+            );
             button.setAttribute("aria-label", label);
             if (isMobileToggle) {
                 button.removeAttribute("title");
                 button.removeAttribute("data-tooltip");
+            } else if (isDesktopNavToggle) {
+                button.removeAttribute("title");
+                button.setAttribute("data-tooltip", tooltip);
             } else {
                 button.setAttribute("title", tooltip);
                 button.setAttribute("data-tooltip", tooltip);
@@ -55,6 +63,82 @@
                 theme === THEME_DARK ? "true" : "false"
             );
         });
+
+        if (activeTooltipToggle) {
+            showThemeTooltip(activeTooltipToggle);
+        }
+    };
+
+    const getThemeTooltip = () => {
+        let tooltip = document.querySelector("[data-theme-tooltip]");
+        if (tooltip) return tooltip;
+
+        tooltip = document.createElement("div");
+        tooltip.className = "theme-tooltip";
+        tooltip.setAttribute("data-theme-tooltip", "");
+        tooltip.setAttribute("role", "tooltip");
+        document.body.append(tooltip);
+        return tooltip;
+    };
+
+    const getCssLength = (value) => {
+        const trimmed = value.trim();
+        const numericValue = Number.parseFloat(trimmed);
+        if (!Number.isFinite(numericValue)) return 0;
+        if (trimmed.endsWith("rem")) {
+            const rootFontSize = Number.parseFloat(
+                getComputedStyle(document.documentElement).fontSize
+            );
+            return numericValue * rootFontSize;
+        }
+        return numericValue;
+    };
+
+    const getThemeNavTooltipOffset = () => {
+        const value = getComputedStyle(root)
+            .getPropertyValue("--theme-nav-tooltip-inline-offset");
+        return getCssLength(value);
+    };
+
+    const showThemeTooltip = (toggle) => {
+        const label = toggle.getAttribute("data-tooltip");
+        if (!label) return;
+
+        const tooltip = getThemeTooltip();
+        tooltip.textContent = label;
+        tooltip.classList.add("theme-tooltip--visible");
+
+        const rect = toggle.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const offset = getThemeNavTooltipOffset();
+        tooltip.style.left = `${rect.left - tooltipRect.width - offset}px`;
+        tooltip.style.top = `${rect.top + rect.height / 2}px`;
+        activeTooltipToggle = toggle;
+    };
+
+    const hideThemeTooltip = () => {
+        const tooltip = document.querySelector("[data-theme-tooltip]");
+        if (tooltip) {
+            tooltip.classList.remove("theme-tooltip--visible");
+        }
+        activeTooltipToggle = null;
+    };
+
+    const onThemeTooltipShow = (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const toggle = target.closest(DESKTOP_NAV_TOGGLE_SELECTOR);
+        if (!toggle) return;
+        showThemeTooltip(toggle);
+    };
+
+    const onThemeTooltipHide = (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        if (!target.closest(DESKTOP_NAV_TOGGLE_SELECTOR)) return;
+        hideThemeTooltip();
     };
 
     const applyTheme = (theme) => {
@@ -93,6 +177,12 @@
 
     if (!window[THEME_INIT_FLAG]) {
         document.addEventListener("click", onThemeToggleClick);
+        document.addEventListener("mouseover", onThemeTooltipShow);
+        document.addEventListener("focusin", onThemeTooltipShow);
+        document.addEventListener("mouseout", onThemeTooltipHide);
+        document.addEventListener("focusout", onThemeTooltipHide);
+        window.addEventListener("resize", hideThemeTooltip);
+        window.addEventListener("scroll", hideThemeTooltip, true);
         document.addEventListener("astro:page-load", syncThemeFromPreference);
         document.addEventListener("astro:after-swap", syncThemeFromPreference);
 
@@ -215,7 +305,9 @@
             cover.className = "article__cover";
             const image = document.createElement("img");
             image.src = item.coverImage;
-            image.alt = "Cover Image";
+            image.alt =
+                (item.coverImageAlt || "").trim() ||
+                `Featured image for ${item.title || "this post"}`;
             image.loading = "lazy";
             cover.append(image);
             coverWrapper.append(cover);

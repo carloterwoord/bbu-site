@@ -37,6 +37,7 @@ const { posts } = Astro.props;
       title={post.entry.data.title}
       href={getPostHref(post.entry.data.slug)}
       coverImage={post.entry.data.coverImage}
+      coverImageAlt={post.entry.data.coverImageAlt}
       previewHtml={previewHtml}
       showDivider={index < posts.length - 1}
     />

@@ -1,18 +1,22 @@
 ---
+import { getAvatarAlt } from "../lib/images";
+
 interface Props {
   name: string;
   bio: string;
   avatar: string;
+  avatarAlt?: string;
   href?: string;
 }
 
-const { name, bio, avatar, href = "" } = Astro.props;
+const { name, bio, avatar, avatarAlt = "", href = "" } = Astro.props;
+const resolvedAvatarAlt = getAvatarAlt(avatarAlt, name);
 ---
 
 <aside class="author author__border">
   <div class="author__header">
     <figure class="author__avatar">
-      <img src={avatar} alt={`Avatar of ${name}`} />
+      <img src={avatar} alt={resolvedAvatarAlt} />
     </figure>
     <div>
       <span>About the Author</span>

@@ -190,7 +190,6 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
     </button>
 
     <ThemeToggle className="theme-toggle--rail" />
-    <ThemeToggle className="theme-toggle--desktop" />
 
     <div class="nav__desktop__rail-menu" :aria-hidden="isDesktopMenuOpen" :inert="isDesktopMenuOpen">
       {menuGroups.map((group, groupIndex) => (
@@ -218,9 +217,9 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
 
     <div id="desktop-menu" class="nav__desktop__panel" :aria-hidden="!isDesktopMenuOpen" :inert="!isDesktopMenuOpen">
       <header class="nav__desktop space-top--3xl space-bottom-base">
-        <div class="nav__desktop__logo" aria-label="Built by Underdogs Logo">
-          <a href={homeHref}>
-            <svg width="196" height="70" viewBox="0 0 196 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div class="nav__desktop__logo">
+          <a href={homeHref} aria-label="Built by Underdogs">
+            <svg aria-hidden="true" focusable="false" width="196" height="70" viewBox="0 0 196 70" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fill-rule="evenodd"
                 clip-rule="evenodd"
@@ -318,6 +317,11 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
             </div>
           </>
         ))}
+      </div>
+
+      <div class="nav__desktop__theme nav__menu-group">
+        <hr class="nav__divider" />
+        <ThemeToggle className="theme-toggle--nav-item theme-toggle--desktop-nav-item" />
       </div>
 
       <footer x-data="{ year: new Date().getFullYear() }" class="nav__desktop__footer space-top--base">

@@ -6,6 +6,7 @@ import AuthorByline from "./AuthorByline.astro";
 import TagList from "./TagList.astro";
 import ShareButton from "./ShareButton.astro";
 import { formatDate, getArchiveMonthHref, getCategoryHref } from "../lib/content";
+import { getAvatarAlt, getPostCoverAlt } from "../lib/images";
 
 interface Props {
   post: CollectionEntry<"posts">;
@@ -14,6 +15,7 @@ interface Props {
   authorName: string;
   authorBio: string;
   authorAvatar: string;
+  authorAvatarAlt?: string;
   authorHref?: string;
   headings?: MarkdownHeading[];
 }
@@ -25,6 +27,7 @@ const {
   authorName,
   authorBio,
   authorAvatar,
+  authorAvatarAlt = "",
   authorHref = "",
   headings = [],
 } = Astro.props;
@@ -43,12 +46,14 @@ const toc = headings
   }));
 const shouldShowTableOfContents =
   (post.data.showTableOfContents ?? true) && toc.length > 0;
+const coverImageAlt = getPostCoverAlt(post.data.coverImageAlt, post.data.title);
+const resolvedAuthorAvatarAlt = getAvatarAlt(authorAvatarAlt, authorName);
 ---
 
 {post.data.coverImage && (
   <div class="page__cover-wrapper">
     <div class="page__cover">
-      <img src={post.data.coverImage} alt="Cover Image" />
+      <img src={post.data.coverImage} alt={coverImageAlt} />
     </div>
   </div>
 )}
@@ -88,6 +93,7 @@ const shouldShowTableOfContents =
       name={authorName}
       bio={authorBio}
       avatar={authorAvatar}
+      avatarAlt={resolvedAuthorAvatarAlt}
       href={authorHref}
     />
     <TagList tags={post.data.tags} />
