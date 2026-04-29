@@ -17,7 +17,6 @@ const shareMenuData = `{
     const text = encodeURIComponent(this.shareText);
     const emailBody = encodeURIComponent(this.pageTitle + '\\n\\n' + this.pageUrl);
     const links = {
-      translate: 'https://translate.google.com/translate?sl=auto&tl=en&u=' + url,
       twitter: 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title,
       linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + url,
       bluesky: 'https://bsky.app/intent/compose?text=' + text,
@@ -84,11 +83,6 @@ const shareMenuData = `{
         <ul aria-label="Share options">
             <li>
                 <button type="button" @click="copyLink()">Copy link</button>
-            </li>
-            <li>
-                <a :href="shareHref('translate')" target="_blank" rel="noopener"
-                    >Translate</a
-                >
             </li>
             <li class="article__share-menu-separator">
                 <a :href="shareHref('twitter')" target="_blank" rel="noopener"
