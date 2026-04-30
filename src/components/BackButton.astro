@@ -1,0 +1,26 @@
+---
+interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<a class="page-back-button" href={href} aria-label="Go back" data-page-back-button>
+  <span aria-hidden="true">↑</span>
+</a>
+
+<script is:inline>
+  document.addEventListener("click", (event) => {
+    const link = event.target?.closest?.("[data-page-back-button]");
+    if (!link) return;
+
+    try {
+      const referrer = document.referrer ? new URL(document.referrer) : null;
+      if (window.history.length > 1 && referrer?.origin === window.location.origin) {
+        event.preventDefault();
+        window.history.back();
+      }
+    } catch (_) {}
+  });
+</script>

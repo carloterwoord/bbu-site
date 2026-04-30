@@ -73,6 +73,11 @@ const jsonLd = metadata?.jsonLd
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     {robots && <meta name="robots" content={robots} />}
     {keywords && <meta name="keywords" content={keywords} />}
+    <link rel="icon" href={withBase("/src/favicons/favicon.ico")} sizes="any" />
+    <link rel="icon" href={withBase("/src/favicons/favicon.svg")} type="image/svg+xml" />
+    <link rel="icon" href={withBase("/src/favicons/favicon-96x96.png")} type="image/png" sizes="96x96" />
+    <link rel="apple-touch-icon" href={withBase("/src/favicons/apple-touch-icon.png")} sizes="180x180" />
+    <link rel="manifest" href={withBase("/src/favicons/site.webmanifest")} />
     <meta property="og:site_name" content={siteTitle} />
     <meta property="og:title" content={openGraphTitle} />
     {openGraphDescription && <meta property="og:description" content={openGraphDescription} />}

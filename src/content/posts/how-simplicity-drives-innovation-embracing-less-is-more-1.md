@@ -11,7 +11,8 @@ tags:
   - Innovation
   - Business
 coverImage: https://images.unsplash.com/photo-1726137569906-14f8079861fa?q=80&w=1770&auto=format&fit=crop
-readTime: 5 min read
+coverImageAlt: ''
+readTime: 5
 draft: false
 ---
 

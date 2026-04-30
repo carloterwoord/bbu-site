@@ -1,9 +1,11 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import BackButton from "../../../components/BackButton.astro";
 import PageHeader from "../../../components/PageHeader.astro";
 import PaginatedPostList from "../../../components/PaginatedPostList.astro";
 import {
   getArchiveMonthHref,
+  getArchiveYearHref,
   getPublishedPosts,
   getResolvedPostsByYearMonth,
 } from "../../../lib/content";
@@ -36,6 +38,7 @@ const resultLabel = posts.length === 1 ? "1 post" : `${posts.length} posts`;
 
 <BaseLayout title={`Archive: ${monthLabel} ${year} - Built by Underdogs`}>
   <main class="main">
+    <BackButton href={getArchiveYearHref(year)} />
     <PageHeader
       title={`Archive: ${monthLabel} ${year}`}
       description={resultLabel}

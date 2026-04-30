@@ -1,10 +1,12 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AuthorCard from "../../components/AuthorCard.astro";
+import BackButton from "../../components/BackButton.astro";
 import PaginatedPostList from "../../components/PaginatedPostList.astro";
 import {
   getAuthorHref,
   getAuthors,
+  getPageHref,
   getResolvedPostsByAuthorSlug,
 } from "../../lib/content";
 
@@ -22,6 +24,7 @@ const posts = await getResolvedPostsByAuthorSlug(author.data.slug);
 
 <BaseLayout title={`${author.data.name} - Built by Underdogs`}>
   <main class="main">
+    <BackButton href={getPageHref("search")} />
     <div class="page">
       <AuthorCard
         name={author.data.name}

@@ -3,6 +3,13 @@
     const FULL_SRC_ATTR = "progressiveSrc";
     const PLACEHOLDER_SRC_ATTR = "progressivePlaceholderSrc";
     const INITIALIZED_ATTR = "progressiveInitialized";
+    const PROGRESSIVE_PLACEHOLDER_WIDTH = 32;
+    const PIXEL_TRANSITION_DURATION = 640;
+    const MIN_PLACEHOLDER_VISIBLE_MS = 180;
+    const MIN_PIXEL_TRANSITION_SIZE = 96;
+    const MIN_PIXEL_BLOCK_SIZE = 8;
+    const MAX_PIXEL_BLOCK_SIZE = 32;
+    const PIXELATOR_FADE_START = 0.82;
 
     const normalizeUrl = (value) => {
         try {
@@ -16,7 +23,7 @@
         url.searchParams.set("auto", "format");
         url.searchParams.set("fit", url.searchParams.get("fit") || "crop");
         url.searchParams.set("q", "20");
-        url.searchParams.set("w", "32");
+        url.searchParams.set("w", String(PROGRESSIVE_PLACEHOLDER_WIDTH));
         return url.toString();
     };
 
@@ -32,7 +39,7 @@
             return "";
         }
 
-        const placeholderWidth = 32;
+        const placeholderWidth = PROGRESSIVE_PLACEHOLDER_WIDTH;
         const placeholderHeight = Math.max(
             1,
             Math.round((height / width) * placeholderWidth)
@@ -68,10 +75,229 @@
         image.classList.add("progressive-image--loaded");
     };
 
-    const loadFullImage = (image, fullSrc) => {
+    const prefersReducedMotion = () =>
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const easeInOutSine = (progress) =>
+        -(Math.cos(Math.PI * progress) - 1) / 2;
+
+    const smoothstep = (progress) => progress * progress * (3 - 2 * progress);
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    const isElementInViewport = (rect) =>
+        rect.bottom > 0 &&
+        rect.right > 0 &&
+        rect.top < window.innerHeight &&
+        rect.left < window.innerWidth;
+
+    const shouldAnimatePixelTransition = (image, placeholderStartedAt) => {
+        if (prefersReducedMotion()) return false;
+        if (performance.now() - placeholderStartedAt < MIN_PLACEHOLDER_VISIBLE_MS) {
+            return false;
+        }
+
+        const imageRect = image.getBoundingClientRect();
+        if (Math.min(imageRect.width, imageRect.height) < MIN_PIXEL_TRANSITION_SIZE) {
+            return false;
+        }
+
+        return isElementInViewport(imageRect);
+    };
+
+    const parsePositionToken = (token, startKeyword, endKeyword) => {
+        const normalizedToken = token?.toLowerCase() || "";
+        if (normalizedToken === startKeyword) return 0;
+        if (normalizedToken === "center") return 0.5;
+        if (normalizedToken === endKeyword) return 1;
+        if (normalizedToken.endsWith("%")) {
+            const percentage = Number.parseFloat(normalizedToken);
+            return Number.isFinite(percentage) ? clamp(percentage / 100, 0, 1) : 0.5;
+        }
+        return 0.5;
+    };
+
+    const getObjectPosition = (imageStyle) => {
+        const tokens = imageStyle.objectPosition.trim().split(/\s+/);
+        return {
+            x: parsePositionToken(tokens[0], "left", "right"),
+            y: parsePositionToken(tokens[1], "top", "bottom"),
+        };
+    };
+
+    const drawFittedImage = (context, source, width, height, fit, position) => {
+        const sourceWidth = source.naturalWidth || source.width;
+        const sourceHeight = source.naturalHeight || source.height;
+        if (!sourceWidth || !sourceHeight || !width || !height) return false;
+
+        if (fit === "cover" || fit === "contain") {
+            const scale =
+                fit === "cover"
+                    ? Math.max(width / sourceWidth, height / sourceHeight)
+                    : Math.min(width / sourceWidth, height / sourceHeight);
+            const drawnWidth = sourceWidth * scale;
+            const drawnHeight = sourceHeight * scale;
+            const x = (width - drawnWidth) * position.x;
+            const y = (height - drawnHeight) * position.y;
+            context.drawImage(source, x, y, drawnWidth, drawnHeight);
+            return true;
+        }
+
+        context.drawImage(source, 0, 0, width, height);
+        return true;
+    };
+
+    const createPixelTransition = (image, source) => {
+        if (prefersReducedMotion()) return null;
+
+        const parent = image.parentElement;
+        const imageRect = image.getBoundingClientRect();
+        if (!parent || imageRect.width <= 0 || imageRect.height <= 0) return null;
+
+        const parentStyle = window.getComputedStyle(parent);
+        if (parentStyle.position === "static") {
+            parent.classList.add("progressive-image-frame");
+        }
+
+        const imageStyle = window.getComputedStyle(image);
+        const parentRect = parent.getBoundingClientRect();
+        const pixelator = document.createElement("canvas");
+        const deviceScale = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.max(1, Math.round(imageRect.width * deviceScale));
+        const height = Math.max(1, Math.round(imageRect.height * deviceScale));
+        const imageZIndex = Number.parseInt(imageStyle.zIndex, 10);
+
+        pixelator.className = "progressive-image-pixelator";
+        pixelator.setAttribute("aria-hidden", "true");
+        pixelator.width = width;
+        pixelator.height = height;
+        pixelator.style.left = `${imageRect.left - parentRect.left}px`;
+        pixelator.style.top = `${imageRect.top - parentRect.top}px`;
+        pixelator.style.width = `${imageRect.width}px`;
+        pixelator.style.height = `${imageRect.height}px`;
+        pixelator.style.borderRadius = imageStyle.borderRadius;
+        pixelator.style.zIndex = Number.isFinite(imageZIndex) ? String(imageZIndex) : "1";
+
+        parent.append(pixelator);
+
+        return {
+            canvas: pixelator,
+            tempCanvas: document.createElement("canvas"),
+            source,
+            width,
+            height,
+            cssWidth: imageRect.width,
+            cssHeight: imageRect.height,
+            fit: imageStyle.objectFit || "fill",
+            position: getObjectPosition(imageStyle),
+        };
+    };
+
+    const drawPixelatedFrame = (transition, blockSize) => {
+        const sampleWidth = Math.max(1, Math.round(transition.cssWidth / blockSize));
+        const sampleHeight = Math.max(1, Math.round(transition.cssHeight / blockSize));
+        const canvasContext = transition.canvas.getContext("2d");
+        const tempContext = transition.tempCanvas.getContext("2d");
+        if (!canvasContext || !tempContext) return false;
+
+        transition.tempCanvas.width = sampleWidth;
+        transition.tempCanvas.height = sampleHeight;
+        tempContext.clearRect(0, 0, sampleWidth, sampleHeight);
+        tempContext.imageSmoothingEnabled = true;
+        try {
+            if (
+                !drawFittedImage(
+                    tempContext,
+                    transition.source,
+                    sampleWidth,
+                    sampleHeight,
+                    transition.fit,
+                    transition.position
+                )
+            ) {
+                return false;
+            }
+
+            canvasContext.clearRect(0, 0, transition.width, transition.height);
+            canvasContext.imageSmoothingEnabled = false;
+            canvasContext.drawImage(
+                transition.tempCanvas,
+                0,
+                0,
+                sampleWidth,
+                sampleHeight,
+                0,
+                0,
+                transition.width,
+                transition.height
+            );
+        } catch {
+            return false;
+        }
+
+        return true;
+    };
+
+    const getStartBlockSize = (transition) =>
+        clamp(
+            Math.max(transition.cssWidth, transition.cssHeight) /
+                PROGRESSIVE_PLACEHOLDER_WIDTH,
+            MIN_PIXEL_BLOCK_SIZE,
+            MAX_PIXEL_BLOCK_SIZE
+        );
+
+    const animatePixelTransition = (transition, startBlockSize) => {
+        const startedAt = performance.now();
+        const animate = (time) => {
+            if (!transition.canvas.isConnected) return;
+
+            const progress = clamp(
+                (time - startedAt) / PIXEL_TRANSITION_DURATION,
+                0,
+                1
+            );
+            const easedProgress = easeInOutSine(progress);
+            const blockSize = Math.pow(startBlockSize, 1 - easedProgress);
+
+            if (progress >= PIXELATOR_FADE_START) {
+                const fadeProgress = clamp(
+                    (progress - PIXELATOR_FADE_START) / (1 - PIXELATOR_FADE_START),
+                    0,
+                    1
+                );
+                transition.canvas.style.opacity = String(1 - smoothstep(fadeProgress));
+            }
+
+            if (!drawPixelatedFrame(transition, blockSize) || progress >= 1) {
+                transition.canvas.remove();
+                return;
+            }
+
+            requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
+    };
+
+    const loadFullImage = (image, fullSrc, placeholderStartedAt = performance.now()) => {
         const loader = new Image();
 
         loader.onload = async () => {
+            let pixelTransition = shouldAnimatePixelTransition(
+                image,
+                placeholderStartedAt
+            )
+                ? createPixelTransition(image, loader)
+                : null;
+            let startBlockSize = 1;
+            if (pixelTransition) {
+                startBlockSize = getStartBlockSize(pixelTransition);
+                if (!drawPixelatedFrame(pixelTransition, startBlockSize)) {
+                    pixelTransition.canvas.remove();
+                    pixelTransition = null;
+                }
+            }
+
             image.src = fullSrc;
             try {
                 await image.decode();
@@ -79,6 +305,9 @@
                 /* Some browsers reject decode for cached or cross-origin images. */
             }
             markLoaded(image);
+            if (pixelTransition) {
+                animatePixelTransition(pixelTransition, startBlockSize);
+            }
         };
 
         loader.onerror = () => {
@@ -111,7 +340,7 @@
 
         if (placeholderSrc && normalizeUrl(placeholderSrc) !== normalizedFullSrc) {
             image.src = placeholderSrc;
-            loadFullImage(image, normalizedFullSrc);
+            loadFullImage(image, normalizedFullSrc, performance.now());
             return;
         }
 

@@ -1,10 +1,12 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import BackButton from "../../components/BackButton.astro";
 import PageHeader from "../../components/PageHeader.astro";
 import PaginatedPostList from "../../components/PaginatedPostList.astro";
 import {
   getCategories,
   getCategoryHref,
+  getPageHref,
   getResolvedPostsByCategorySlug,
 } from "../../lib/content";
 import { getHeaderImageAlt } from "../../lib/images";
@@ -23,6 +25,7 @@ const posts = await getResolvedPostsByCategorySlug(category.data.slug);
 
 <BaseLayout title={`${category.data.name} - Built by Underdogs`}>
   <main class="main">
+    <BackButton href={getPageHref("search")} />
     <PageHeader
       title={category.data.name}
       description={category.data.description}

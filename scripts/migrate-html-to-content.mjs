@@ -212,7 +212,7 @@ const posts = [
     tags: ["Underdogs", "Less but better", "First principles"],
     coverImage:
       "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop",
-    readTime: "4 min read",
+    readTime: 4,
     draft: false,
     body: `You used to be yourself, authentically and unapologetically. Whether in business meetings or social gatherings, your uniqueness was your strength. And it was beautiful.
 
@@ -278,7 +278,7 @@ The era of the Underdog is just beginning. Stay true.`
     categories: ["underdog-principles"],
     tags: ["Simplicity", "Principles"],
     coverImage: "",
-    readTime: "3 min read",
+    readTime: 3,
     draft: false,
     body: `In a world overflowing with choices, noise, and distractions, simplicity is becoming the ultimate luxury.
 
@@ -300,7 +300,7 @@ Simplicity allows for clarity. When you keep things simple, you make space for b
     tags: ["Innovation", "Business"],
     coverImage:
       "https://images.unsplash.com/photo-1726137569906-14f8079861fa?q=80&w=1770&auto=format&fit=crop",
-    readTime: "5 min read",
+    readTime: 5,
     draft: false,
     body: `Innovation is often seen as complex, a realm for the overly ambitious, with intricate solutions for complicated problems. But in reality, simplicity is the true catalyst for groundbreaking ideas.
 

@@ -12,6 +12,7 @@ const LOCAL_IMAGE_EXTENSIONS = new Set([
   ".png",
   ".webp",
 ]);
+const PROGRESSIVE_PLACEHOLDER_WIDTH = 32;
 const localPlaceholderCache = new Map<string, Promise<string>>();
 
 function cleanAlt(value: ImageAltValue) {
@@ -38,7 +39,7 @@ function getUnsplashPlaceholder(url: URL) {
   url.searchParams.set("auto", "format");
   url.searchParams.set("fit", url.searchParams.get("fit") || "crop");
   url.searchParams.set("q", "20");
-  url.searchParams.set("w", "32");
+  url.searchParams.set("w", String(PROGRESSIVE_PLACEHOLDER_WIDTH));
   return url.toString();
 }
 
@@ -52,7 +53,7 @@ function getPicsumPlaceholder(url: URL) {
     return "";
   }
 
-  const placeholderWidth = 32;
+  const placeholderWidth = PROGRESSIVE_PLACEHOLDER_WIDTH;
   const placeholderHeight = Math.max(1, Math.round((height / width) * placeholderWidth));
   url.pathname = `/id/${match[1]}/${placeholderWidth}/${placeholderHeight}${match[4] ?? ""}`;
   return url.toString();
@@ -111,7 +112,7 @@ async function createLocalImagePlaceholder(imagePath: string) {
   try {
     const buffer = await sharp(imagePath)
       .rotate()
-      .resize({ width: 32, withoutEnlargement: true })
+      .resize({ width: PROGRESSIVE_PLACEHOLDER_WIDTH, withoutEnlargement: true })
       .webp({ quality: 20 })
       .toBuffer();
 

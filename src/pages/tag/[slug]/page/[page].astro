@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import BackButton from "../../../../components/BackButton.astro";
 import PageHeader from "../../../../components/PageHeader.astro";
 import PaginatedPostList from "../../../../components/PaginatedPostList.astro";
 import {
@@ -35,6 +36,7 @@ const description = tag.description || `${resultLabel} filed under this tag.`;
 
 <BaseLayout title={`Tag: ${tag.label} - Page ${page} - Built by Underdogs`}>
   <main class="main">
+    <BackButton href={getTagHref(tag.slug)} />
     <PageHeader
       title={`Tag: ${tag.label}`}
       description={description}

@@ -10,7 +10,7 @@ tags:
   - Simplicity
   - Principles
 coverImage: ''
-readTime: 3 min read
+readTime: 3
 draft: false
 ---
 

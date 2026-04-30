@@ -56,7 +56,7 @@ collections:
       - { label: Tags, name: tags, widget: list, required: false }
       - { label: Cover Image, name: coverImage, widget: image, required: false }
       - { label: Cover Image Alt Text, name: coverImageAlt, widget: string, required: false, hint: "Describe the visual content. If left empty, the site falls back to the post title." }
-      - { label: Read Time, name: readTime, widget: string, required: false }
+      - { label: Read Time, name: readTime, widget: number, value_type: int, min: 1, required: false, hint: "Enter minutes only. The site displays this as '[number] min read'." }
       - { label: Show Table of Contents, name: showTableOfContents, widget: boolean, default: true, required: false }
       - { label: Show Related Posts, name: showRelatedPosts, widget: boolean, default: true, required: false }
       - { label: Related Posts Heading, name: relatedPostsHeading, widget: string, default: Related posts, required: false }

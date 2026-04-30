@@ -1,10 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import BackButton from "../components/BackButton.astro";
 import SearchForm from "../components/SearchForm.astro";
 import {
   formatDate,
   getArchiveMonthHref,
   getCategoryHref,
+  getPageHref,
   getPostHref,
   getResolvedPosts,
   getTaxonomySlug,
@@ -95,6 +97,7 @@ const resultItemsJson = JSON.stringify(resultItems)
 
 <BaseLayout title="Results - Built by Underdogs">
   <main class="main">
+    <BackButton href={getPageHref("search")} />
     <div class="page__header-wrapper">
       <div class="page__header">
         <header>

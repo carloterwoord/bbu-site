@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import AuthorCard from "../../../../components/AuthorCard.astro";
+import BackButton from "../../../../components/BackButton.astro";
 import PaginatedPostList from "../../../../components/PaginatedPostList.astro";
 import {
   getAuthorHref,
@@ -32,6 +33,7 @@ const { author, page, posts } = Astro.props;
 
 <BaseLayout title={`${author.data.name} - Page ${page} - Built by Underdogs`}>
   <main class="main">
+    <BackButton href={getAuthorHref(author.data.slug)} />
     <div class="page">
       <AuthorCard
         name={author.data.name}

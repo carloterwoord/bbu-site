@@ -10,7 +10,9 @@ tags:
   - asdf
   - gsdg
 coverImage: ''
-readTime: ''
+coverImageAlt: ''
+readTime: 5
+relatedPostsHeading: ''
 draft: false
 ---
 

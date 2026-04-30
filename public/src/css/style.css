@@ -1225,7 +1225,6 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 
 .article__cover-wrapper {
     margin-top: var(--space-lg);
-    border-radius: 0.6em;
     box-shadow: 0 0.0625em 0.125em oklch(var(--lch-black) / 0.02);
 }
 
@@ -1274,29 +1273,33 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     object-fit: cover;
 }
 
+@media (max-width: 625px) {
+    .page__cover img {
+        height: 100%;
+        max-height: none;
+    }
+}
+
 .progressive-image {
-    opacity: 0.88;
-    filter: blur(1rem);
-    transform: scale(1.025);
-    transform-origin: center;
-    transition:
-        opacity 0.45s ease,
-        filter 0.45s ease,
-        transform 0.45s ease;
-    will-change: opacity, filter, transform;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
 }
 
 .progressive-image--loaded {
-    opacity: 1;
-    filter: blur(0);
-    transform: scale(1);
+    image-rendering: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .progressive-image {
-        transition: none;
-        transform: none;
-    }
+.progressive-image-frame {
+    position: relative;
+}
+
+.progressive-image-pixelator {
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    will-change: opacity;
 }
 
 .page__header-wrapper {
@@ -2677,4 +2680,47 @@ html[data-theme="dark"] .search-form .search-submit {
     transform: translate(-50%, -50%);
     font-size: var(--font-size-2xl);
     font-weight: 500;
+}
+
+.page-back-button {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border: 1px solid oklch(var(--lch-coal) / 0.1);
+    border-radius: 0.35em;
+    background: var(--color-white);
+    color: var(--color-black);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.page-back-button span {
+    transform: rotate(-90deg);
+    font-size: var(--font-size-2xl);
+    font-weight: 500;
+    line-height: 1;
+}
+
+@media (hover: hover) {
+    .page-back-button {
+        transition: border-color var(--transition);
+    }
+
+    .page-back-button:hover,
+    .page-back-button:focus-visible {
+        border-color: var(--color-black);
+    }
+}
+
+@media (max-width: 625px) {
+    .scroll-button,
+    .page-back-button {
+        display: none;
+    }
 }

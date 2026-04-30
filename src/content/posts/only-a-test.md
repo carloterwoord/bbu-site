@@ -9,7 +9,7 @@ categories:
 tags:
   - fds
 coverImage: ''
-readTime: '4'
+readTime: 4
 draft: false
 ---
 

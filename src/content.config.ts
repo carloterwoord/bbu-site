@@ -28,6 +28,24 @@ function normalizeSlug(value: string) {
   return slug || "untitled";
 }
 
+function formatReadTime(value: unknown) {
+  if (value === null || value === undefined) return "";
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) && value > 0 ? `${Math.round(value)} min read` : "";
+  }
+
+  if (typeof value === "string") {
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return "";
+
+    const minutes = Number.parseInt(trimmedValue, 10);
+    return Number.isFinite(minutes) && minutes > 0 ? `${minutes} min read` : "";
+  }
+
+  return "";
+}
+
 const defaultPostSeo = {
   title: "",
   description: "",
@@ -92,7 +110,7 @@ const posts = defineCollection({
       tags: z.array(z.string()).default([]),
       coverImage: z.string().default(""),
       coverImageAlt: z.string().default(""),
-      readTime: z.string().default(""),
+      readTime: z.preprocess(formatReadTime, z.string().default("")),
       showTableOfContents: z.boolean().default(true),
       showRelatedPosts: z.boolean().default(true),
       relatedPostsHeading: z.string().default("Related posts"),

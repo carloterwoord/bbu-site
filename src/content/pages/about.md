@@ -20,7 +20,7 @@ There is an idea behind it. Built by Underdogs is a platform to distribute what 
 
 A place that celebrates making and the art of craft. How to build useful things and the journey of figuring out ways on becoming independent.
 
-## Why go through all this effort?
+### Why go through all this effort?
 
 Sharing teaches you more than you might think at first. You will learn how to write and how to present your ideas clearly.
 

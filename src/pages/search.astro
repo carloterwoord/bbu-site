@@ -65,10 +65,14 @@ const yearSections = Object.entries(postsByYear)
 <BaseLayout title={`${pageTitle} - Built by Underdogs`}>
   <main class="main">
     <div class="page page__header space-top--3xl">
-      <header class="article__headline">
+      <header>
         <h1>{pageTitle === "Search" ? "Search Built by Underdogs" : pageTitle}</h1>
-        {pageExcerpt && <p>{pageExcerpt}</p>}
       </header>
+      {pageExcerpt && (
+        <article>
+          <p>{pageExcerpt}</p>
+        </article>
+      )}
       <hr class="page__header__divider" />
       <div>
         <SearchForm />

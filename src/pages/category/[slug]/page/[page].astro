@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import BackButton from "../../../../components/BackButton.astro";
 import PageHeader from "../../../../components/PageHeader.astro";
 import PaginatedPostList from "../../../../components/PaginatedPostList.astro";
 import {
@@ -33,6 +34,7 @@ const { category, page, posts } = Astro.props;
 
 <BaseLayout title={`${category.data.name} - Page ${page} - Built by Underdogs`}>
   <main class="main">
+    <BackButton href={getCategoryHref(category.data.slug)} />
     <PageHeader
       title={category.data.name}
       description={category.data.description}

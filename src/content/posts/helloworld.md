@@ -10,7 +10,7 @@ tags:
   - big
   - bigger
 coverImage: ''
-readTime: '2'
+readTime: 2
 draft: false
 ---
 
