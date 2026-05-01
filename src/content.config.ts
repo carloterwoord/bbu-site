@@ -67,8 +67,9 @@ const defaultPostSeo = {
   structuredDataType: "BlogPosting" as const,
 };
 
-const postSeoSchema = z
-  .object({
+const postSeoSchema = z.preprocess(
+  (value) => value ?? undefined,
+  z.object({
     title: z.string().default(""),
     description: z.string().default(""),
     canonicalUrl: z.string().default(""),
@@ -95,7 +96,8 @@ const postSeoSchema = z
       .default([]),
     structuredDataType: z.enum(structuredDataTypes).default("BlogPosting"),
   })
-  .default(defaultPostSeo);
+    .default(defaultPostSeo)
+);
 
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/posts" }),

@@ -29,7 +29,7 @@
 
     const getPicsumPlaceholder = (url) => {
         const match = url.pathname.match(
-            /^\/id\/([^/]+)\/(\d+)\/(\d+)(\.[a-z0-9]+)?$/i
+            /^\/id\/([^/]+)\/(\d+)\/(\d+)(\.[a-z0-9]+)?$/i,
         );
         if (!match) return "";
 
@@ -42,7 +42,7 @@
         const placeholderWidth = PROGRESSIVE_PLACEHOLDER_WIDTH;
         const placeholderHeight = Math.max(
             1,
-            Math.round((height / width) * placeholderWidth)
+            Math.round((height / width) * placeholderWidth),
         );
         url.pathname = `/id/${match[1]}/${placeholderWidth}/${placeholderHeight}${match[4] || ""}`;
         return url.toString();
@@ -78,8 +78,7 @@
     const prefersReducedMotion = () =>
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const easeInOutSine = (progress) =>
-        -(Math.cos(Math.PI * progress) - 1) / 2;
+    const easeInOutSine = (progress) => -(Math.cos(Math.PI * progress) - 1) / 2;
 
     const smoothstep = (progress) => progress * progress * (3 - 2 * progress);
 
@@ -93,12 +92,18 @@
 
     const shouldAnimatePixelTransition = (image, placeholderStartedAt) => {
         if (prefersReducedMotion()) return false;
-        if (performance.now() - placeholderStartedAt < MIN_PLACEHOLDER_VISIBLE_MS) {
+        if (
+            performance.now() - placeholderStartedAt <
+            MIN_PLACEHOLDER_VISIBLE_MS
+        ) {
             return false;
         }
 
         const imageRect = image.getBoundingClientRect();
-        if (Math.min(imageRect.width, imageRect.height) < MIN_PIXEL_TRANSITION_SIZE) {
+        if (
+            Math.min(imageRect.width, imageRect.height) <
+            MIN_PIXEL_TRANSITION_SIZE
+        ) {
             return false;
         }
 
@@ -112,7 +117,9 @@
         if (normalizedToken === endKeyword) return 1;
         if (normalizedToken.endsWith("%")) {
             const percentage = Number.parseFloat(normalizedToken);
-            return Number.isFinite(percentage) ? clamp(percentage / 100, 0, 1) : 0.5;
+            return Number.isFinite(percentage)
+                ? clamp(percentage / 100, 0, 1)
+                : 0.5;
         }
         return 0.5;
     };
@@ -152,7 +159,8 @@
 
         const parent = image.parentElement;
         const imageRect = image.getBoundingClientRect();
-        if (!parent || imageRect.width <= 0 || imageRect.height <= 0) return null;
+        if (!parent || imageRect.width <= 0 || imageRect.height <= 0)
+            return null;
 
         const parentStyle = window.getComputedStyle(parent);
         if (parentStyle.position === "static") {
@@ -176,7 +184,9 @@
         pixelator.style.width = `${imageRect.width}px`;
         pixelator.style.height = `${imageRect.height}px`;
         pixelator.style.borderRadius = imageStyle.borderRadius;
-        pixelator.style.zIndex = Number.isFinite(imageZIndex) ? String(imageZIndex) : "1";
+        pixelator.style.zIndex = Number.isFinite(imageZIndex)
+            ? String(imageZIndex)
+            : "1";
 
         parent.append(pixelator);
 
@@ -194,8 +204,14 @@
     };
 
     const drawPixelatedFrame = (transition, blockSize) => {
-        const sampleWidth = Math.max(1, Math.round(transition.cssWidth / blockSize));
-        const sampleHeight = Math.max(1, Math.round(transition.cssHeight / blockSize));
+        const sampleWidth = Math.max(
+            1,
+            Math.round(transition.cssWidth / blockSize),
+        );
+        const sampleHeight = Math.max(
+            1,
+            Math.round(transition.cssHeight / blockSize),
+        );
         const canvasContext = transition.canvas.getContext("2d");
         const tempContext = transition.tempCanvas.getContext("2d");
         if (!canvasContext || !tempContext) return false;
@@ -212,7 +228,7 @@
                     sampleWidth,
                     sampleHeight,
                     transition.fit,
-                    transition.position
+                    transition.position,
                 )
             ) {
                 return false;
@@ -229,7 +245,7 @@
                 0,
                 0,
                 transition.width,
-                transition.height
+                transition.height,
             );
         } catch {
             return false;
@@ -243,7 +259,7 @@
             Math.max(transition.cssWidth, transition.cssHeight) /
                 PROGRESSIVE_PLACEHOLDER_WIDTH,
             MIN_PIXEL_BLOCK_SIZE,
-            MAX_PIXEL_BLOCK_SIZE
+            MAX_PIXEL_BLOCK_SIZE,
         );
 
     const animatePixelTransition = (transition, startBlockSize) => {
@@ -254,18 +270,21 @@
             const progress = clamp(
                 (time - startedAt) / PIXEL_TRANSITION_DURATION,
                 0,
-                1
+                1,
             );
             const easedProgress = easeInOutSine(progress);
             const blockSize = Math.pow(startBlockSize, 1 - easedProgress);
 
             if (progress >= PIXELATOR_FADE_START) {
                 const fadeProgress = clamp(
-                    (progress - PIXELATOR_FADE_START) / (1 - PIXELATOR_FADE_START),
+                    (progress - PIXELATOR_FADE_START) /
+                        (1 - PIXELATOR_FADE_START),
                     0,
-                    1
+                    1,
                 );
-                transition.canvas.style.opacity = String(1 - smoothstep(fadeProgress));
+                transition.canvas.style.opacity = String(
+                    1 - smoothstep(fadeProgress),
+                );
             }
 
             if (!drawPixelatedFrame(transition, blockSize) || progress >= 1) {
@@ -279,13 +298,17 @@
         requestAnimationFrame(animate);
     };
 
-    const loadFullImage = (image, fullSrc, placeholderStartedAt = performance.now()) => {
+    const loadFullImage = (
+        image,
+        fullSrc,
+        placeholderStartedAt = performance.now(),
+    ) => {
         const loader = new Image();
 
         loader.onload = async () => {
             let pixelTransition = shouldAnimatePixelTransition(
                 image,
-                placeholderStartedAt
+                placeholderStartedAt,
             )
                 ? createPixelTransition(image, loader)
                 : null;
@@ -338,7 +361,10 @@
         image.dataset[FULL_SRC_ATTR] = normalizedFullSrc;
         image.classList.add("progressive-image");
 
-        if (placeholderSrc && normalizeUrl(placeholderSrc) !== normalizedFullSrc) {
+        if (
+            placeholderSrc &&
+            normalizeUrl(placeholderSrc) !== normalizedFullSrc
+        ) {
             image.src = placeholderSrc;
             loadFullImage(image, normalizedFullSrc, performance.now());
             return;
@@ -347,8 +373,12 @@
         if (image.complete) {
             markLoaded(image);
         } else {
-            image.addEventListener("load", () => markLoaded(image), { once: true });
-            image.addEventListener("error", () => markLoaded(image), { once: true });
+            image.addEventListener("load", () => markLoaded(image), {
+                once: true,
+            });
+            image.addEventListener("error", () => markLoaded(image), {
+                once: true,
+            });
         }
     };
 
@@ -386,6 +416,105 @@
 })();
 
 (() => {
+    const CARD_SELECTOR = "a.url-card[href]";
+    const IMAGE_SELECTOR = ".url-card-image";
+    const CONTENT_SELECTOR = ".url-card-content";
+    const INIT_FLAG = "__bbuUrlCardsInitialized";
+    const ENHANCED_ATTR = "urlCardEnhanced";
+    const ENHANCING_ATTR = "urlCardEnhancing";
+
+    const isUsefulText = (value) =>
+        typeof value === "string" && value.trim().length > 0;
+
+    const createImageElement = (src) => {
+        const frame = document.createElement("span");
+        const image = document.createElement("img");
+
+        frame.className = "url-card-image";
+        image.src = src;
+        image.alt = "";
+        image.loading = "lazy";
+        image.decoding = "async";
+        image.referrerPolicy = "origin";
+
+        frame.append(image);
+        return frame;
+    };
+
+    const addDescription = (card, description) => {
+        if (!isUsefulText(description)) return;
+        if (card.querySelector(".url-card-description")) return;
+
+        const content = card.querySelector(CONTENT_SELECTOR);
+        if (!content) return;
+
+        const descriptionElement = document.createElement("span");
+        descriptionElement.className = "url-card-description";
+        descriptionElement.textContent = description.trim();
+        content.append(descriptionElement);
+    };
+
+    const enhanceUrlCard = async (card) => {
+        if (!(card instanceof HTMLAnchorElement)) return;
+        if (card.dataset[ENHANCED_ATTR] === "true") return;
+        if (card.dataset[ENHANCING_ATTR] === "true") return;
+        if (card.querySelector(IMAGE_SELECTOR)) {
+            card.dataset[ENHANCED_ATTR] = "true";
+            return;
+        }
+
+        card.dataset[ENHANCING_ATTR] = "true";
+
+        try {
+            const response = await fetch(
+                `/api/metadata?url=${encodeURIComponent(card.href)}`,
+                {
+                    headers: {
+                        accept: "application/json",
+                    },
+                },
+            );
+            if (!response.ok) return;
+
+            const metadata = await response.json();
+            if (!metadata || typeof metadata !== "object") return;
+
+            if (isUsefulText(metadata.image)) {
+                card.prepend(createImageElement(metadata.image.trim()));
+                window["BBUProgressiveImages"]?.prepareImages?.(card);
+            }
+
+            addDescription(card, metadata.description);
+            card.dataset[ENHANCED_ATTR] = "true";
+        } catch {
+            /* Missing local API support should not break post rendering. */
+        } finally {
+            delete card.dataset[ENHANCING_ATTR];
+        }
+    };
+
+    const enhanceUrlCards = () => {
+        document.querySelectorAll(CARD_SELECTOR).forEach((card) => {
+            void enhanceUrlCard(card);
+        });
+    };
+
+    if (!window[INIT_FLAG]) {
+        document.addEventListener("astro:page-load", enhanceUrlCards);
+        document.addEventListener("astro:after-swap", enhanceUrlCards);
+        window[INIT_FLAG] = true;
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", enhanceUrlCards, {
+            once: true,
+        });
+    } else {
+        enhanceUrlCards();
+    }
+})();
+
+(() => {
     const THEME_KEY = "bbu-theme";
     const THEME_DARK = "dark";
     const THEME_LIGHT = "light";
@@ -419,20 +548,19 @@
         getStoredTheme() || (mediaQuery.matches ? THEME_DARK : THEME_LIGHT);
 
     const updateToggleState = (theme) => {
-        const nextTheme =
-            theme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
+        const nextTheme = theme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
         const label =
             nextTheme === THEME_DARK
                 ? "Switch to dark mode"
                 : "Switch to light mode";
-        const tooltip = nextTheme === THEME_DARK ? "Dark" : "Light";
+        const tooltip = nextTheme === THEME_DARK ? "Dark side" : "Light mode";
 
         document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
             const isMobileToggle = button.classList.contains(
-                "theme-toggle--mobile"
+                "theme-toggle--mobile",
             );
             const isDesktopNavToggle = button.classList.contains(
-                "theme-toggle--desktop-nav-item"
+                "theme-toggle--desktop-nav-item",
             );
             button.setAttribute("aria-label", label);
             if (isMobileToggle) {
@@ -447,7 +575,7 @@
             }
             button.setAttribute(
                 "aria-pressed",
-                theme === THEME_DARK ? "true" : "false"
+                theme === THEME_DARK ? "true" : "false",
             );
         });
 
@@ -474,7 +602,7 @@
         if (!Number.isFinite(numericValue)) return 0;
         if (trimmed.endsWith("rem")) {
             const rootFontSize = Number.parseFloat(
-                getComputedStyle(document.documentElement).fontSize
+                getComputedStyle(document.documentElement).fontSize,
             );
             return numericValue * rootFontSize;
         }
@@ -482,8 +610,9 @@
     };
 
     const getThemeNavTooltipOffset = () => {
-        const value = getComputedStyle(root)
-            .getPropertyValue("--theme-nav-tooltip-inline-offset");
+        const value = getComputedStyle(root).getPropertyValue(
+            "--theme-nav-tooltip-inline-offset",
+        );
         return getCssLength(value);
     };
 
@@ -623,7 +752,7 @@
         page,
         label,
         className,
-        disabled = false
+        disabled = false,
     ) => {
         const element = document.createElement(disabled ? "span" : "a");
         element.className = `pagination__button ${className}${
@@ -651,8 +780,10 @@
         header.className = "article__headline";
 
         const meta = document.createElement("div");
+        meta.className = "article__meta";
 
         const time = document.createElement("time");
+        time.className = "article__meta-item";
         time.setAttribute("datetime", item.dateISO || "");
         if (item.dateHref) {
             const dateLink = document.createElement("a");
@@ -663,16 +794,31 @@
             time.textContent = item.dateLabel || "";
         }
 
-        const divider = document.createElement("span");
-        divider.textContent = "\u2022";
-
-        const category = document.createElement("p");
+        const category = document.createElement("span");
+        category.className = "article__meta-item";
+        const categoryDivider = document.createElement("span");
+        categoryDivider.className = "article__meta-separator";
+        categoryDivider.setAttribute("aria-hidden", "true");
+        categoryDivider.textContent = "\u2022";
         const categoryLink = document.createElement("a");
         categoryLink.href = item.categoryHref || "#";
         categoryLink.textContent = item.categoryLabel || "";
-        category.append(categoryLink);
+        category.append(categoryDivider, categoryLink);
 
-        meta.append(time, divider, category);
+        meta.append(time, category);
+
+        if (item.readTime) {
+            const readTime = document.createElement("span");
+            readTime.className = "article__meta-item";
+            const readTimeDivider = document.createElement("span");
+            readTimeDivider.className = "article__meta-separator";
+            readTimeDivider.setAttribute("aria-hidden", "true");
+            readTimeDivider.textContent = "\u2022";
+            const readTimeText = document.createElement("span");
+            readTimeText.textContent = item.readTime;
+            readTime.append(readTimeDivider, readTimeText);
+            meta.append(readTime);
+        }
 
         const headline = document.createElement("div");
         headline.className = "article__headline__link";
@@ -693,7 +839,9 @@
             const image = document.createElement("img");
             const placeholderSrc =
                 item.coverImagePlaceholder ||
-                window["BBUProgressiveImages"]?.getPlaceholderSrc(item.coverImage) ||
+                window["BBUProgressiveImages"]?.getPlaceholderSrc(
+                    item.coverImage,
+                ) ||
                 "";
             image.src = placeholderSrc || item.coverImage;
             image.dataset.progressiveImage = "";
@@ -737,9 +885,7 @@
     };
 
     const initSearchResults = () => {
-        const dataSource = document.querySelector(
-            "[data-search-results-data]"
-        );
+        const dataSource = document.querySelector("[data-search-results-data]");
         if (!dataSource) return;
 
         document.querySelector("[data-search-results]")?.remove();
@@ -760,10 +906,10 @@
         const empty = document.querySelector("[data-search-empty]");
         const input = document.querySelector('.search-form input[name="q"]');
         const paginationDivider = document.querySelector(
-            "[data-results-pagination-divider]"
+            "[data-results-pagination-divider]",
         );
         const paginationContainer = document.querySelector(
-            "[data-results-pagination]"
+            "[data-results-pagination]",
         );
         let items = [];
         try {
@@ -773,11 +919,11 @@
         }
         const pageSize = Math.max(
             1,
-            Number(dataSource.dataset.pageSize || 6) || 6
+            Number(dataSource.dataset.pageSize || 6) || 6,
         );
         const requestedPage = Math.max(
             1,
-            Math.floor(Number(params.get("page")) || 1)
+            Math.floor(Number(params.get("page")) || 1),
         );
 
         if (input instanceof HTMLInputElement) {
@@ -808,8 +954,7 @@
             const itemMonth = item.month || "";
 
             const matchesQuery =
-                !hasQuery ||
-                terms.every((term) => searchText.includes(term));
+                !hasQuery || terms.every((term) => searchText.includes(term));
             const matchesTag = !tag || tags.includes(tag);
             const matchesAuthor = !author || itemAuthor === author;
             const matchesYear = !year || itemYear === year;
@@ -839,7 +984,7 @@
             resultsContainer.className = "search__results__container";
             resultsContainer.setAttribute("data-search-results", "");
             resultsContainer.replaceChildren(
-                ...pagedItems.map(createResultItem)
+                ...pagedItems.map(createResultItem),
             );
             dataSource.insertAdjacentElement("beforebegin", resultsContainer);
         }
@@ -895,8 +1040,8 @@
                 currentPage - 1,
                 previousLabel,
                 "pagination__button--prev",
-                currentPage === 1
-            )
+                currentPage === 1,
+            ),
         );
 
         const list = document.createElement("ul");
@@ -930,8 +1075,8 @@
                 currentPage + 1,
                 nextLabel,
                 "pagination__button--next",
-                currentPage === totalPages
-            )
+                currentPage === totalPages,
+            ),
         );
 
         inner.append(nav);

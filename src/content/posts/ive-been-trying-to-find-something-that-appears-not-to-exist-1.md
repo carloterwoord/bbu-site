@@ -21,6 +21,8 @@ draft: false
 
 You used to be yourself, authentically and unapologetically. Whether in business meetings or social gatherings, your uniqueness was your strength. And it was beautiful.
 
+https://www.nederland.fm/
+
 Today, most people are copies. Not original, but _replicated_. <u class="underline--wavy">Following the latest trends</u> enters you into an endless <u>cycle of conformity.</u> Every day you wake up trying to be <u class="underline--red">someone else's version</u> of success.
 
 <blockquote>
@@ -31,6 +33,8 @@ Today, most people are copies. Not original, but _replicated_. <u class="underli
 ## Introducing Built by Underdogs, a movement to help people find their voice.
 
 <mark class="highlight--yellow">For nearly two decades, the personal branding playbook has benefited the loud and the privileged.</mark> With carefully curated feeds and filters, careers have soared on the backs of people pressured to fit into boxes they never belonged in.
+
+https://www.nederland.fm/
 
 ### This is about two fundamental beliefs
 

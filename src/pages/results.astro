@@ -79,6 +79,7 @@ const resultItems = await Promise.all(
       dateHref: getArchiveMonthHref(year, month),
       categoryLabel,
       categoryHref,
+      readTime: post.entry.data.readTime,
       authorSlug: post.author?.data.slug ?? "",
       year: String(year),
       month: `${year}-${String(month).padStart(2, "0")}`,

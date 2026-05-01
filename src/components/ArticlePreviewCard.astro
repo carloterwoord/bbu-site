@@ -9,6 +9,7 @@ interface Props {
   dateHref?: string;
   categoryLabel: string;
   categoryHref: string;
+  readTime?: string;
   title: string;
   href: string;
   coverImage?: string;
@@ -23,6 +24,7 @@ const {
   dateHref = "",
   categoryLabel,
   categoryHref,
+  readTime = "",
   title,
   href,
   coverImage = "",
@@ -44,6 +46,7 @@ const resolvedCoverImageAlt = getPostCoverAlt(coverImageAlt, title);
       dateHref={dateHref}
       categoryLabel={categoryLabel}
       categoryHref={categoryHref}
+      readTime={readTime}
     />
     <div class="article__headline__link">
       <h2>{title}</h2>

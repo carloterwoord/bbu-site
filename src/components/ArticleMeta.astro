@@ -18,16 +18,18 @@ const {
 } = Astro.props;
 ---
 
-<div>
-  <time datetime={dateISO}>
+<div class="article__meta">
+  <time class="article__meta-item" datetime={dateISO}>
     {dateHref ? <a href={dateHref}>{dateLabel}</a> : dateLabel}
   </time>
-  <span>•</span>
-  <p><a href={categoryHref}>{categoryLabel}</a></p>
+  <span class="article__meta-item">
+    <span class="article__meta-separator" aria-hidden="true">•</span>
+    <a href={categoryHref}>{categoryLabel}</a>
+  </span>
   {readTime && (
-    <>
-      <span>•</span>
-      <p>{readTime}</p>
-    </>
+    <span class="article__meta-item">
+      <span class="article__meta-separator" aria-hidden="true">•</span>
+      <span>{readTime}</span>
+    </span>
   )}
 </div>
