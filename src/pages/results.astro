@@ -51,7 +51,7 @@ const resultItems = await Promise.all(
     const month = post.entry.data.date.getMonth() + 1;
     const excerptText = textFromHtml(post.entry.data.excerpt);
     const bodyText = textFromMarkdown(post.entry.body ?? "");
-    const previewHtml = getPostPreviewHtml(
+    const previewHtml = await getPostPreviewHtml(
       post.entry.body,
       post.entry.data.excerpt,
       1

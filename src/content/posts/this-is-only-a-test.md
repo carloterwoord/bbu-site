@@ -21,12 +21,4 @@ draft: false
 
 https://chat.com
 
-https://google.com/
-
-https://claude.ai/
-
-https://cluster.nl/
-
-https://www.nytimes.com/2026/04/15/opinion/art-artificial-intelligence.html?smid=url-share 
-
-https://www.nytimes.com/video/us/100000010873356/hegseth-senate-hearing-iran.html?smid=url-share
+Very coool that it all starts to work propperly!

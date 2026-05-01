@@ -454,6 +454,15 @@
         content.append(descriptionElement);
     };
 
+    const updateTitle = (card, title) => {
+        if (!isUsefulText(title)) return;
+
+        const titleElement = card.querySelector(".url-card-title");
+        if (!titleElement) return;
+
+        titleElement.textContent = title.trim();
+    };
+
     const enhanceUrlCard = async (card) => {
         if (!(card instanceof HTMLAnchorElement)) return;
         if (card.dataset[ENHANCED_ATTR] === "true") return;
@@ -478,6 +487,8 @@
 
             const metadata = await response.json();
             if (!metadata || typeof metadata !== "object") return;
+
+            updateTitle(card, metadata.title);
 
             if (isUsefulText(metadata.image)) {
                 card.prepend(createImageElement(metadata.image.trim()));
@@ -504,6 +515,11 @@
         document.addEventListener("astro:after-swap", enhanceUrlCards);
         window[INIT_FLAG] = true;
     }
+
+    window["BBUUrlCards"] = {
+        enhanceUrlCard,
+        enhanceUrlCards,
+    };
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", enhanceUrlCards, {
@@ -987,6 +1003,7 @@
                 ...pagedItems.map(createResultItem),
             );
             dataSource.insertAdjacentElement("beforebegin", resultsContainer);
+            window["BBUUrlCards"]?.enhanceUrlCards?.();
         }
 
         if (summary) {

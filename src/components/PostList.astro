@@ -14,33 +14,48 @@ interface Props {
 }
 
 const { posts } = Astro.props;
----
 
-{posts.map((post, index) => {
+const previewPosts = await Promise.all(posts.map(async (post, index) => {
   const firstCategory = post.categories[0];
   const categoryLabel = firstCategory?.data.name ?? "Category";
   const categoryHref = getCategoryHref(firstCategory?.data.slug ?? "category");
   const year = post.entry.data.date.getFullYear();
   const month = post.entry.data.date.getMonth() + 1;
-  const previewHtml = getPostPreviewHtml(
+  const previewHtml = await getPostPreviewHtml(
     post.entry.body,
     post.entry.data.excerpt
   );
 
-  return (
-    <ArticlePreviewCard
-      dateISO={post.entry.data.date.toISOString().slice(0, 10)}
-      dateLabel={formatDate(post.entry.data.date)}
-      dateHref={getArchiveMonthHref(year, month)}
-      categoryLabel={categoryLabel}
-      categoryHref={categoryHref}
-      readTime={post.entry.data.readTime}
-      title={post.entry.data.title}
-      href={getPostHref(post.entry.data.slug)}
-      coverImage={post.entry.data.coverImage}
-      coverImageAlt={post.entry.data.coverImageAlt}
-      previewHtml={previewHtml}
-      showDivider={index < posts.length - 1}
-    />
-  );
-})}
+  return {
+    dateISO: post.entry.data.date.toISOString().slice(0, 10),
+    dateLabel: formatDate(post.entry.data.date),
+    dateHref: getArchiveMonthHref(year, month),
+    categoryLabel,
+    categoryHref,
+    readTime: post.entry.data.readTime,
+    title: post.entry.data.title,
+    href: getPostHref(post.entry.data.slug),
+    coverImage: post.entry.data.coverImage,
+    coverImageAlt: post.entry.data.coverImageAlt,
+    previewHtml,
+    showDivider: index < posts.length - 1,
+  };
+}));
+---
+
+{previewPosts.map((post) => (
+  <ArticlePreviewCard
+    dateISO={post.dateISO}
+    dateLabel={post.dateLabel}
+    dateHref={post.dateHref}
+    categoryLabel={post.categoryLabel}
+    categoryHref={post.categoryHref}
+    readTime={post.readTime}
+    title={post.title}
+    href={post.href}
+    coverImage={post.coverImage}
+    coverImageAlt={post.coverImageAlt}
+    previewHtml={post.previewHtml}
+    showDivider={post.showDivider}
+  />
+))}

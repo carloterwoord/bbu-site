@@ -244,7 +244,7 @@ function renderUrlCard(url, metadata = {}) {
   const displayUrl = getDisplayUrl(url);
 
   return [
-    `<a class="url-card" data-url-card href="${escapeAttribute(href)}">`,
+    `<a class="url-card" data-url-card href="${escapeAttribute(href)}" target="_blank" rel="noopener noreferrer">`,
     metadata.image
       ? `<span class="url-card-image"><img src="${escapeAttribute(metadata.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="origin"></span>`
       : "",

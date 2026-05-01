@@ -1652,6 +1652,9 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
 .article--preview .article__headline__link h2 {
     color: var(--color-black);
     text-decoration: none;
+    text-decoration-thickness: 0.055em;
+    text-decoration-skip-ink: auto;
+    text-underline-offset: 0.1em;
 }
 
 .article--preview {
@@ -1680,6 +1683,10 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     pointer-events: none;
 }
 
+.article--preview .article__content-preview a.url-card {
+    pointer-events: auto;
+}
+
 @media (hover: hover) {
     .article__headline__link a:focus,
     .article__headline__link a:hover,
@@ -1687,7 +1694,6 @@ html[data-theme="dark"] .theme-toggle__icon--sun {
     .article--preview:focus-within .article__headline__link h2 {
         color: var(--color-blue);
         text-decoration: underline;
-        text-underline-offset: 0.15em;
         cursor: pointer;
     }
 }
@@ -1915,7 +1921,7 @@ strong {
     max-width: 100%;
     overflow: hidden;
     border: 0.0625em solid var(--color-url-card-border);
-    border-radius: 0.5rem;
+    /* border-radius: 0.5rem; */
     background-color: var(--color-url-card-bg);
     color: var(--color-black);
     font-weight: inherit;
@@ -2010,9 +2016,15 @@ strong {
 .article__content a[href*="science.org/stoken/"] .url-card-title::after,
 .article__content a[href*="share.inquirer.com/"] .url-card-title::after,
 .article__content a[href*="theglobeandmail.com/gift"] .url-card-title::after,
-.article__content a[href*="defector.com"][href*="giftLink="] .url-card-title::after,
-.article__content a[href*="aftermath.site"][href*="giftLink="] .url-card-title::after,
-.article__content a[href*="hellgatenyc.com"][href*="giftLink="] .url-card-title::after,
+.article__content
+    a[href*="defector.com"][href*="giftLink="]
+    .url-card-title::after,
+.article__content
+    a[href*="aftermath.site"][href*="giftLink="]
+    .url-card-title::after,
+.article__content
+    a[href*="hellgatenyc.com"][href*="giftLink="]
+    .url-card-title::after,
 .article__content
     a[href*="slate.com"][href*="tpcc=giftedarticle"]
     .url-card-title::after,
@@ -2116,25 +2128,30 @@ strong {
 }
 
 .article__content-preview {
+    --preview-fade-size: clamp(2.5rem, 8vw, 6rem);
+
     position: relative;
     overflow: hidden;
 }
 
+.article__content-preview::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    height: var(--preview-fade-size);
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--color-white));
+}
+
 .article__content-preview > *:last-child {
     position: relative;
-    padding-bottom: clamp(1em, 3vw, var(--space-lg));
 }
 
 .article__content-preview > *:last-child::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 1;
-    width: 100%;
-    height: clamp(16em, 30vw, 24em);
-    pointer-events: none;
-    background: linear-gradient(to bottom, transparent, var(--color-white));
+    content: none;
 }
 
 .article__keep-reading a {
@@ -2452,7 +2469,7 @@ strong {
 }
 
 .search__content__tag-item {
-    font-size: clamp(var(--font-size-2xl), 2.5vw, var(--font-size-3xl));
+    font-size: clamp(var(--font-size-xl), 2.5vw, var(--font-size-3xl));
     letter-spacing: var(--letter-spacing-base);
     line-height: var(--line-height-3xl);
 }
@@ -2664,7 +2681,12 @@ html[data-theme="dark"] .search-form .search-submit {
 
 .search__results__item .article__content-preview {
     min-height: 7.5rem;
+    padding-bottom: 0;
     margin-top: calc(var(--space-base) / 2) !important;
+}
+
+.search__results__item .article__content-preview::after {
+    content: none;
 }
 
 .search__results__item .article__keep-reading {
