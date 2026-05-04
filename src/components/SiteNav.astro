@@ -76,6 +76,9 @@ const navData = `{
         String(this.isDesktopMenuOpen)
       );
     } catch (_) {}
+  },
+  closeMobileMenu() {
+    this.isMenuOpen = false;
   }
 }`;
 const navClass = "{ 'nav--desktop-open': !isMobile && isDesktopMenuOpen, 'nav--desktop-closed': !isMobile && !isDesktopMenuOpen }";
@@ -116,7 +119,7 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
   <div class="nav__mobile__container" :class={mobileClass} aria-label="Mobile Navigation">
     <header class="nav__mobile__header">
       <div class="nav__mobile__logo">
-        <a href={homeHref}>{siteTitle}</a>
+        <a href={homeHref} @click="closeMobileMenu()">{siteTitle}</a>
       </div>
 
       <div class="nav__mobile__actions">
@@ -135,7 +138,13 @@ const desktopClass = "{ 'nav__desktop__container--open': isDesktopMenuOpen, 'nav
       </div>
     </header>
 
-    <div id="mobile-menu" x-show="isMenuOpen" class="nav__mobile__container__content no-scrollbar" :aria-hidden="!isMenuOpen">
+    <div
+      id="mobile-menu"
+      x-show="isMenuOpen"
+      class="nav__mobile__container__content no-scrollbar"
+      :aria-hidden="!isMenuOpen"
+      @click="if ($event.target.closest('a')) closeMobileMenu()"
+    >
       <div>
         <article>
           <p>Thoughts, opinions and insights on making, becoming independent and finding your voice as an Underdog.</p>
