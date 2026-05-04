@@ -12,8 +12,17 @@ const LOCAL_IMAGE_EXTENSIONS = new Set([
   ".png",
   ".webp",
 ]);
-const PROGRESSIVE_PLACEHOLDER_WIDTH = 32;
+const PROGRESSIVE_PLACEHOLDER_WIDTH = 64;
 const localPlaceholderCache = new Map<string, Promise<string>>();
+export const defaultPostCoverImages = [
+  "/uploads/black_placeholder.webp",
+  "/uploads/blue_placeholder.webp",
+  "/uploads/cyan_placeholder.webp",
+  "/uploads/gray_placeholder.webp",
+  "/uploads/green_placeholder.webp",
+  "/uploads/orange_placeholder.webp",
+];
+const defaultPostCoverImageSet = new Set(defaultPostCoverImages);
 
 function cleanAlt(value: ImageAltValue) {
   return value?.trim() ?? "";
@@ -23,7 +32,49 @@ export function getImageAlt(explicitAlt: ImageAltValue, fallbackAlt: ImageAltVal
   return cleanAlt(explicitAlt) || cleanAlt(fallbackAlt);
 }
 
-export function getPostCoverAlt(explicitAlt: ImageAltValue, title: string) {
+function getStableIndex(seed: string, length: number) {
+  let hash = 0;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+  }
+
+  return length > 0 ? hash % length : 0;
+}
+
+function normalizeImagePath(src: ImageSrcValue) {
+  const value = src?.trim() ?? "";
+  if (!value) return "";
+
+  try {
+    return new URL(value, "https://builtbyunderdogs.local").pathname;
+  } catch {
+    return value;
+  }
+}
+
+export function isDefaultPostCoverImage(src: ImageSrcValue) {
+  return defaultPostCoverImageSet.has(normalizeImagePath(src));
+}
+
+export function getDefaultPostCoverImage(seed: string) {
+  const value = seed.trim() || "post";
+  return defaultPostCoverImages[getStableIndex(value, defaultPostCoverImages.length)] ?? "";
+}
+
+export function getPostCoverImage(src: ImageSrcValue, seed: string) {
+  return src?.trim() || getDefaultPostCoverImage(seed);
+}
+
+export function getPostCoverAlt(
+  explicitAlt: ImageAltValue,
+  title: string,
+  src?: ImageSrcValue
+) {
+  const value = cleanAlt(explicitAlt);
+  if (value) return value;
+  if (isDefaultPostCoverImage(src)) return "";
+
   return getImageAlt(explicitAlt, `Featured image for ${title}`);
 }
 

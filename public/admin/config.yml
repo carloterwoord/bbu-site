@@ -115,6 +115,7 @@ collections:
           label: Body,
           name: body,
           widget: markdown,
+          editor_components: [code-block, figure-image],
           hint: "Markdown with embedded HTML is supported for rich content parity.",
         }
 
@@ -189,6 +190,7 @@ collections:
           name: body,
           widget: markdown,
           required: false,
+          editor_components: [code-block, figure-image],
           hint: "Optional. Use slug 'home' to control homepage intro content. The 'search' route uses a dedicated template and ignores this body."
         }
 

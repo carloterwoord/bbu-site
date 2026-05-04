@@ -6,5 +6,5 @@ export const siteUrl = (
   import.meta.env.SITE ||
   "https://www.buildbyunderdogs.com"
 ).replace(/\/$/, "");
-export const defaultSocialImage = "/uploads/default-social-image.svg";
+export const defaultSocialImage = "/uploads/black_placeholder.webp";
 export const defaultSocialImageUrl = new URL(defaultSocialImage, siteUrl).toString();

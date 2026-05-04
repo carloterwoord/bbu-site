@@ -1,7 +1,7 @@
 ---
 import ArticleMeta from "./ArticleMeta.astro";
 import ArticleCover from "./ArticleCover.astro";
-import { getPostCoverAlt } from "../lib/images";
+import { getPostCoverAlt, getPostCoverImage } from "../lib/images";
 
 interface Props {
   dateISO: string;
@@ -12,6 +12,7 @@ interface Props {
   readTime?: string;
   title: string;
   href: string;
+  coverImageSeed?: string;
   coverImage?: string;
   coverImageAlt?: string;
   previewHtml?: string;
@@ -27,13 +28,19 @@ const {
   readTime = "",
   title,
   href,
+  coverImageSeed = "",
   coverImage = "",
   coverImageAlt = "",
   previewHtml = "",
   showDivider = true,
 } = Astro.props;
 
-const resolvedCoverImageAlt = getPostCoverAlt(coverImageAlt, title);
+const resolvedCoverImage = getPostCoverImage(coverImage, coverImageSeed || title);
+const resolvedCoverImageAlt = getPostCoverAlt(
+  coverImageAlt,
+  title,
+  resolvedCoverImage
+);
 ---
 
 <article class="article article--preview space-top--3xl space-bottom--3xl">
@@ -51,14 +58,16 @@ const resolvedCoverImageAlt = getPostCoverAlt(coverImageAlt, title);
     <div class="article__headline__link">
       <h2>{title}</h2>
     </div>
-    <ArticleCover src={coverImage} alt={resolvedCoverImageAlt} />
+    <ArticleCover src={resolvedCoverImage} alt={resolvedCoverImageAlt} />
   </header>
 
   {previewHtml && (
-    <div
-      class="article__content article__content-preview space-top--base"
-      set:html={previewHtml}
-    />
+    <div class="article__content-preview-container space-top--base">
+      <div
+        class="article__content article__content-preview"
+        set:html={previewHtml}
+      />
+    </div>
   )}
 
   <div class="article__keep-reading article__keep-reading--preview">

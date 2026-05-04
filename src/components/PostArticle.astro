@@ -7,7 +7,7 @@ import TagList from "./TagList.astro";
 import ShareButton from "./ShareButton.astro";
 import ProgressiveImage from "./ProgressiveImage.astro";
 import { formatDate, getArchiveMonthHref, getCategoryHref } from "../lib/content";
-import { getAvatarAlt, getPostCoverAlt } from "../lib/images";
+import { getAvatarAlt, getPostCoverAlt, getPostCoverImage } from "../lib/images";
 
 interface Props {
   post: CollectionEntry<"posts">;
@@ -47,14 +47,22 @@ const toc = headings
   }));
 const shouldShowTableOfContents =
   (post.data.showTableOfContents ?? true) && toc.length > 0;
-const coverImageAlt = getPostCoverAlt(post.data.coverImageAlt, post.data.title);
+const coverImage = getPostCoverImage(
+  post.data.coverImage,
+  post.data.slug || post.data.title
+);
+const coverImageAlt = getPostCoverAlt(
+  post.data.coverImageAlt,
+  post.data.title,
+  coverImage
+);
 const resolvedAuthorAvatarAlt = getAvatarAlt(authorAvatarAlt, authorName);
 ---
 
-{post.data.coverImage && (
+{coverImage && (
   <div class="page__cover-wrapper">
     <div class="page__cover">
-      <ProgressiveImage src={post.data.coverImage} alt={coverImageAlt} loading="eager" />
+      <ProgressiveImage src={coverImage} alt={coverImageAlt} loading="eager" />
     </div>
   </div>
 )}

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BackButton from "../components/BackButton.astro";
+import PageHeader from "../components/PageHeader.astro";
 import SearchForm from "../components/SearchForm.astro";
 import {
   formatDate,
@@ -11,7 +12,11 @@ import {
   getResolvedPosts,
   getTaxonomySlug,
 } from "../lib/content";
-import { getProgressiveImagePlaceholder } from "../lib/images";
+import {
+  getPostCoverAlt,
+  getPostCoverImage,
+  getProgressiveImagePlaceholder,
+} from "../lib/images";
 import { getPostPreviewHtml } from "../lib/preview";
 
 const posts = await getResolvedPosts();
@@ -53,8 +58,16 @@ const resultItems = await Promise.all(
     const bodyText = textFromMarkdown(post.entry.body ?? "");
     const previewHtml = await getPostPreviewHtml(
       post.entry.body,
-      post.entry.data.excerpt,
-      1
+      post.entry.data.excerpt
+    );
+    const coverImage = getPostCoverImage(
+      post.entry.data.coverImage,
+      post.entry.data.slug || post.entry.data.title
+    );
+    const coverImageAlt = getPostCoverAlt(
+      post.entry.data.coverImageAlt,
+      post.entry.data.title,
+      coverImage
     );
     const tagSlugs = post.entry.data.tags.map(getTaxonomySlug);
     const searchText = [
@@ -69,11 +82,9 @@ const resultItems = await Promise.all(
     return {
       title: post.entry.data.title,
       href: getPostHref(post.entry.data.slug),
-      coverImage: post.entry.data.coverImage,
-      coverImagePlaceholder: await getProgressiveImagePlaceholder(
-        post.entry.data.coverImage
-      ),
-      coverImageAlt: post.entry.data.coverImageAlt,
+      coverImage,
+      coverImagePlaceholder: await getProgressiveImagePlaceholder(coverImage),
+      coverImageAlt,
       dateISO: post.entry.data.date.toISOString().slice(0, 10),
       dateLabel: formatDate(post.entry.data.date),
       dateHref: getArchiveMonthHref(year, month),
@@ -99,35 +110,34 @@ const resultItemsJson = JSON.stringify(resultItems)
 <BaseLayout title="Results - Built by Underdogs">
   <main class="main">
     <BackButton href={getPageHref("search")} />
-    <div class="page__header-wrapper">
-      <div class="page__header">
-        <header>
-          <h1 data-results-title>Results</h1>
-        </header>
-        <article>
-          <p data-results-summary>No posts found.</p>
-        </article>
-      </div>
-    </div>
+    <PageHeader
+      title="Results"
+      description="No posts found."
+      titleAttributes={{ "data-results-title": "" }}
+      descriptionAttributes={{ "data-results-summary": "" }}
+    />
 
-    <div class="page page__content page__content--search-results space-top--xl space-bottom--4xl">
+    <div class="page search__results-search space-top--xl">
       <SearchForm />
-
-      <script
-        is:inline
-        type="application/json"
-        data-search-results-data
-        data-page-size={RESULTS_PER_PAGE}
-        set:html={resultItemsJson}
-      ></script>
-
-      <p class="search__results-empty" data-search-empty>
+      <p
+        class="search__results-empty space-top--lg space-bottom--4xl"
+        data-search-empty
+        hidden
+      >
         No posts matched this search.
       </p>
-
-      <hr class="page__divider" data-results-pagination-divider hidden />
-      <div class="page__pagination-wrapper" data-results-pagination hidden></div>
     </div>
+
+    <script
+      is:inline
+      type="application/json"
+      data-search-results-data
+      data-page-size={RESULTS_PER_PAGE}
+      set:html={resultItemsJson}
+    ></script>
+
+    <hr class="page__divider" data-results-pagination-divider hidden />
+    <div class="page__pagination-wrapper" data-results-pagination hidden></div>
   </main>
 
 </BaseLayout>

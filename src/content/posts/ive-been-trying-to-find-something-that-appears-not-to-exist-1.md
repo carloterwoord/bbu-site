@@ -19,9 +19,7 @@ relatedPostsHeading: ''
 draft: false
 ---
 
-You used to be yourself, authentically and unapologetically. Whether in business meetings or social gatherings, your uniqueness was your strength. And it was beautiful.
-
-https://www.nederland.fm/
+You used to be yourself, authentically and unapologetically. Whether in business meetings or social gatherings, your uniqueness was your strength. [And it was beautiful.](https://www.nederland.fm/)
 
 Today, most people are copies. Not original, but _replicated_. <u class="underline--wavy">Following the latest trends</u> enters you into an endless <u>cycle of conformity.</u> Every day you wake up trying to be <u class="underline--red">someone else's version</u> of success.
 
@@ -55,8 +53,13 @@ https://www.nederland.fm/
 </section>
 
 <figure>
-  <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop" alt="A descriptive alt text" loading="lazy" />
-  <figcaption>Image description here.</figcaption>
+  <img src="/uploads/profiel-foto-klein-675x675.jpeg" alt="Picture of my face" loading="lazy" decoding="async" />
+  <figcaption>Crazy!!!</figcaption>
+</figure>
+
+<figure>
+  <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" alt="A descriptive alt text" loading="lazy" decoding="async" />
+  <figcaption>Crayzee</figcaption>
 </figure>
 
 <figure>

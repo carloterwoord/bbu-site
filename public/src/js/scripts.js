@@ -3,7 +3,7 @@
     const FULL_SRC_ATTR = "progressiveSrc";
     const PLACEHOLDER_SRC_ATTR = "progressivePlaceholderSrc";
     const INITIALIZED_ATTR = "progressiveInitialized";
-    const PROGRESSIVE_PLACEHOLDER_WIDTH = 32;
+    const PROGRESSIVE_PLACEHOLDER_WIDTH = 64;
     const PIXEL_TRANSITION_DURATION = 640;
     const MIN_PLACEHOLDER_VISIBLE_MS = 180;
     const MIN_PIXEL_TRANSITION_SIZE = 96;
@@ -752,6 +752,111 @@
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-+|-+$/g, "");
 
+    const getNormalizedTextMap = (value) => {
+        let normalized = "";
+        const map = [];
+
+        for (let index = 0; index < value.length; index += 1) {
+            const character = value[index];
+            const normalizedCharacter = normalize(character);
+            if (!normalizedCharacter) continue;
+
+            for (let offset = 0; offset < normalizedCharacter.length; offset += 1) {
+                normalized += normalizedCharacter[offset];
+                map.push(index);
+            }
+        }
+
+        map.push(value.length);
+        return { normalized, map };
+    };
+
+    const getHighlightRanges = (value, terms) => {
+        if (!terms.length || !value.trim()) return [];
+
+        const { normalized, map } = getNormalizedTextMap(value);
+        const ranges = [];
+
+        for (const term of terms) {
+            if (!term) continue;
+
+            let start = normalized.indexOf(term);
+            while (start !== -1) {
+                const end = start + term.length;
+                ranges.push({
+                    start: map[start],
+                    end: map[end] ?? value.length,
+                });
+                start = normalized.indexOf(term, start + Math.max(term.length, 1));
+            }
+        }
+
+        return ranges
+            .filter((range) => range.end > range.start)
+            .sort((a, b) => a.start - b.start || b.end - a.end)
+            .reduce((merged, range) => {
+                const previous = merged.at(-1);
+                if (!previous || range.start > previous.end) {
+                    merged.push({ ...range });
+                    return merged;
+                }
+
+                previous.end = Math.max(previous.end, range.end);
+                return merged;
+            }, []);
+    };
+
+    const highlightTextNode = (textNode, terms) => {
+        const value = textNode.nodeValue || "";
+        const ranges = getHighlightRanges(value, terms);
+        if (!ranges.length) return;
+
+        const fragment = document.createDocumentFragment();
+        let cursor = 0;
+
+        for (const range of ranges) {
+            if (range.start > cursor) {
+                fragment.append(document.createTextNode(value.slice(cursor, range.start)));
+            }
+
+            const mark = document.createElement("mark");
+            mark.className = "search-highlight";
+            mark.textContent = value.slice(range.start, range.end);
+            fragment.append(mark);
+            cursor = range.end;
+        }
+
+        if (cursor < value.length) {
+            fragment.append(document.createTextNode(value.slice(cursor)));
+        }
+
+        textNode.replaceWith(fragment);
+    };
+
+    const highlightSearchTerms = (root, terms) => {
+        if (!terms.length) return;
+
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+                const parent = node.parentElement;
+                if (!parent) return NodeFilter.FILTER_REJECT;
+                if (parent.closest("script, style, noscript")) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+                return node.nodeValue?.trim()
+                    ? NodeFilter.FILTER_ACCEPT
+                    : NodeFilter.FILTER_REJECT;
+            },
+        });
+        const textNodes = [];
+
+        while (walker.nextNode()) {
+            textNodes.push(walker.currentNode);
+        }
+
+        textNodes.forEach((node) => highlightTextNode(node, terms));
+    };
+
     const getPageUrl = (page) => {
         const nextParams = new URLSearchParams(window.location.search);
         if (page <= 1) {
@@ -785,12 +890,15 @@
         return element;
     };
 
-    const createResultItem = (item) => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "search__results__item";
-
+    const createResultNodes = (item, highlightTerms = [], showDivider = true) => {
         const article = document.createElement("article");
-        article.className = "article space-top--3xl space-bottom--3xl";
+        article.className =
+            "article article--preview space-top--3xl space-bottom--3xl";
+
+        const previewLink = document.createElement("a");
+        previewLink.className = "article__preview-link";
+        previewLink.href = item.href || "#";
+        previewLink.setAttribute("aria-label", `Read ${item.title || "post"}`);
 
         const header = document.createElement("header");
         header.className = "article__headline";
@@ -838,12 +946,9 @@
 
         const headline = document.createElement("div");
         headline.className = "article__headline__link";
-        const headlineLink = document.createElement("a");
-        headlineLink.href = item.href || "#";
         const heading = document.createElement("h2");
         heading.textContent = item.title || "";
-        headlineLink.append(heading);
-        headline.append(headlineLink);
+        headline.append(heading);
 
         header.append(meta, headline);
 
@@ -866,8 +971,9 @@
                 image.dataset.progressivePlaceholderSrc = placeholderSrc;
             }
             image.alt =
-                (item.coverImageAlt || "").trim() ||
-                `Featured image for ${item.title || "this post"}`;
+                typeof item.coverImageAlt === "string"
+                    ? item.coverImageAlt
+                    : `Featured image for ${item.title || "this post"}`;
             image.loading = "lazy";
             image.decoding = "async";
             cover.append(image);
@@ -876,28 +982,39 @@
             window["BBUProgressiveImages"]?.prepareImage(image);
         }
 
-        article.append(header);
+        highlightSearchTerms(header, highlightTerms);
+        article.append(previewLink, header);
 
         if (item.previewHtml) {
+            const previewContainer = document.createElement("div");
+            previewContainer.className =
+                "article__content-preview-container space-top--base";
             const preview = document.createElement("div");
-            preview.className =
-                "article__content article__content-preview space-top--base";
+            preview.className = "article__content article__content-preview";
             preview.innerHTML = item.previewHtml;
-            article.append(preview);
+            highlightSearchTerms(preview, highlightTerms);
+            previewContainer.append(preview);
+            article.append(previewContainer);
         }
 
         const keepReading = document.createElement("div");
-        keepReading.className = "article__keep-reading";
+        keepReading.className =
+            "article__keep-reading article__keep-reading--preview";
         const keepReadingLink = document.createElement("a");
         keepReadingLink.href = item.href || "#";
-        keepReadingLink.className =
-            "text-sm font-semibold underline text-gray-800 hover:text-black";
+        keepReadingLink.setAttribute("tabindex", "-1");
+        keepReadingLink.setAttribute("aria-hidden", "true");
         keepReadingLink.textContent = "Keep reading";
         keepReading.append(keepReadingLink);
         article.append(keepReading);
 
-        wrapper.append(article);
-        return wrapper;
+        const nodes = [article];
+        if (showDivider) {
+            const divider = document.createElement("hr");
+            divider.className = "page__divider";
+            nodes.push(divider);
+        }
+        return nodes;
     };
 
     const initSearchResults = () => {
@@ -913,6 +1030,9 @@
         const year = (params.get("year") || "").trim();
         const month = (params.get("month") || "").trim();
         const terms = normalize(query).split(/\s+/).filter(Boolean);
+        const highlightTerms = Array.from(new Set(terms)).sort(
+            (a, b) => b.length - a.length,
+        );
         const hasQuery = query.length > 0;
         const hasActiveFilter =
             hasQuery || Boolean(tag || author || year || month);
@@ -994,22 +1114,29 @@
             totalPages > 0 ? Math.min(requestedPage, totalPages) : 1;
         const pageStart = (currentPage - 1) * pageSize;
         const pagedItems = visibleItems.slice(pageStart, pageStart + pageSize);
+        const hasMatches = matches > 0;
 
         if (pagedItems.length > 0) {
             const resultsContainer = document.createElement("div");
             resultsContainer.className = "search__results__container";
             resultsContainer.setAttribute("data-search-results", "");
             resultsContainer.replaceChildren(
-                ...pagedItems.map(createResultItem),
+                ...pagedItems.flatMap((item, index) =>
+                    createResultNodes(
+                        item,
+                        highlightTerms,
+                        index < pagedItems.length - 1,
+                    ),
+                ),
             );
             dataSource.insertAdjacentElement("beforebegin", resultsContainer);
             window["BBUUrlCards"]?.enhanceUrlCards?.();
         }
 
         if (summary) {
-            if (matches === 0) {
+            if (!hasMatches) {
                 summary.textContent = "No posts found.";
-            } else if (matches === 1) {
+            } else if (hasMatches && matches === 1) {
                 summary.textContent = "1 post found.";
             } else if (totalPages > 1) {
                 const pageEnd = pageStart + pagedItems.length;
@@ -1027,7 +1154,7 @@
             empty.textContent = hasActiveFilter
                 ? "No posts matched this search."
                 : "Enter a search query to see results.";
-            empty.hidden = matches !== 0;
+            empty.hidden = hasMatches;
         }
 
         if (!paginationContainer) return;

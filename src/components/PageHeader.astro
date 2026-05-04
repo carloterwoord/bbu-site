@@ -7,6 +7,8 @@ interface Props {
   image?: string;
   imageAlt?: string;
   wrapperClass?: string;
+  titleAttributes?: Record<string, string>;
+  descriptionAttributes?: Record<string, string>;
 }
 
 const {
@@ -15,6 +17,8 @@ const {
   image = "",
   imageAlt = "",
   wrapperClass = "",
+  titleAttributes = {},
+  descriptionAttributes = {},
 } = Astro.props;
 
 const headerClass = [
@@ -30,11 +34,11 @@ const headerClass = [
   )}
   <div class="page__header">
     <header>
-      <h1>{title}</h1>
+      <h1 {...titleAttributes}>{title}</h1>
     </header>
     {description && (
       <article>
-        <p>{description}</p>
+        <p {...descriptionAttributes}>{description}</p>
       </article>
     )}
   </div>

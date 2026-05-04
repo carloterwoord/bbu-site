@@ -35,6 +35,7 @@ const previewPosts = await Promise.all(posts.map(async (post, index) => {
     readTime: post.entry.data.readTime,
     title: post.entry.data.title,
     href: getPostHref(post.entry.data.slug),
+    coverImageSeed: post.entry.data.slug,
     coverImage: post.entry.data.coverImage,
     coverImageAlt: post.entry.data.coverImageAlt,
     previewHtml,
@@ -53,6 +54,7 @@ const previewPosts = await Promise.all(posts.map(async (post, index) => {
     readTime={post.readTime}
     title={post.title}
     href={post.href}
+    coverImageSeed={post.coverImageSeed}
     coverImage={post.coverImage}
     coverImageAlt={post.coverImageAlt}
     previewHtml={post.previewHtml}
